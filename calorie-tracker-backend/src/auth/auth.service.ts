@@ -61,6 +61,7 @@ export class AuthService {
     return {
       access_token,
       user: {
+        _id: user._id, // Assurez-vous que l'ID utilisateur est inclus ici
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -108,7 +109,10 @@ export class AuthService {
     user.codeExpiration = codeExpirationTime;
     await user.save();
 
-    await this.emailService.sendVerificationCode(user.email, newVerificationCode);
+    await this.emailService.sendVerificationCode(
+      user.email,
+      newVerificationCode,
+    );
 
     return { message: 'A new verification code has been sent to your email.' };
   }

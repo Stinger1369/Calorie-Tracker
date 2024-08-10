@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import hostname from '../../../hostname';
@@ -13,7 +13,7 @@ const initialState = {
 // Action pour l'enregistrement
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userData, {rejectWithValue}) => {
+  async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/register`, userData);
       return response.data;
@@ -23,7 +23,7 @@ export const registerUser = createAsyncThunk(
       }
       return rejectWithValue('An error occurred');
     }
-  },
+  }
 );
 
 // Action pour la connexion
@@ -32,6 +32,18 @@ export const loginUser = createAsyncThunk(
   async (userData, {rejectWithValue}) => {
     try {
       const response = await axios.post(`${hostname}/auth/login`, userData);
+      const user = response.data.user;
+
+      // Assurez-vous que l'ID utilisateur est présent
+      if (user && user._id) {
+        // Sauvegarder l'utilisateur dans AsyncStorage avec son _id
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        console.log('User data saved in AsyncStorage:', JSON.stringify(user));
+      } else {
+        console.error('User ID not found in response');
+        return rejectWithValue('User ID not found');
+      }
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -45,11 +57,11 @@ export const loginUser = createAsyncThunk(
 // Action pour vérifier le code de vérification
 export const verifyCode = createAsyncThunk(
   'auth/verifyCode',
-  async (verificationData, {rejectWithValue}) => {
+  async (verificationData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         `${hostname}/auth/verify-code`,
-        verificationData,
+        verificationData
       );
       return response.data;
     } catch (error) {
@@ -58,13 +70,13 @@ export const verifyCode = createAsyncThunk(
       }
       return rejectWithValue('An error occurred');
     }
-  },
+  }
 );
 
 // Action pour demander un nouveau code de vérification
 export const requestNewCode = createAsyncThunk(
   'auth/requestNewCode',
-  async (email, {rejectWithValue}) => {
+  async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/request-new-code`, {
         email,
@@ -76,13 +88,13 @@ export const requestNewCode = createAsyncThunk(
       }
       return rejectWithValue('An error occurred while requesting a new code');
     }
-  },
+  }
 );
 
 // Action pour réinitialiser le mot de passe
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
-  async ({token, newPassword}, {rejectWithValue}) => {
+  async ({ token, newPassword }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/reset-password`, {
         token,
@@ -95,13 +107,16 @@ export const resetPassword = createAsyncThunk(
       }
       return rejectWithValue('An error occurred while resetting the password');
     }
-  },
+  }
 );
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
     user: null,
     token: null,
+    loading: false,
+    error: null,
   },
   reducers: {
     logout: (state, action) => {
@@ -120,7 +135,6 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, state => {
         state.loading = false;
-        // Aucune mise à jour de l'AsyncStorage ici
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -134,8 +148,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.access_token;
-        // Stocker les données de l'utilisateur uniquement après une connexion réussie
-        AsyncStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -147,7 +159,6 @@ const authSlice = createSlice({
       })
       .addCase(verifyCode.fulfilled, state => {
         state.loading = false;
-        // Logic to handle verification success if needed
       })
       .addCase(verifyCode.rejected, (state, action) => {
         state.loading = false;
@@ -159,7 +170,6 @@ const authSlice = createSlice({
       })
       .addCase(requestNewCode.fulfilled, state => {
         state.loading = false;
-        // Logic to handle requestNewCode success if needed
       })
       .addCase(requestNewCode.rejected, (state, action) => {
         state.loading = false;
@@ -171,7 +181,6 @@ const authSlice = createSlice({
       })
       .addCase(resetPassword.fulfilled, state => {
         state.loading = false;
-        // Logic to handle resetPassword success if needed
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
@@ -180,6 +189,6 @@ const authSlice = createSlice({
   },
 });
 
-export const {logout} = authSlice.actions;
+export const { logout } = authSlice.actions;
 
 export default authSlice.reducer;

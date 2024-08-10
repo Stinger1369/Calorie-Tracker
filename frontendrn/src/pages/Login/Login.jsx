@@ -20,7 +20,16 @@ const Login = () => {
   const handleLogin = async values => {
     try {
       const response = await dispatch(loginUser(values)).unwrap();
-      await AsyncStorage.setItem('user', JSON.stringify(response.user));
+
+      // Vérifiez que l'utilisateur est correctement stocké
+      console.log('User logged in:', response.user);
+
+      // Sauvegarder l'ID de l'utilisateur dans AsyncStorage
+      await AsyncStorage.setItem(
+        'user',
+        JSON.stringify({...response.user, _id: response.user._id}),
+      );
+
       navigation.navigate('Home');
     } catch (err) {
       console.log('Login failed:', err);
