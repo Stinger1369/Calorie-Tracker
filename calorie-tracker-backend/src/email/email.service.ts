@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import * as dotenv from 'dotenv';
+
+dotenv.config(); // Charger les variables d'environnement du fichier .env
 
 @Injectable()
 export class EmailService {
@@ -15,9 +18,19 @@ export class EmailService {
     });
   }
 
+  async sendVerificationCode(to: string, code: string) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject: 'Email Verification',
+      text: `Your verification code is: ${code}`,
+    };
+
+    return this.transporter.sendMail(mailOptions);
+  }
+
   async sendResetPasswordEmail(to: string, token: string) {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,

@@ -10,20 +10,55 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = new this.userModel(createUserDto);
-    user.horoscope = this.getHoroscope(user.dateOfBirth);
+    let baseUsername =
+      `${createUserDto.firstName}.${createUserDto.lastName}`.toLowerCase();
+    let username = baseUsername;
+    let counter = 1;
+
+    // Vérifie l'unicité du username
+    while (await this.userModel.findOne({ username })) {
+      username = `${baseUsername}${counter}`;
+      counter++;
+    }
+
+    const user = new this.userModel({
+      ...createUserDto,
+      username, // Attribue le username unique
+    });
+
     await user.save();
     return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const updatedData = { ...updateUserDto };
+
+    if (updateUserDto.username) {
+      let baseUsername = updateUserDto.username.toLowerCase();
+      let username = baseUsername;
+      let counter = 1;
+
+      // Vérifie l'unicité du username pour cet utilisateur
+      while (await this.userModel.findOne({ username, _id: { $ne: id } })) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+
+      updatedData.username = username; // Attribue le username unique dans une copie
+    }
+
     const user = await this.userModel
-      .findByIdAndUpdate(id, updateUserDto, {
+      .findByIdAndUpdate(id, updatedData, {
         new: true,
       })
       .exec();
-    user.horoscope = this.getHoroscope(user.dateOfBirth);
-    await user.save();
+
+    // Recalcule l'horoscope après la mise à jour si la date de naissance est modifiée
+    if (updateUserDto.dateOfBirth) {
+      user.horoscope = this.getHoroscope(updateUserDto.dateOfBirth);
+      await user.save(); // Sauvegarder seulement si l'horoscope est recalculé
+    }
+
     return user;
   }
 

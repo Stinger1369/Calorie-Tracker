@@ -67,7 +67,16 @@ export class User extends Document {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true })
+  @Prop()
+  verificationCode: string;
+
+  @Prop()
+  codeExpiration: Date;
+
+  @Prop({ default: false })
+  isVerified: boolean;
+
+  @Prop({ required: false })
   dateOfBirth: Date;
 
   @Prop()
