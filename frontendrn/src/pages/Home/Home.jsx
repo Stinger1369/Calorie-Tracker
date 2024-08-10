@@ -1,9 +1,15 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Modal, Button} from 'react-native';
-import styles from './homeStyles'; // Externalized styles
+import {View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importation ajoutée
+import {logout} from '../../redux/features/auth/authSlice';
+import styles from './homeStyles'; // Import externalized styles
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const openModal = () => {
     setModalVisible(true);
@@ -13,10 +19,13 @@ const Home = () => {
     setModalVisible(false);
   };
 
-  const handleLogout = () => {
-    // Close the modal and handle logout logic
-    setModalVisible(false);
-    // Redirect to Logout logic or perform other actions
+  const handleLogout = async saveData => {
+    closeModal(); // Close the modal
+    if (!saveData) {
+      await AsyncStorage.removeItem('user'); // Supprimer les informations de l'utilisateur si non sauvegardé
+    }
+    dispatch(logout()); // Appeler l'action logout du redux
+    navigation.navigate('Welcom'); // Rediriger vers l'écran Welcom
   };
 
   return (
@@ -29,7 +38,7 @@ const Home = () => {
       <Text style={styles.welcomeText}>Bienvenue sur la page d'accueil !</Text>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={closeModal}>
@@ -39,11 +48,20 @@ const Home = () => {
               <Text style={styles.iconText}>X</Text>
             </TouchableOpacity>
             <Text style={styles.modalText}>
-              Voulez-vous vraiment vous déconnecter?
+              Souhaitez-vous sauvegarder vos données pour une connexion rapide
+              la prochaine fois?
             </Text>
             <View style={styles.buttonRow}>
-              <Button title="Yes" onPress={handleLogout} />
-              <Button title="No" onPress={closeModal} />
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleLogout(true)}>
+                <Text style={styles.modalButtonText}>Oui</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleLogout(false)}>
+                <Text style={styles.modalButtonText}>Non</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

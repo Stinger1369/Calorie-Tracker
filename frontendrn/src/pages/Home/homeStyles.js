@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff', // White background for a clean look
     padding: 20,
   },
   header: {
@@ -13,9 +13,6 @@ export default StyleSheet.create({
   },
   iconContainer: {
     padding: 10,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 30,
-    elevation: 2,
   },
   iconText: {
     fontSize: 18,
@@ -25,16 +22,16 @@ export default StyleSheet.create({
   welcomeText: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#333',
+    color: '#333', // Dark grey text for readability
     textAlign: 'center',
     marginVertical: 20,
-    fontFamily: 'Avenir-Medium',
+    fontFamily: 'Avenir-Medium', // Professional and clean font
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
     width: '80%',
@@ -42,14 +39,10 @@ export default StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
   },
   closeButton: {
     alignSelf: 'flex-end',
+    marginBottom: 10,
   },
   modalText: {
     fontSize: 18,
@@ -62,5 +55,17 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#e74c3c',
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
