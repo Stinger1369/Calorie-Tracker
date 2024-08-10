@@ -10,6 +10,7 @@ import Logout from './src/components/Logout/Logout';
 import AuthChoice from './src/pages/AuthChoice/AuthChoice';
 import ResetPassword from './src/pages/ResetPassword/ResetPassword';
 import TabNavigator from './src/navigation/TabNavigator';
+import ProfileEditNavigator from './src/pages//ProfileSection/ProfileUpdateEdit/ProfileEditNavigator';
 
 import store from './src/redux/store/store';
 import {enableScreens} from 'react-native-screens';
@@ -44,7 +45,7 @@ const App = () => {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="Home"  // Ce nom reste "Home" car il est utilisé pour le TabNavigator.
+            name="Home"
             component={TabNavigator}
             options={{headerShown: false}}
           />
@@ -62,6 +63,12 @@ const App = () => {
             name="ResetPassword"
             component={ResetPassword}
             options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ProfileEdit"
+            component={ProfileEditNavigator}
+            options={{headerShown: false}}
+            //options={{title: 'Edit Profile'}}
           />
         </Stack.Navigator>
       </NavigationContainer>

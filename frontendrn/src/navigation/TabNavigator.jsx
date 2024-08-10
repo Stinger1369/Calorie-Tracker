@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
 import Home from '../pages/Home/Home';
 import Contact from '../pages/Contact/Contact';
-import Profile from '../pages/Profile/Profile';
+import Profile from '../pages/ProfileSection/profile/Profile';
 import CustomDrawer from './CustomDrawer';
 import styles from './TabNavigatorStyle';
 

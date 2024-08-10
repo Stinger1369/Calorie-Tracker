@@ -37,8 +37,14 @@ export const loginUser = createAsyncThunk(
       // Assurez-vous que l'ID utilisateur est présent
       if (user && user._id) {
         // Sauvegarder l'utilisateur dans AsyncStorage avec son _id
-        await AsyncStorage.setItem('user', JSON.stringify(user));
-        console.log('User data saved in AsyncStorage:', JSON.stringify(user));
+        await AsyncStorage.setItem(
+          'user',
+          JSON.stringify({...user, id: user._id}),
+        );
+        console.log(
+          'User data saved in AsyncStorage:',
+          JSON.stringify({...user, id: user._id}),
+        );
       } else {
         console.error('User ID not found in response');
         return rejectWithValue('User ID not found');
