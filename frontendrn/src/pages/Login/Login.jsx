@@ -1,11 +1,12 @@
 import React from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {loginUser, requestNewCode} from '../../redux/features/auth/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import styles from './loginStyles'; // Import external styles
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -19,13 +20,8 @@ const Login = () => {
   const handleLogin = async values => {
     try {
       const response = await dispatch(loginUser(values)).unwrap();
-      console.log('Login response:', response);
-
-      // Store user information in AsyncStorage
       await AsyncStorage.setItem('user', JSON.stringify(response.user));
-      console.log('User data stored in AsyncStorage:', response.user);
-
-      navigation.navigate('Home'); // Redirect to Home after successful login
+      navigation.navigate('Home');
     } catch (err) {
       console.log('Login failed:', err);
     }
@@ -33,14 +29,13 @@ const Login = () => {
 
   const handleForgotPassword = async (email, setFieldTouched) => {
     if (!email) {
-      setFieldTouched('email', true); // Mark the email field as touched to trigger validation
+      setFieldTouched('email', true);
       return;
     }
 
     try {
       await dispatch(requestNewCode(email)).unwrap();
-      console.log('Verification code sent to email:', email);
-      navigation.navigate('ResetPassword', {email}); // Navigate to reset password screen
+      navigation.navigate('ResetPassword', {email});
     } catch (err) {
       console.log('Failed to send verification code:', err);
     }
@@ -83,44 +78,18 @@ const Login = () => {
           {touched.password && errors.password && (
             <Text style={styles.errorText}>{errors.password}</Text>
           )}
-          <Button title="Se connecter" onPress={handleSubmit} />
-          <Button
-            title="Mot de passe oublié?"
-            onPress={() => handleForgotPassword(values.email, setFieldTouched)}
-          />
-          {touched.email && !values.email && (
-            <Text style={styles.errorText}>
-              Veuillez entrer votre adresse email
-            </Text>
-          )}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Se connecter</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.forgotButton}
+            onPress={() => handleForgotPassword(values.email, setFieldTouched)}>
+            <Text style={styles.forgotButtonText}>Mot de passe oublié?</Text>
+          </TouchableOpacity>
         </View>
       )}
     </Formik>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-  },
-  errorText: {
-    fontSize: 12,
-    color: 'red',
-    marginBottom: 10,
-  },
-});
 
 export default Login;

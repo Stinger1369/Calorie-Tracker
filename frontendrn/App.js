@@ -23,14 +23,46 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Welcom">
-          <Stack.Screen name="Welcom" component={Welcom} />
-          <Stack.Screen name="AuthChoice" component={AuthChoice} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Logout" component={Logout} />
-          <Stack.Screen name="ResetPassword" component={ResetPassword} />
+          <Stack.Screen
+            name="Welcom"
+            component={Welcom}
+            options={{ headerShown: false }} // Hide header for Welcom
+          />
+          <Stack.Screen
+            name="AuthChoice"
+            component={AuthChoice}
+            options={{ headerShown: false }} // Hide header for AuthChoice
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{ headerShown: false }} // Hide header for Register
+          />
+          <Stack.Screen
+            name="VerifyEmail"
+            component={VerifyEmail}
+            options={{ headerShown: false }} // Hide header for VerifyEmail
+          />
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }} // Hide header for Home
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }} // Hide header for Login
+          />
+          <Stack.Screen
+            name="Logout"
+            component={Logout}
+            options={{ headerShown: false }} // Hide header for Logout
+          />
+          <Stack.Screen
+            name="ResetPassword"
+            component={ResetPassword}
+            options={{ headerShown: false }} // Hide header for ResetPassword
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {resetPassword} from '../../redux/features/auth/authSlice';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import styles from './resetPasswordStyles'; // Import external styles
 
 const ResetPassword = () => {
   const [code, setCode] = useState('');
@@ -40,31 +41,11 @@ const ResetPassword = () => {
         value={newPassword}
         onChangeText={setNewPassword}
       />
-      <Button
-        title="Réinitialiser le mot de passe"
-        onPress={handleResetPassword}
-      />
+      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+        <Text style={styles.buttonText}>Réinitialiser le mot de passe</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-  },
-});
 
 export default ResetPassword;

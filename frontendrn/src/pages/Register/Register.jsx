@@ -1,42 +1,43 @@
 import React from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {registerUser} from '../../redux/features/auth/authSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import styles from './registerStyles'; // Import external styles
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('Required'),
-    lastName: Yup.string().required('Required'),
-    email: Yup.string().email('Invalid email').required('Required'),
-    password: Yup.string().min(6, 'Password too short').required('Required'),
+    firstName: Yup.string().required('Prénom requis'),
+    lastName: Yup.string().required('Nom requis'),
+    email: Yup.string().email('Email invalide').required('Email requis'),
+    password: Yup.string()
+      .min(6, 'Mot de passe trop court')
+      .required('Mot de passe requis'),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
-      .required('Required'),
+      .oneOf(
+        [Yup.ref('password'), undefined],
+        'Les mots de passe doivent correspondre',
+      )
+      .required('Confirmation de mot de passe requise'),
   });
-const handleRegister = async values => {
-  try {
-    // Effacer les anciennes données de l'utilisateur avant d'enregistrer les nouvelles
-    await AsyncStorage.removeItem('user');
-    console.log('User data in AsyncStorage cleared');
 
-    // Envoyer les nouvelles données pour l'inscription
-    const response = await dispatch(registerUser(values)).unwrap();
-    console.log('Response from server after registration:', response);
+  const handleRegister = async values => {
+    try {
+      // Envoyer les nouvelles données pour l'inscription
+      const response = await dispatch(registerUser(values)).unwrap();
+      console.log('Response from server after registration:', response);
 
-    // Aucune sauvegarde dans l'AsyncStorage ici, car l'utilisateur n'est pas encore connecté
-    navigation.navigate('VerifyEmail');
-  } catch (err) {
-    console.log('Error during registration:', err);
-  }
-};
-
+      // Naviguer vers l'écran de vérification de l'email
+      navigation.navigate('VerifyEmail');
+    } catch (err) {
+      console.log("Erreur lors de l'inscription :", err);
+    }
+  };
 
   return (
     <Formik
@@ -54,7 +55,7 @@ const handleRegister = async values => {
           <Text style={styles.title}>Inscription</Text>
           <TextInput
             style={styles.input}
-            placeholder="First Name"
+            placeholder="Prénom"
             onChangeText={handleChange('firstName')}
             onBlur={handleBlur('firstName')}
             value={values.firstName}
@@ -64,7 +65,7 @@ const handleRegister = async values => {
           )}
           <TextInput
             style={styles.input}
-            placeholder="Last Name"
+            placeholder="Nom"
             onChangeText={handleChange('lastName')}
             onBlur={handleBlur('lastName')}
             value={values.lastName}
@@ -84,7 +85,7 @@ const handleRegister = async values => {
           )}
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Mot de passe"
             secureTextEntry
             onChangeText={handleChange('password')}
             onBlur={handleBlur('password')}
@@ -95,7 +96,7 @@ const handleRegister = async values => {
           )}
           <TextInput
             style={styles.input}
-            placeholder="Confirm Password"
+            placeholder="Confirmer le mot de passe"
             secureTextEntry
             onChangeText={handleChange('confirmPassword')}
             onBlur={handleBlur('confirmPassword')}
@@ -104,35 +105,13 @@ const handleRegister = async values => {
           {touched.confirmPassword && errors.confirmPassword && (
             <Text style={styles.errorText}>{errors.confirmPassword}</Text>
           )}
-          <Button title="S'inscrire" onPress={handleSubmit} />
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>S'inscrire</Text>
+          </TouchableOpacity>
         </View>
       )}
     </Formik>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-  },
-  errorText: {
-    fontSize: 12,
-    color: 'red',
-    marginBottom: 10,
-  },
-});
 
 export default Register;

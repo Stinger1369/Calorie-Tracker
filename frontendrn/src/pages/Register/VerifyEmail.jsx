@@ -1,77 +1,101 @@
-import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet, Alert} from 'react-native';
+import React from 'react';
+import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {verifyCode, requestNewCode} from '../../redux/features/auth/authSlice';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import styles from './verifyEmailStyles'; // Import external styles
 
 const VerifyEmail = () => {
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const handleVerify = async () => {
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email('Email invalide').required('Email requis'),
+    code: Yup.string().required('Code de vérification requis'),
+  });
+
+  const handleVerify = async (values, {setSubmitting, setErrors}) => {
     try {
-      await dispatch(verifyCode({email, code})).unwrap();
+      await dispatch(verifyCode(values)).unwrap();
       navigation.navigate('Login'); // Redirection vers l'écran de connexion après vérification réussie
     } catch (err) {
-      Alert.alert(
-        'Erreur',
-        err || "Une erreur s'est produite lors de la vérification.",
-      );
+      setErrors({general: err || 'Erreur lors de la vérification du code.'});
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleRequestNewCode = async () => {
+  const handleRequestNewCode = async (email, setErrors) => {
+    if (!email) {
+      setErrors({email: 'Veuillez entrer votre adresse email'});
+      return;
+    }
     try {
       const response = await dispatch(requestNewCode(email)).unwrap();
-      Alert.alert('Nouveau code envoyé', response.message);
+      setErrors({general: response.message});
     } catch (err) {
-      Alert.alert(
-        'Erreur',
-        err || "Une erreur s'est produite lors de l'envoi du nouveau code.",
-      );
+      setErrors({general: err || "Erreur lors de l'envoi du nouveau code."});
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Vérification de l'email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Code de vérification"
-        value={code}
-        onChangeText={setCode}
-      />
-      <Button title="Vérifier" onPress={handleVerify} />
-      <Button title="Renvoyer le code" onPress={handleRequestNewCode} />
-    </View>
+    <Formik
+      initialValues={{email: '', code: ''}}
+      validationSchema={validationSchema}
+      onSubmit={handleVerify}>
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        setErrors,
+        values,
+        errors,
+        touched,
+        isSubmitting,
+      }) => (
+        <View style={styles.container}>
+          <Text style={styles.title}>Vérification de l'email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={values.email}
+            onChangeText={handleChange('email')}
+            onBlur={handleBlur('email')}
+          />
+          {touched.email && errors.email && (
+            <Text style={styles.errorText}>{errors.email}</Text>
+          )}
+          <TextInput
+            style={styles.input}
+            placeholder="Code de vérification"
+            value={values.code}
+            onChangeText={handleChange('code')}
+            onBlur={handleBlur('code')}
+          />
+          {touched.code && errors.code && (
+            <Text style={styles.errorText}>{errors.code}</Text>
+          )}
+          {errors.general && (
+            <Text style={styles.errorText}>{errors.general}</Text>
+          )}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSubmit}
+            disabled={isSubmitting}>
+            <Text style={styles.buttonText}>Vérifier</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.resendButton]}
+            onPress={() => handleRequestNewCode(values.email, setErrors)}
+            disabled={isSubmitting}>
+            <Text style={styles.buttonText}>Renvoyer le code</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </Formik>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-  },
-});
 
 export default VerifyEmail;

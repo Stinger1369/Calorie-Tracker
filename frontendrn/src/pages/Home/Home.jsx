@@ -1,31 +1,55 @@
-import React from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, Modal, Button} from 'react-native';
+import styles from './homeStyles'; // Externalized styles
 
 const Home = () => {
-  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleLogout = () => {
+    // Close the modal and handle logout logic
+    setModalVisible(false);
+    // Redirect to Logout logic or perform other actions
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Bienvenue sur la page d'accueil !</Text>
-      <Button
-        title="Se déconnecter"
-        onPress={() => navigation.navigate('Logout')}
-      />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.iconContainer} onPress={openModal}>
+          <Text style={styles.iconText}>X</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.welcomeText}>Bienvenue sur la page d'accueil !</Text>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.iconText}>X</Text>
+            </TouchableOpacity>
+            <Text style={styles.modalText}>
+              Voulez-vous vraiment vous déconnecter?
+            </Text>
+            <View style={styles.buttonRow}>
+              <Button title="Yes" onPress={handleLogout} />
+              <Button title="No" onPress={closeModal} />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-});
 
 export default Home;
