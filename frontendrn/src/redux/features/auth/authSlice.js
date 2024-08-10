@@ -97,15 +97,17 @@ export const resetPassword = createAsyncThunk(
     }
   },
 );
-
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState: {
+    user: null,
+    token: null,
+  },
   reducers: {
     logout: (state, action) => {
       state.user = null;
       state.token = null;
-      if (action.payload && !action.payload.saveData) {
+      if (!action.payload.saveData) {
         AsyncStorage.removeItem('user');
       }
     },

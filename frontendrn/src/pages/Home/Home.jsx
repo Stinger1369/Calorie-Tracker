@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, Modal} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importation ajoutée
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../../redux/features/auth/authSlice';
-import styles from './homeStyles'; // Import externalized styles
+import styles from './homeStyles';
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -20,12 +20,12 @@ const Home = () => {
   };
 
   const handleLogout = async saveData => {
-    closeModal(); // Close the modal
-    if (!saveData) {
-      await AsyncStorage.removeItem('user'); // Supprimer les informations de l'utilisateur si non sauvegardé
-    }
-    dispatch(logout()); // Appeler l'action logout du redux
-    navigation.navigate('Welcom'); // Rediriger vers l'écran Welcom
+    closeModal(); // Fermer le modal
+    dispatch(logout({saveData}));
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Welcom'}], // Rediriger vers l'écran Welcom et réinitialiser la navigation
+    });
   };
 
   return (

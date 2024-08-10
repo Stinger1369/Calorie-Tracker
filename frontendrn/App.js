@@ -5,11 +5,11 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Welcom from './src/pages/Welcom/Welcom';
 import Register from './src/pages/Register/Register';
 import VerifyEmail from './src/pages/Register/VerifyEmail';
-import Home from './src/pages/Home/Home';
 import Login from './src/pages/Login/Login';
 import Logout from './src/components/Logout/Logout';
 import AuthChoice from './src/pages/AuthChoice/AuthChoice';
 import ResetPassword from './src/pages/ResetPassword/ResetPassword';
+import TabNavigator from './src/navigation/TabNavigator';
 
 import store from './src/redux/store/store';
 import {enableScreens} from 'react-native-screens';
@@ -26,42 +26,42 @@ const App = () => {
           <Stack.Screen
             name="Welcom"
             component={Welcom}
-            options={{ headerShown: false }} // Hide header for Welcom
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="AuthChoice"
             component={AuthChoice}
-            options={{ headerShown: false }} // Hide header for AuthChoice
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="Register"
             component={Register}
-            options={{ headerShown: false }} // Hide header for Register
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="VerifyEmail"
             component={VerifyEmail}
-            options={{ headerShown: false }} // Hide header for VerifyEmail
+            options={{headerShown: false}}
           />
           <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{ headerShown: false }} // Hide header for Home
+            name="Home"  // Ce nom reste "Home" car il est utilisé pour le TabNavigator.
+            component={TabNavigator}
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ headerShown: false }} // Hide header for Login
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="Logout"
             component={Logout}
-            options={{ headerShown: false }} // Hide header for Logout
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="ResetPassword"
             component={ResetPassword}
-            options={{ headerShown: false }} // Hide header for ResetPassword
+            options={{headerShown: false}}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from './welcomStyles'; // Import the externalized styles
+import styles from './welcomStyles';
 
 const Welcom = () => {
   const navigation = useNavigation();
@@ -11,9 +11,7 @@ const Welcom = () => {
   useEffect(() => {
     const checkUserStatus = async () => {
       try {
-        console.log('Attempting to retrieve user data from AsyncStorage...');
         const user = await AsyncStorage.getItem('user');
-        console.log('User data retrieved from AsyncStorage:', user);
 
         if (user) {
           const parsedUser = JSON.parse(user);
@@ -31,9 +29,9 @@ const Welcom = () => {
 
   const handleContinue = () => {
     if (userName) {
-      navigation.navigate('Home');
+      navigation.navigate('Home'); // L'utilisateur a sauvegardé ses informations, on va directement à Home
     } else {
-      navigation.navigate('AuthChoice');
+      navigation.navigate('AuthChoice'); // L'utilisateur doit se reconnecter
     }
   };
 

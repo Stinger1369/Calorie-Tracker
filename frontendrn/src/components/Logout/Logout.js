@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Button, Alert} from 'react-native';
+import {View, Text, StyleSheet, Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {logout} from '../../redux/features/auth/authSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Logout = () => {
   const navigation = useNavigation();
@@ -11,11 +10,11 @@ const Logout = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async saveData => {
-    if (!saveData) {
-      await AsyncStorage.removeItem('user'); // Supprimer les informations de l'utilisateur si l'utilisateur choisit de ne pas sauvegarder
-    }
-    dispatch(logout()); // Appeler l'action logout du redux
-    navigation.navigate('Welcom'); // Rediriger vers l'écran Welcom
+    dispatch(logout({saveData})); // Appeler l'action logout du redux avec le paramètre saveData
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Welcom'}], // Rediriger vers l'écran Welcom et réinitialiser la navigation
+    });
   };
 
   const confirmLogout = () => {
