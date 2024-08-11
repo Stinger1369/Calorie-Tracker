@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "frontendexpo",
+    "slug": "frontendexpo",
+    "scheme": "myapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {},
+    "web": {}
+  }
+}
