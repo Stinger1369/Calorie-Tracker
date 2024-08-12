@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { Picker } from "@react-native-picker/picker"; // Importer le Picker
 import {
   updateUserInfo,
   fetchUserInfo,
@@ -19,8 +14,8 @@ const HealthInfoScreen = ({ navigation }) => {
   const { userInfo } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.auth);
 
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState(null); // Valeur par défaut du poids
+  const [height, setHeight] = useState(null); // Valeur par défaut de la taille
   const [medicalConditions, setMedicalConditions] = useState([]);
   const [bloodTestResults, setBloodTestResults] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
@@ -46,8 +41,8 @@ const HealthInfoScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (userInfo) {
-      setWeight(userInfo.weight?.toString() || "");
-      setHeight(userInfo.height?.toString() || "");
+      setWeight(userInfo.weight || null); // Ajuste la valeur initiale si présente
+      setHeight(userInfo.height || null); // Ajuste la valeur initiale si présente
       setMedicalConditions(userInfo.medicalConditions || []);
       setBloodTestResults(userInfo.bloodTestResults || []);
       setIsSaved(true);
@@ -57,8 +52,8 @@ const HealthInfoScreen = ({ navigation }) => {
 
   const handleSave = () => {
     const updatedData = {
-      weight: parseFloat(weight),
-      height: parseFloat(height),
+      weight: weight !== null ? parseFloat(weight) : null,
+      height: height !== null ? parseFloat(height) : null,
       medicalConditions,
       bloodTestResults,
     };
@@ -73,12 +68,6 @@ const HealthInfoScreen = ({ navigation }) => {
   const handleNext = () => {
     handleSave();
     navigation.navigate("LifestyleInfo");
-  };
-
-  const handleInputChange = (value, setter) => {
-    setter(value);
-    setIsSaved(false);
-    setHasChanges(true);
   };
 
   const handleAddMedicalCondition = () => {
@@ -118,20 +107,44 @@ const HealthInfoScreen = ({ navigation }) => {
     >
       <View>
         <Text style={styles.label}>Weight (kg):</Text>
-        <TextInput
-          style={styles.input}
-          value={weight}
-          onChangeText={(value) => handleInputChange(value, setWeight)}
-          keyboardType="numeric"
-        />
+        <Picker
+          selectedValue={weight}
+          onValueChange={(itemValue) => {
+            if (itemValue === null) {
+              setWeight(null);
+            } else {
+              setWeight(itemValue);
+            }
+            setHasChanges(true);
+            setIsSaved(false);
+          }}
+          style={styles.picker}
+        >
+          <Picker.Item label="Not specified" value={null} />
+          {Array.from({ length: 349 }, (_, i) => i + 2).map((value) => (
+            <Picker.Item key={value} label={`${value} kg`} value={value} />
+          ))}
+        </Picker>
 
         <Text style={styles.label}>Height (cm):</Text>
-        <TextInput
-          style={styles.input}
-          value={height}
-          onChangeText={(value) => handleInputChange(value, setHeight)}
-          keyboardType="numeric"
-        />
+        <Picker
+          selectedValue={height}
+          onValueChange={(itemValue) => {
+            if (itemValue === null) {
+              setHeight(null);
+            } else {
+              setHeight(itemValue);
+            }
+            setHasChanges(true);
+            setIsSaved(false);
+          }}
+          style={styles.picker}
+        >
+          <Picker.Item label="Not specified" value={null} />
+          {Array.from({ length: 201 }, (_, i) => i + 50).map((value) => (
+            <Picker.Item key={value} label={`${value} cm`} value={value} />
+          ))}
+        </Picker>
 
         <Text style={styles.label}>Medical Conditions:</Text>
         {medicalConditions.map((condition, index) => (

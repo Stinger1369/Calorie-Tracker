@@ -10,7 +10,7 @@ import {
   ValidateNested,
   IsBoolean,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { BloodTestResultDto } from './blood-test-result.dto';
 import { FoodAnalysisDto } from './food-analysis.dto';
 
@@ -22,6 +22,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => (value ? value.trim() : null))
   readonly gender?: string;
 
   @IsOptional()

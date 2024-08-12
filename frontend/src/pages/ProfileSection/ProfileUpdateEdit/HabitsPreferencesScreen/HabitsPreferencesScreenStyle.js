@@ -3,15 +3,17 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1C1C1E", // Couleur de fond sombre
+    backgroundColor: "#1C1C1E",
+    paddingHorizontal: 20,
+    paddingTop: "20%",
   },
   innerContainer: {
     flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
+    justifyContent: "space-between",
+    paddingBottom: "30%",
   },
   label: {
-    color: "#FFFFFF", // Texte blanc
+    color: "#FFFFFF",
     fontSize: 16,
     marginBottom: 8,
   },
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
-  finishButton: {
+  nextButton: {
     backgroundColor: "#FF9500",
     padding: 15,
     borderRadius: 10,
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  finishButtonText: {
+  nextButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",

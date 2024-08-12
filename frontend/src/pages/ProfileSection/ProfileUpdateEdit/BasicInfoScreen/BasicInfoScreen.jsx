@@ -6,8 +6,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Button,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker"; // Importer Picker depuis le nouveau package
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUserInfo,
@@ -24,9 +26,10 @@ const BasicInfoScreen = ({ navigation }) => {
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState(""); // Utiliser le même état pour le genre
+  const [dateOfBirth, setDateOfBirth] = useState(new Date());
+  const [gender, setGender] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -53,7 +56,9 @@ const BasicInfoScreen = ({ navigation }) => {
     if (userInfo) {
       setFirstName(userInfo.firstName || "");
       setLastName(userInfo.lastName || "");
-      setDateOfBirth(userInfo.dateOfBirth || "");
+      setDateOfBirth(
+        userInfo.dateOfBirth ? new Date(userInfo.dateOfBirth) : new Date()
+      );
       setGender(userInfo.gender || "");
       setImageUrl(userInfo.imageUrl || "");
       setIsSaved(true);
@@ -65,7 +70,7 @@ const BasicInfoScreen = ({ navigation }) => {
     const updatedData = {
       firstName,
       lastName,
-      dateOfBirth,
+      dateOfBirth: dateOfBirth.toISOString().split("T")[0],
       gender,
       imageUrl,
     };
@@ -85,6 +90,12 @@ const BasicInfoScreen = ({ navigation }) => {
     setter(value);
     setIsSaved(false);
     setHasChanges(true);
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || dateOfBirth;
+    setShowDatePicker(false);
+    handleInputChange(currentDate, setDateOfBirth);
   };
 
   return (
@@ -115,12 +126,22 @@ const BasicInfoScreen = ({ navigation }) => {
           onChangeText={(value) => handleInputChange(value, setLastName)}
         />
         <Text style={styles.label}>Date of Birth:</Text>
-        <TextInput
+        <TouchableOpacity
           style={styles.input}
-          value={dateOfBirth}
-          onChangeText={(value) => handleInputChange(value, setDateOfBirth)}
-          placeholder="YYYY-MM-DD"
-        />
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={styles.dateText}>
+            {dateOfBirth.toISOString().split("T")[0]}
+          </Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={dateOfBirth}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
         <Text style={styles.label}>Gender:</Text>
         <Picker
           selectedValue={gender}

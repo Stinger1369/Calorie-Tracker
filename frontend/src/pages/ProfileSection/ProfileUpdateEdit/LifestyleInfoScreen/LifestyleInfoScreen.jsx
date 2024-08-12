@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { Picker } from "@react-native-picker/picker";
 import {
   updateUserInfo,
   fetchUserInfo,
 } from "../../../../redux/features/user/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./LifestyleInfoScreenStyle"; // Utilisation d'un fichier de style externe
+import styles from "./LifestyleInfoScreenStyle";
 
 const LifestyleInfoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -25,7 +26,6 @@ const LifestyleInfoScreen = ({ navigation }) => {
   const [activityLevel, setActivityLevel] = useState("");
   const [dietaryPreferences, setDietaryPreferences] = useState("");
   const [dailyCalorieIntake, setDailyCalorieIntake] = useState("");
-  const [dailyExercise, setDailyExercise] = useState("");
 
   const [initialValues, setInitialValues] = useState({});
   const [isSaved, setIsSaved] = useState(false);
@@ -58,7 +58,6 @@ const LifestyleInfoScreen = ({ navigation }) => {
         activityLevel: userInfo.activityLevel || "",
         dietaryPreferences: userInfo.dietaryPreferences || "",
         dailyCalorieIntake: userInfo.dailyCalorieIntake?.toString() || "",
-        dailyExercise: userInfo.dailyExercise || "",
       };
       setMaritalStatus(initialData.maritalStatus);
       setNumberOfChildren(initialData.numberOfChildren);
@@ -66,7 +65,6 @@ const LifestyleInfoScreen = ({ navigation }) => {
       setActivityLevel(initialData.activityLevel);
       setDietaryPreferences(initialData.dietaryPreferences);
       setDailyCalorieIntake(initialData.dailyCalorieIntake);
-      setDailyExercise(initialData.dailyExercise);
       setInitialValues(initialData);
       setIsSaved(true);
       setHasChanges(false);
@@ -81,7 +79,6 @@ const LifestyleInfoScreen = ({ navigation }) => {
       activityLevel,
       dietaryPreferences,
       dailyCalorieIntake: Number(dailyCalorieIntake),
-      dailyExercise,
     };
 
     if (userInfo && userInfo._id) {
@@ -110,11 +107,20 @@ const LifestyleInfoScreen = ({ navigation }) => {
     >
       <View>
         <Text style={styles.label}>Marital Status:</Text>
-        <TextInput
+        <Picker
+          selectedValue={maritalStatus}
           style={styles.input}
-          value={maritalStatus}
-          onChangeText={(value) => handleInputChange(value, setMaritalStatus)}
-        />
+          onValueChange={(itemValue) =>
+            handleInputChange(itemValue, setMaritalStatus)
+          }
+        >
+          <Picker.Item label="Select marital status" value="" />
+          <Picker.Item label="Single" value="single" />
+          <Picker.Item label="Married" value="married" />
+          <Picker.Item label="Divorced" value="divorced" />
+          <Picker.Item label="Widowed" value="widowed" />
+        </Picker>
+
         <Text style={styles.label}>Number of Children:</Text>
         <TextInput
           style={styles.input}
@@ -124,26 +130,53 @@ const LifestyleInfoScreen = ({ navigation }) => {
           }
           keyboardType="numeric"
         />
+
         <Text style={styles.label}>Occupation:</Text>
-        <TextInput
+        <Picker
+          selectedValue={occupation}
           style={styles.input}
-          value={occupation}
-          onChangeText={(value) => handleInputChange(value, setOccupation)}
-        />
-        <Text style={styles.label}>Activity Level:</Text>
-        <TextInput
-          style={styles.input}
-          value={activityLevel}
-          onChangeText={(value) => handleInputChange(value, setActivityLevel)}
-        />
-        <Text style={styles.label}>Dietary Preferences:</Text>
-        <TextInput
-          style={styles.input}
-          value={dietaryPreferences}
-          onChangeText={(value) =>
-            handleInputChange(value, setDietaryPreferences)
+          onValueChange={(itemValue) =>
+            handleInputChange(itemValue, setOccupation)
           }
-        />
+        >
+          <Picker.Item label="Select occupation" value="" />
+          <Picker.Item label="Office work" value="office_work" />
+          <Picker.Item label="Manual labor" value="manual_labor" />
+          <Picker.Item label="Unemployed" value="unemployed" />
+          <Picker.Item label="Other" value="other" />
+        </Picker>
+
+        <Text style={styles.label}>Activity Level:</Text>
+        <Picker
+          selectedValue={activityLevel}
+          style={styles.input}
+          onValueChange={(itemValue) =>
+            handleInputChange(itemValue, setActivityLevel)
+          }
+        >
+          <Picker.Item label="Select activity level" value="" />
+          <Picker.Item label="Sedentary" value="sedentary" />
+          <Picker.Item label="Lightly active" value="lightly_active" />
+          <Picker.Item label="Moderately active" value="moderately_active" />
+          <Picker.Item label="Very active" value="very_active" />
+        </Picker>
+
+        <Text style={styles.label}>Dietary Preferences:</Text>
+        <Picker
+          selectedValue={dietaryPreferences}
+          style={styles.input}
+          onValueChange={(itemValue) =>
+            handleInputChange(itemValue, setDietaryPreferences)
+          }
+        >
+          <Picker.Item label="Select dietary preference" value="" />
+          <Picker.Item label="Vegetarian" value="vegetarian" />
+          <Picker.Item label="Vegan" value="vegan" />
+          <Picker.Item label="Pescatarian" value="pescatarian" />
+          <Picker.Item label="Omnivore" value="omnivore" />
+          <Picker.Item label="Other" value="other" />
+        </Picker>
+
         <Text style={styles.label}>Daily Calorie Intake:</Text>
         <TextInput
           style={styles.input}
@@ -152,12 +185,6 @@ const LifestyleInfoScreen = ({ navigation }) => {
             handleInputChange(value, setDailyCalorieIntake)
           }
           keyboardType="numeric"
-        />
-        <Text style={styles.label}>Daily Exercise:</Text>
-        <TextInput
-          style={styles.input}
-          value={dailyExercise}
-          onChangeText={(value) => handleInputChange(value, setDailyExercise)}
         />
       </View>
       <View style={styles.buttonContainer}>

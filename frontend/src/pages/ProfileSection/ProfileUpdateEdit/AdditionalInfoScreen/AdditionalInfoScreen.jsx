@@ -105,9 +105,12 @@ const AdditionalInfoScreen = ({ navigation }) => {
       dispatch(updateUserInfo({ userId: userInfo._id, userData: updatedData }));
       setInitialValues(updatedData);
       setIsSaved(true);
-
-      navigation.navigate("ProfileTab");
     }
+  };
+
+  const handleNext = () => {
+    handleSave();
+    navigation.navigate("Exercise");
   };
 
   return (
@@ -193,11 +196,11 @@ const AdditionalInfoScreen = ({ navigation }) => {
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.finishButton}
-            onPress={handleSave}
+            style={styles.nextButton}
+            onPress={handleNext}
             disabled={!isSaved}
           >
-            <Text style={styles.finishButtonText}>Finish</Text>
+            <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </View>

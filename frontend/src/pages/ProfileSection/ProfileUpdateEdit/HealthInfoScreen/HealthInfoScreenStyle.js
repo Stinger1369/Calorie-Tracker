@@ -3,16 +3,17 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1C1C1E", // Couleur de fond sombre
-    padding: 20,
+    backgroundColor: "#1C1C1E",
+    paddingHorizontal: 20,
+    paddingTop: "20%", // Ajuste le padding en fonction du header
   },
   innerContainer: {
     flexGrow: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     paddingBottom: 30,
   },
   label: {
-    color: "#FFFFFF", // Texte blanc
+    color: "#FFFFFF",
     fontSize: 16,
     marginBottom: 8,
   },
@@ -23,6 +24,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 15,
+  },
+  picker: {
+    backgroundColor: "#2C2C2E",
+    color: "#FFFFFF",
+    marginBottom: 15,
+    borderRadius: 10,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -54,6 +61,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  addButton: {
+    backgroundColor: "#2C2C2E",
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  addButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+  },
 });
 
 export default styles;
+

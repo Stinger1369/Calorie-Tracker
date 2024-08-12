@@ -5,14 +5,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1C1C1E", // Couleur de fond sombre
     padding: 20,
+    paddingTop: "20%",
   },
   innerContainer: {
     flexGrow: 1,
-    justifyContent: "space-between", // Permet de séparer le contenu et les boutons
-    paddingBottom: 30, // Ajout d'un espace en bas pour les boutons
+    justifyContent: "space-between",
+    paddingBottom: "30%",
   },
   label: {
-    color: "#FFFFFF", // Texte blanc
+    color: "#FFFFFF",
     fontSize: 16,
     marginBottom: 8,
   },
@@ -25,8 +26,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
-    flexDirection: "row", // Aligne les boutons en ligne
-    justifyContent: "space-between", // Sépare les boutons
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   saveButton: {
@@ -37,20 +38,20 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
-  nextButton: {
-    backgroundColor: "#FF9500",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    flex: 1,
-  },
   saveButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },
-  nextButtonText: {
-    color: "#FFFFFF",
+  finishButton: {
+    backgroundColor: "#4CAF50", // Couleur de fond pour le bouton Finish
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    flex: 1,
+  },
+  finishButtonText: {
+    color: "#FFFFFF", // Couleur du texte du bouton Finish
     fontSize: 16,
     fontWeight: "bold",
   },
