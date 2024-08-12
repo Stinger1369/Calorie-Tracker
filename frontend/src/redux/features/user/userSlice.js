@@ -1,8 +1,17 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import axios from 'axios';
-import hostname from '../../../hostname';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import hostname from "../../../hostname";
 
-// Initial state
+// Fonction utilitaire pour obtenir le token JWT depuis le store
+const getAuthHeader = (getState) => {
+  const token = getState().auth.token;
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
+
 const initialState = {
   userInfo: null,
   loading: false,
@@ -11,61 +20,71 @@ const initialState = {
 
 // Action pour récupérer les informations de l'utilisateur
 export const fetchUserInfo = createAsyncThunk(
-  'user/fetchUserInfo',
-  async (userId, {rejectWithValue}) => {
+  "user/fetchUserInfo",
+  async (userId, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`${hostname}/users/${userId}`);
+      const response = await axios.get(
+        `${hostname}/users/${userId}`,
+        getAuthHeader(getState)
+      );
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
-  },
+  }
 );
 
 // Action pour mettre à jour les informations de l'utilisateur
 export const updateUserInfo = createAsyncThunk(
-  'user/updateUserInfo',
-  async ({userId, userData}, {rejectWithValue}) => {
+  "user/updateUserInfo",
+  async ({ userId, userData }, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.put(`${hostname}/users/${userId}`, userData);
+      const response = await axios.put(
+        `${hostname}/users/${userId}`,
+        userData,
+        getAuthHeader(getState)
+      );
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
-  },
+  }
 );
 
 // Action pour supprimer un utilisateur
 export const deleteUser = createAsyncThunk(
-  'user/deleteUser',
-  async (userId, {rejectWithValue}) => {
+  "user/deleteUser",
+  async (userId, { rejectWithValue, getState }) => {
     try {
-      await axios.delete(`${hostname}/users/${userId}`);
+      await axios.delete(
+        `${hostname}/users/${userId}`,
+        getAuthHeader(getState)
+      );
       return userId; // Retourner l'ID de l'utilisateur supprimé
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
-  },
+  }
 );
 
 // Slice
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       // Fetch User Info
-      .addCase(fetchUserInfo.pending, state => {
+      .addCase(fetchUserInfo.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -75,10 +94,10 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch user info';
+        state.error = action.payload || "Failed to fetch user info";
       })
       // Update User Info
-      .addCase(updateUserInfo.pending, state => {
+      .addCase(updateUserInfo.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -88,10 +107,10 @@ const userSlice = createSlice({
       })
       .addCase(updateUserInfo.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to update user info';
+        state.error = action.payload || "Failed to update user info";
       })
       // Delete User
-      .addCase(deleteUser.pending, state => {
+      .addCase(deleteUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -101,7 +120,7 @@ const userSlice = createSlice({
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to delete user';
+        state.error = action.payload || "Failed to delete user";
       });
   },
 });

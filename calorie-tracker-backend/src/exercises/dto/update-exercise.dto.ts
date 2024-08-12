@@ -5,6 +5,7 @@ import {
   IsDate,
   IsOptional,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateExerciseDto {
   @IsOptional()
@@ -19,7 +20,8 @@ export class UpdateExerciseDto {
   @IsNumber()
   readonly caloriesBurned?: number;
 
-  @IsOptional()
+@IsOptional()
   @IsDate()
+  @Type(() => Date)
   readonly date?: Date;
 }

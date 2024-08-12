@@ -26,28 +26,31 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Action pour la connexion
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
-  async (userData, {rejectWithValue}) => {
+  "auth/loginUser",
+  async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/login`, userData);
       const user = response.data.user;
+      const token = response.data.access_token; // Récupération du token
 
-      // Assurez-vous que l'ID utilisateur est présent
-      if (user && user._id) {
-        // Sauvegarder l'utilisateur dans AsyncStorage avec son _id
+      // Assurez-vous que l'ID utilisateur et le token sont présents
+      if (user && user._id && token) {
+        // Sauvegarder l'utilisateur et le token dans AsyncStorage
         await AsyncStorage.setItem(
-          'user',
-          JSON.stringify({...user, id: user._id}),
+          "user",
+          JSON.stringify({ ...user, id: user._id })
         );
+        await AsyncStorage.setItem("token", token);
+
         console.log(
-          'User data saved in AsyncStorage:',
-          JSON.stringify({...user, id: user._id}),
+          "User data and token saved in AsyncStorage:",
+          JSON.stringify({ ...user, id: user._id }),
+          token
         );
       } else {
-        console.error('User ID not found in response');
-        return rejectWithValue('User ID not found');
+        console.error("User ID or token not found in response");
+        return rejectWithValue("User ID or token not found");
       }
 
       return response.data;
@@ -55,10 +58,11 @@ export const loginUser = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
-  },
+  }
 );
+
 
 // Action pour vérifier le code de vérification
 export const verifyCode = createAsyncThunk(

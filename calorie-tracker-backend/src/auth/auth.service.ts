@@ -51,12 +51,24 @@ export class AuthService {
   async login(
     loginDto: LoginDto,
   ): Promise<{ access_token: string; user: any }> {
+    console.log('Login attempt with:', loginDto);
+
     const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (!user || !user.isVerified) {
+
+    if (!user) {
+      console.error('Login failed: invalid credentials');
+      throw new UnauthorizedException('Invalid credentials.');
+    }
+
+    if (!user.isVerified) {
+      console.error('Login failed: user is not verified');
       throw new UnauthorizedException('User is not verified.');
     }
+
     const payload = { email: user.email, sub: user._id };
     const access_token = this.jwtService.sign(payload);
+
+    console.log('Login successful, generated token:', access_token);
 
     return {
       access_token,

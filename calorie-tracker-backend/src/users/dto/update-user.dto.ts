@@ -59,8 +59,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   readonly dailyCalorieIntake?: number;
 
   @IsOptional()
-  @IsString()
-  readonly dailyExercise?: string;
+  @IsArray()
+  @IsString({ each: true })
+  readonly dailyExercise?: string[];
 
   @IsOptional()
   @ValidateNested({ each: true })

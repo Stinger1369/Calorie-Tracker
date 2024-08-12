@@ -106,8 +106,8 @@ export class User extends Document {
   @Prop()
   dailyCalorieIntake: number;
 
-  @Prop()
-  dailyExercise: string;
+  @Prop([String])
+  dailyExercise: string[];
 
   @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'BloodTestResult' }])
   bloodTestResults: BloodTestResult[];

@@ -2,6 +2,16 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import hostname from "../../../hostname";
 
+// Fonction utilitaire pour obtenir le token JWT depuis le store
+const getAuthHeader = (getState) => {
+  const token = getState().auth.token;
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
+
 const initialState = {
   exercises: [],
   loading: false,
@@ -11,9 +21,12 @@ const initialState = {
 // Action pour récupérer les exercices par userId
 export const fetchExercises = createAsyncThunk(
   "exercise/fetchExercises",
-  async (userId, { rejectWithValue }) => {
+  async (userId, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`${hostname}/exercises/user/${userId}`);
+      const response = await axios.get(
+        `${hostname}/exercises/user/${userId}`,
+        getAuthHeader(getState)
+      );
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -27,9 +40,13 @@ export const fetchExercises = createAsyncThunk(
 // Action pour créer un nouvel exercice
 export const createExercise = createAsyncThunk(
   "exercise/createExercise",
-  async (exerciseData, { rejectWithValue }) => {
+  async (exerciseData, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.post(`${hostname}/exercises`, exerciseData);
+      const response = await axios.post(
+        `${hostname}/exercises`,
+        exerciseData,
+        getAuthHeader(getState)
+      );
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -43,11 +60,12 @@ export const createExercise = createAsyncThunk(
 // Action pour mettre à jour un exercice
 export const updateExercise = createAsyncThunk(
   "exercise/updateExercise",
-  async ({ exerciseId, updateData }, { rejectWithValue }) => {
+  async ({ exerciseId, updateData }, { rejectWithValue, getState }) => {
     try {
       const response = await axios.put(
         `${hostname}/exercises/${exerciseId}`,
-        updateData
+        updateData,
+        getAuthHeader(getState)
       );
       return response.data;
     } catch (error) {
@@ -62,10 +80,11 @@ export const updateExercise = createAsyncThunk(
 // Action pour supprimer un exercice par son ID
 export const deleteExercise = createAsyncThunk(
   "exercise/deleteExercise",
-  async (exerciseId, { rejectWithValue }) => {
+  async (exerciseId, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.delete(
-        `${hostname}/exercises/${exerciseId}`
+      await axios.delete(
+        `${hostname}/exercises/${exerciseId}`,
+        getAuthHeader(getState)
       );
       return exerciseId; // Retourner l'ID de l'exercice supprimé pour pouvoir le retirer de la liste
     } catch (error) {

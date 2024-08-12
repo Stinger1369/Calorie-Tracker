@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber, IsDate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsDate,
+  IsOptional,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateExerciseDto {
   @IsNotEmpty()
@@ -13,11 +20,12 @@ export class CreateExerciseDto {
   @IsNumber()
   readonly duration: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  readonly caloriesBurned: number;
+  readonly caloriesBurned?: number;
 
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   readonly date: Date;
 }

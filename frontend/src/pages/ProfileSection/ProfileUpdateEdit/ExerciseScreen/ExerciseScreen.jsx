@@ -9,10 +9,11 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker"; // Importation mise à jour
+import { Picker } from "@react-native-picker/picker";
 import {
   fetchExercises,
   createExercise,
+  updateExercise,
 } from "../../../../redux/features/exercise/exerciseSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./ExerciseScreenStyle";
@@ -20,7 +21,9 @@ import styles from "./ExerciseScreenStyle";
 const ExerciseScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { exercises, loading, error } = useSelector((state) => state.exercise);
 
+  const [exerciseId, setExerciseId] = useState(null);
   const [exerciseName, setExerciseName] = useState("");
   const [duration, setDuration] = useState("");
   const [date, setDate] = useState(new Date());
@@ -28,6 +31,14 @@ const ExerciseScreen = ({ navigation }) => {
   const [exerciseType, setExerciseType] = useState("Running");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [isFormChanged, setIsFormChanged] = useState(false);
+
+  const [initialState, setInitialState] = useState({
+    exerciseName: "",
+    duration: "",
+    date: new Date(),
+    exerciseType: "Running",
+  });
 
   useEffect(() => {
     const loadUserExercises = async () => {
@@ -41,6 +52,7 @@ const ExerciseScreen = ({ navigation }) => {
 
       if (currentUserId) {
         setUserId(currentUserId);
+        console.log(`Fetching exercises for user ID: ${currentUserId}`);
         dispatch(fetchExercises(currentUserId));
       } else {
         console.error("User ID is missing");
@@ -56,17 +68,90 @@ const ExerciseScreen = ({ navigation }) => {
       return;
     }
 
+    const formattedDate = new Date(date);
+
     const exerciseData = {
       userId: userId,
-      exerciseName: exerciseType,
+      exerciseName: exerciseType === "Custom" ? exerciseName : exerciseType,
       duration: Number(duration),
-      date,
+      date: formattedDate,
     };
 
-    dispatch(createExercise(exerciseData));
+    if (exerciseId) {
+      console.log(`Updating exercise with ID: ${exerciseId}`);
+      dispatch(updateExercise({ exerciseId, updateData: exerciseData }))
+        .unwrap()
+        .then((result) => {
+          console.log("Exercise updated successfully:", result);
+        })
+        .catch((err) => {
+          console.error("Failed to update exercise:", err);
+        });
+    } else {
+      console.log("Creating a new exercise");
+      dispatch(createExercise(exerciseData))
+        .unwrap()
+        .then((result) => {
+          console.log("Exercise created successfully:", result);
+        })
+        .catch((err) => {
+          console.error("Failed to create exercise:", err);
+        });
+    }
+
+    resetForm();
+  };
+
+  const handleEditExercise = (exercise) => {
+    console.log("Editing exercise:", exercise);
+    setExerciseId(exercise._id);
+    setExerciseName(exercise.exerciseName);
+    setDuration(exercise.duration.toString());
+    setDate(new Date(exercise.date));
+    setExerciseType(
+      [
+        "Running",
+        "Cycling",
+        "Swimming",
+        "Walking",
+        "Weight Lifting",
+        "Yoga",
+      ].includes(exercise.exerciseName)
+        ? exercise.exerciseName
+        : "Custom"
+    );
+
+    setInitialState({
+      exerciseName: exercise.exerciseName,
+      duration: exercise.duration.toString(),
+      date: new Date(exercise.date),
+      exerciseType: [
+        "Running",
+        "Cycling",
+        "Swimming",
+        "Walking",
+        "Weight Lifting",
+        "Yoga",
+      ].includes(exercise.exerciseName)
+        ? exercise.exerciseName
+        : "Custom",
+    });
+  };
+
+  const resetForm = () => {
+    setExerciseId(null);
     setExerciseName("");
     setDuration("");
     setDate(new Date());
+    setExerciseType("Running");
+    setInitialState({
+      exerciseName: "",
+      duration: "",
+      date: new Date(),
+      exerciseType: "Running",
+    });
+    setIsFormChanged(false);
+    console.log("Form reset");
   };
 
   const handleFinish = () => {
@@ -78,6 +163,8 @@ const ExerciseScreen = ({ navigation }) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(Platform.OS === "ios");
     setDate(currentDate);
+    setIsFormChanged(true);
+    console.log("Date selected:", currentDate);
   };
 
   const onChangeTime = (event, selectedTime) => {
@@ -89,6 +176,25 @@ const ExerciseScreen = ({ navigation }) => {
       updatedDate.setMinutes(currentTime.getMinutes());
       return updatedDate;
     });
+    setIsFormChanged(true);
+    console.log("Time selected:", currentTime);
+  };
+
+  useEffect(() => {
+    if (loading) {
+      console.log("Loading...");
+    } else if (error) {
+      console.error("Error:", error);
+    }
+  }, [loading, error]);
+
+  const isFormValid = () => {
+    return (
+      exerciseName !== "" &&
+      duration !== "" &&
+      exerciseType !== "" &&
+      isFormChanged
+    );
   };
 
   return (
@@ -101,7 +207,10 @@ const ExerciseScreen = ({ navigation }) => {
         <Picker
           selectedValue={exerciseType}
           style={styles.picker}
-          onValueChange={(itemValue) => setExerciseType(itemValue)}
+          onValueChange={(itemValue) => {
+            setExerciseType(itemValue);
+            setIsFormChanged(true);
+          }}
         >
           <Picker.Item label="Running" value="Running" />
           <Picker.Item label="Cycling" value="Cycling" />
@@ -117,7 +226,10 @@ const ExerciseScreen = ({ navigation }) => {
             style={styles.input}
             placeholder="Enter Custom Exercise Name"
             value={exerciseName}
-            onChangeText={(value) => setExerciseName(value)}
+            onChangeText={(value) => {
+              setExerciseName(value);
+              setIsFormChanged(true);
+            }}
           />
         )}
 
@@ -125,7 +237,10 @@ const ExerciseScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           value={duration}
-          onChangeText={(value) => setDuration(value)}
+          onChangeText={(value) => {
+            setDuration(value);
+            setIsFormChanged(true);
+          }}
           keyboardType="numeric"
         />
 
@@ -166,12 +281,37 @@ const ExerciseScreen = ({ navigation }) => {
           />
         )}
       </View>
+
+      {exercises.length > 0 && (
+        <View>
+          <Text style={styles.label}>Your Exercises:</Text>
+          {exercises.map((exercise) => (
+            <TouchableOpacity
+              key={exercise._id}
+              style={styles.exerciseItem}
+              onPress={() => handleEditExercise(exercise)}
+            >
+              <Text style={styles.exerciseText}>
+                {exercise.exerciseName} - {exercise.duration} min on{" "}
+                {new Date(exercise.date).toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.saveButton}
+          style={[
+            styles.saveButton,
+            { opacity: isFormValid() ? 1 : 0.5 }, // Désactive visuellement le bouton
+          ]}
           onPress={handleSaveExercise}
+          disabled={!isFormValid()} // Désactive le bouton
         >
-          <Text style={styles.saveButtonText}>Save Exercise</Text>
+          <Text style={styles.saveButtonText}>
+            {exerciseId ? "Update Exercise" : "Save Exercise"}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
           <Text style={styles.finishButtonText}>Finish</Text>

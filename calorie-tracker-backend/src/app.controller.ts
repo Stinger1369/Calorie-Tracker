@@ -1,12 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+// calorie-tracker-backend/src/app.controller.ts
+import { Controller, Get, Param } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { Inject } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    @Inject('RECOMMENDATION_SERVICE') private client: ClientProxy, // Injecter le client du microservice
+  ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('recommendations/:userId')
+  async getRecommendations(@Param('userId') userId: string) {
+    // Envoyer l'ID utilisateur au microservice pour obtenir les recommandations
+    return this.client.send({ cmd: 'get_recommendation' }, userId).toPromise();
   }
 }

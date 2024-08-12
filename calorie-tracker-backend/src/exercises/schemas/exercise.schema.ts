@@ -10,10 +10,10 @@ export class Exercise extends Document {
   exerciseName: string;
 
   @Prop({ required: true })
-  duration: number; // Duration in minutes
+  duration: number;
 
-  @Prop({ required: true })
-  caloriesBurned: number;
+  @Prop({ required: false })
+  caloriesBurned?: number;
 
   @Prop({ required: true })
   date: Date;

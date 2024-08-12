@@ -25,13 +25,35 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
   },
+  picker: {
+    backgroundColor: "#2C2C2E",
+    color: "#FFFFFF",
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  dateTimePickerButton: {
+    backgroundColor: "#2C2C2E",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  exerciseItem: {
+    backgroundColor: "#2C2C2E",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  exerciseText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
   },
   saveButton: {
-    backgroundColor: "#FF4D4D",
+    backgroundColor: "#FF4D4D", // Couleur pour le bouton Save
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -44,14 +66,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   finishButton: {
-    backgroundColor: "#4CAF50", // Couleur de fond pour le bouton Finish
+    backgroundColor: "#4CAF50", // Couleur pour le bouton Finish
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
     flex: 1,
   },
   finishButtonText: {
-    color: "#FFFFFF", // Couleur du texte du bouton Finish
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },
