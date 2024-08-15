@@ -15,7 +15,7 @@ import AuthChoice from "./src/pages/AuthChoice/AuthChoice";
 import ResetPassword from "./src/pages/Login/ResetPassword/ResetPassword";
 import TabNavigator from "./src/navigation/TabNavigator";
 import ProfileEditNavigator from "./src/pages/ProfileSection/ProfileUpdateEdit/ProfileEditNavigator/ProfileEditNavigator";
-
+import IMCDetails from "./src/pages/ProfileSection/profile/Imc/IMCDetails";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
@@ -91,6 +91,7 @@ const App = () => {
             component={ProfileEditNavigator}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="IMCDetails" component={IMCDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

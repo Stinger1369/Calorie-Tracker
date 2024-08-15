@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { calculateBMI } from '../functions/imc.function';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +16,6 @@ export class UsersService {
     let username = baseUsername;
     let counter = 1;
 
-    // Vérifie l'unicité du username
     while (await this.userModel.findOne({ username })) {
       username = `${baseUsername}${counter}`;
       counter++;
@@ -23,8 +23,13 @@ export class UsersService {
 
     const user = new this.userModel({
       ...createUserDto,
-      username, // Attribue le username unique
+      username,
     });
+
+    // Calculer l'IMC lors de la création si les données sont présentes
+    if (user.weight && user.height) {
+      user.bmi = calculateBMI(user.weight, user.height);
+    }
 
     await user.save();
     return user;
@@ -38,27 +43,28 @@ export class UsersService {
       let username = baseUsername;
       let counter = 1;
 
-      // Vérifie l'unicité du username pour cet utilisateur
       while (await this.userModel.findOne({ username, _id: { $ne: id } })) {
         username = `${baseUsername}${counter}`;
         counter++;
       }
 
-      updatedData.username = username; // Attribue le username unique dans une copie
+      updatedData.username = username;
     }
 
     const user = await this.userModel
-      .findByIdAndUpdate(id, updatedData, {
-        new: true,
-      })
+      .findByIdAndUpdate(id, updatedData, { new: true })
       .exec();
 
-    // Recalcule l'horoscope après la mise à jour si la date de naissance est modifiée
     if (updateUserDto.dateOfBirth) {
       user.horoscope = this.getHoroscope(updateUserDto.dateOfBirth);
-      await user.save(); // Sauvegarder seulement si l'horoscope est recalculé
     }
 
+    // Recalculer l'IMC si le poids ou la taille ont été mis à jour
+    if (updateUserDto.weight || updateUserDto.height) {
+      user.bmi = calculateBMI(user.weight, user.height);
+    }
+
+    await user.save();
     return user;
   }
 
@@ -72,18 +78,43 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Assurez-vous que dailyExercise est un tableau
     if (!Array.isArray(user.dailyExercise)) {
       user.dailyExercise = [];
     }
 
-    // Utiliser $addToSet pour ajouter uniquement si l'élément n'existe pas déjà
     await this.userModel
       .updateOne(
         { _id: userId },
         { $addToSet: { dailyExercise: exerciseName } },
       )
       .exec();
+  }
+
+  async removeDailyExercise(
+    userId: string,
+    exerciseName: string,
+  ): Promise<void> {
+    const user = await this.userModel.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userModel
+      .updateOne({ _id: userId }, { $pull: { dailyExercise: exerciseName } })
+      .exec();
+  }
+
+  async updateBMI(userId: string, bmi: number): Promise<User> {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { $set: { bmi: bmi } }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return user;
   }
 
   async findAll(): Promise<User[]> {
@@ -106,28 +137,43 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
-  private getHoroscope(dateOfBirth: any): string {
-    const date = new Date(dateOfBirth);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+  private getHoroscope(dateOfBirth: Date): string {
+    const month = dateOfBirth.getMonth() + 1;
+    const day = dateOfBirth.getDate();
 
-    if ((month == 1 && day >= 20) || (month == 2 && day <= 18))
-      return 'Aquarius';
-    if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return 'Pisces';
-    if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return 'Aries';
-    if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return 'Taurus';
-    if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return 'Gemini';
-    if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return 'Cancer';
-    if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return 'Leo';
-    if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return 'Virgo';
-    if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return 'Libra';
-    if ((month == 10 && day >= 23) || (month == 11 && day <= 21))
-      return 'Scorpio';
-    if ((month == 11 && day >= 22) || (month == 12 && day <= 21))
-      return 'Sagittarius';
-    if ((month == 12 && day >= 22) || (month == 1 && day <= 19))
-      return 'Capricorn';
+    const zodiacSigns = [
+      { name: 'Capricorn', startDate: [1, 1], endDate: [1, 19] },
+      { name: 'Aquarius', startDate: [1, 20], endDate: [2, 18] },
+      { name: 'Pisces', startDate: [2, 19], endDate: [3, 20] },
+      { name: 'Aries', startDate: [3, 21], endDate: [4, 19] },
+      { name: 'Taurus', startDate: [4, 20], endDate: [5, 20] },
+      { name: 'Gemini', startDate: [5, 21], endDate: [6, 20] },
+      { name: 'Cancer', startDate: [6, 21], endDate: [7, 22] },
+      { name: 'Leo', startDate: [7, 23], endDate: [8, 22] },
+      { name: 'Virgo', startDate: [8, 23], endDate: [9, 22] },
+      { name: 'Libra', startDate: [9, 23], endDate: [10, 22] },
+      { name: 'Scorpio', startDate: [10, 23], endDate: [11, 21] },
+      { name: 'Sagittarius', startDate: [11, 22], endDate: [12, 21] },
+      { name: 'Capricorn', startDate: [12, 22], endDate: [12, 31] },
+    ];
 
-    return 'Unknown';
+    return (
+      zodiacSigns.find((sign) =>
+        this.isDateInRange(month, day, sign.startDate, sign.endDate),
+      )?.name || 'Unknown'
+    );
+  }
+
+  private isDateInRange(
+    month: number,
+    day: number,
+    start: number[],
+    end: number[],
+  ): boolean {
+    const date = month * 100 + day;
+    const startDate = start[0] * 100 + start[1];
+    const endDate = end[0] * 100 + end[1];
+
+    return date >= startDate && date <= endDate;
   }
 }

@@ -20,19 +20,36 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+    const newUser = await this.usersService.create(createUserDto);
+    console.log('New user created:', newUser);
+    return newUser;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+    const users = await this.usersService.findAll();
+    console.log('All users retrieved:', users);
+    return users;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
+    console.log('User data retrieved for ID:', id, user);
+    return user;
+  }
+
+  @Put(':id/bmi')
+  async updateBMI(
+    @Param('id') id: string,
+    @Body('bmi') bmi: number,
+  ): Promise<User> {
+    // Spécifiez que la promesse retourne un `User`
+    const updatedUser = await this.usersService.updateBMI(id, bmi);
+    console.log('User BMI updated:', updatedUser);
+    return updatedUser;
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -41,12 +58,15 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
+    const updatedUser = await this.usersService.update(id, updateUserDto);
+    console.log('User updated:', updatedUser);
+    return updatedUser;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     await this.usersService.delete(id);
+    console.log('User deleted with ID:', id);
   }
 }

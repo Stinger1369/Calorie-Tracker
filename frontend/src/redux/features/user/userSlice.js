@@ -80,7 +80,9 @@ export const deleteUser = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    // Ajouter des reducers personnalisés si nécessaire
+  },
   extraReducers: (builder) => {
     builder
       // Fetch User Info

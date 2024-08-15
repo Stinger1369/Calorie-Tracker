@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import hostname from '../../../hostname';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import hostname from "../../../hostname";
 
 const initialState = {
   user: null,
@@ -12,7 +12,7 @@ const initialState = {
 
 // Action pour l'enregistrement
 export const registerUser = createAsyncThunk(
-  'auth/registerUser',
+  "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/register`, userData);
@@ -21,7 +21,7 @@ export const registerUser = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
   }
 );
@@ -63,10 +63,9 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-
 // Action pour vérifier le code de vérification
 export const verifyCode = createAsyncThunk(
-  'auth/verifyCode',
+  "auth/verifyCode",
   async (verificationData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
@@ -78,14 +77,14 @@ export const verifyCode = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred');
+      return rejectWithValue("An error occurred");
     }
   }
 );
 
 // Action pour demander un nouveau code de vérification
 export const requestNewCode = createAsyncThunk(
-  'auth/requestNewCode',
+  "auth/requestNewCode",
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/request-new-code`, {
@@ -96,14 +95,14 @@ export const requestNewCode = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred while requesting a new code');
+      return rejectWithValue("An error occurred while requesting a new code");
     }
   }
 );
 
 // Action pour réinitialiser le mot de passe
 export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
+  "auth/resetPassword",
   async ({ token, newPassword }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/reset-password`, {
@@ -115,42 +114,42 @@ export const resetPassword = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue('An error occurred while resetting the password');
+      return rejectWithValue("An error occurred while resetting the password");
     }
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
-  initialState: {
-    user: null,
-    token: null,
-    loading: false,
-    error: null,
-  },
+  name: "auth",
+  initialState,
   reducers: {
     logout: (state, action) => {
       state.user = null;
-      state.token = null;
       if (!action.payload.saveData) {
-        AsyncStorage.removeItem('user');
+        state.token = null;
+        AsyncStorage.removeItem("user");
+        AsyncStorage.removeItem("token");
       }
     },
+    restoreToken: (state, action) => {
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(registerUser.pending, state => {
+      .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, state => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to register';
+        state.error = action.payload || "Failed to register";
       })
-      .addCase(loginUser.pending, state => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -161,44 +160,44 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to login';
+        state.error = action.payload || "Failed to login";
       })
-      .addCase(verifyCode.pending, state => {
+      .addCase(verifyCode.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(verifyCode.fulfilled, state => {
+      .addCase(verifyCode.fulfilled, (state) => {
         state.loading = false;
       })
       .addCase(verifyCode.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to verify code';
+        state.error = action.payload || "Failed to verify code";
       })
-      .addCase(requestNewCode.pending, state => {
+      .addCase(requestNewCode.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(requestNewCode.fulfilled, state => {
+      .addCase(requestNewCode.fulfilled, (state) => {
         state.loading = false;
       })
       .addCase(requestNewCode.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to request new code';
+        state.error = action.payload || "Failed to request new code";
       })
-      .addCase(resetPassword.pending, state => {
+      .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(resetPassword.fulfilled, state => {
+      .addCase(resetPassword.fulfilled, (state) => {
         state.loading = false;
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to reset password';
+        state.error = action.payload || "Failed to reset password";
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, restoreToken } = authSlice.actions;
 
 export default authSlice.reducer;

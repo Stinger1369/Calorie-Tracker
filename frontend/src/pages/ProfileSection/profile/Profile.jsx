@@ -9,24 +9,34 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserInfo } from "../../../redux/features/user/userSlice";
+import { restoreToken } from "../../../redux/features/auth/authSlice";
 import Icon from "react-native-vector-icons/FontAwesome";
 import styles from "./ProfileStyles";
-import moment from "moment"; // Pour formater la date
+import moment from "moment";
+import { calculateIMC } from "./Imc/calculateIMC"; // Importer la fonction IMC
 
 const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
   const { userInfo, loading, error } = useSelector((state) => state.user);
-  const { user } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const loadUserData = async () => {
       try {
         let userId = user?._id;
+        let storedToken = token;
 
-        if (!userId) {
+        if (!userId || !storedToken) {
           const storedUser = await AsyncStorage.getItem("user");
-          const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-          userId = parsedUser?._id;
+          storedToken = await AsyncStorage.getItem("token");
+
+          if (storedUser && storedToken) {
+            const parsedUser = JSON.parse(storedUser);
+            userId = parsedUser?._id;
+
+            // Restaurer l'état de l'utilisateur et du token dans Redux
+            dispatch(restoreToken({ user: parsedUser, token: storedToken }));
+          }
         }
 
         if (userId) {
@@ -38,13 +48,17 @@ const Profile = ({ navigation }) => {
     };
 
     loadUserData();
-  }, [dispatch, user]);
+  }, [dispatch, user, token]);
 
   const handleUpdateUser = () => {
     navigation.navigate("ProfileEdit");
   };
 
-  const currentDate = moment().format("dddd, DD MMMM"); // Format de la date
+  const handleIMCPress = () => {
+    navigation.navigate("IMCDetails", { imc: userInfo.bmi });
+  };
+
+  const currentDate = moment().format("dddd, DD MMMM");
 
   const renderProfileIcon = () => {
     if (userInfo.imageUrl) {
@@ -84,6 +98,8 @@ const Profile = ({ navigation }) => {
     );
   }
 
+  const imc = userInfo.bmi || calculateIMC(userInfo.weight, userInfo.height);
+
   return (
     <View style={styles.container}>
       {userInfo ? (
@@ -105,7 +121,13 @@ const Profile = ({ navigation }) => {
           <Text style={styles.dateText}>{currentDate}</Text>
           <Text style={styles.kcalText}>1 883 Kcal</Text>
           <Text style={styles.label}>Total Kilocalories</Text>
-          {/* Afficher d'autres informations utilisateur ici */}
+          {/* Afficher les informations du profil utilisateur, y compris l'IMC */}
+          <TouchableOpacity onPress={handleIMCPress}>
+            <Text style={styles.label}>
+              Taille: {userInfo.height} cm - Poids: {userInfo.weight} kg - IMC:{" "}
+              {imc}
+            </Text>
+          </TouchableOpacity>
         </>
       ) : (
         <Text style={styles.errorText}>No user information available.</Text>

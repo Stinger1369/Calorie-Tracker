@@ -3,7 +3,6 @@ import { CreateUserDto } from './create-user.dto';
 import {
   IsOptional,
   IsString,
-  IsEmail,
   IsDate,
   IsNumber,
   IsArray,
@@ -151,6 +150,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
   readonly mentalHealthStatus?: string;
+
+  @IsOptional()
+  @IsNumber()
+  readonly bmi?: number;
 
   @IsOptional()
   @IsBoolean()

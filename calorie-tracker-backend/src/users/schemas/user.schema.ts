@@ -180,6 +180,15 @@ export class User extends Document {
   mentalHealthStatus: string; // Good, Moderate, Poor
 
   @Prop()
+  bmi: number; // IMC (Indice de Masse Corporelle)
+
+  @Prop()
+  recommendedCalories: number; // Calorie quotidienne recommandée
+
+  @Prop()
+  healthAssessment: string; // Bilan de santé résumé
+
+  @Prop()
   premiumUser: boolean; // Indicates if the user has a premium account
 
   @Prop()
