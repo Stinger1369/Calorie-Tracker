@@ -4,10 +4,28 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { calculateBMI } from '../functions/imc.function';
+import { calculateCaloricNeeds } from '../functions/calculateCaloricNeeds';
+import { getHoroscope } from '../utils/zodiac-signs.util'; // Import de la fonction externalisée
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  private calculateAge(dateOfBirth: Date): number {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     let baseUsername =
@@ -15,7 +33,6 @@ export class UsersService {
     let username = baseUsername;
     let counter = 1;
 
-    // Vérifie l'unicité du username
     while (await this.userModel.findOne({ username })) {
       username = `${baseUsername}${counter}`;
       counter++;
@@ -23,8 +40,23 @@ export class UsersService {
 
     const user = new this.userModel({
       ...createUserDto,
-      username, // Attribue le username unique
+      username,
     });
+
+    // Calculer l'IMC et les besoins caloriques lors de la création si les données sont présentes
+    if (user.weight && user.height) {
+      user.bmi = calculateBMI(user.weight, user.height);
+
+      if (user.dateOfBirth && user.gender) {
+        const age = this.calculateAge(user.dateOfBirth);
+        user.recommendedCalories = calculateCaloricNeeds(
+          user.gender as 'male' | 'female' | 'other',
+          user.weight,
+          user.height,
+          age,
+        );
+      }
+    }
 
     await user.save();
     return user;
@@ -38,27 +70,47 @@ export class UsersService {
       let username = baseUsername;
       let counter = 1;
 
-      // Vérifie l'unicité du username pour cet utilisateur
       while (await this.userModel.findOne({ username, _id: { $ne: id } })) {
         username = `${baseUsername}${counter}`;
         counter++;
       }
 
-      updatedData.username = username; // Attribue le username unique dans une copie
+      updatedData.username = username;
     }
 
     const user = await this.userModel
-      .findByIdAndUpdate(id, updatedData, {
-        new: true,
-      })
+      .findByIdAndUpdate(id, updatedData, { new: true })
       .exec();
 
-    // Recalcule l'horoscope après la mise à jour si la date de naissance est modifiée
     if (updateUserDto.dateOfBirth) {
-      user.horoscope = this.getHoroscope(updateUserDto.dateOfBirth);
-      await user.save(); // Sauvegarder seulement si l'horoscope est recalculé
+      const month = new Date(updateUserDto.dateOfBirth).getMonth() + 1;
+      const day = new Date(updateUserDto.dateOfBirth).getDate();
+      user.horoscope = getHoroscope(month, day); // Utilisation de la fonction externalisée
     }
 
+    // Recalculer l'IMC et les besoins caloriques si le poids, la taille, la date de naissance ou le genre ont été mis à jour
+    if (
+      updateUserDto.weight ||
+      updateUserDto.height ||
+      updateUserDto.dateOfBirth ||
+      updateUserDto.gender
+    ) {
+      if (user.weight && user.height) {
+        user.bmi = calculateBMI(user.weight, user.height);
+
+        if (user.dateOfBirth && user.gender) {
+          const age = this.calculateAge(user.dateOfBirth);
+          user.recommendedCalories = calculateCaloricNeeds(
+            user.gender as 'male' | 'female' | 'other',
+            user.weight,
+            user.height,
+            age,
+          );
+        }
+      }
+    }
+
+    await user.save();
     return user;
   }
 
@@ -72,18 +124,43 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Assurez-vous que dailyExercise est un tableau
     if (!Array.isArray(user.dailyExercise)) {
       user.dailyExercise = [];
     }
 
-    // Utiliser $addToSet pour ajouter uniquement si l'élément n'existe pas déjà
     await this.userModel
       .updateOne(
         { _id: userId },
         { $addToSet: { dailyExercise: exerciseName } },
       )
       .exec();
+  }
+
+  async removeDailyExercise(
+    userId: string,
+    exerciseName: string,
+  ): Promise<void> {
+    const user = await this.userModel.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userModel
+      .updateOne({ _id: userId }, { $pull: { dailyExercise: exerciseName } })
+      .exec();
+  }
+
+  async updateBMI(userId: string, bmi: number): Promise<User> {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { $set: { bmi: bmi } }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return user;
   }
 
   async findAll(): Promise<User[]> {
@@ -104,30 +181,5 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     return this.userModel.findById(id).exec();
-  }
-
-  private getHoroscope(dateOfBirth: any): string {
-    const date = new Date(dateOfBirth);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-
-    if ((month == 1 && day >= 20) || (month == 2 && day <= 18))
-      return 'Aquarius';
-    if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return 'Pisces';
-    if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return 'Aries';
-    if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return 'Taurus';
-    if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return 'Gemini';
-    if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return 'Cancer';
-    if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return 'Leo';
-    if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return 'Virgo';
-    if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return 'Libra';
-    if ((month == 10 && day >= 23) || (month == 11 && day <= 21))
-      return 'Scorpio';
-    if ((month == 11 && day >= 22) || (month == 12 && day <= 21))
-      return 'Sagittarius';
-    if ((month == 12 && day >= 22) || (month == 1 && day <= 19))
-      return 'Capricorn';
-
-    return 'Unknown';
   }
 }

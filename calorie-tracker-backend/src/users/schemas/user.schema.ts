@@ -79,7 +79,7 @@ export class User extends Document {
   @Prop({ required: false })
   dateOfBirth: Date;
 
-  @Prop()
+  @Prop({ required: true, enum: ['male', 'female', 'other'] })
   gender: string;
 
   @Prop()
@@ -178,6 +178,18 @@ export class User extends Document {
 
   @Prop()
   mentalHealthStatus: string; // Good, Moderate, Poor
+
+  @Prop()
+  bmi: number; // IMC (Indice de Masse Corporelle)
+
+  @Prop()
+  recommendedCalories: number; // Calorie quotidienne recommandée
+
+  @Prop()
+  caloricNeeds: number; // Besoins caloriques calculés
+
+  @Prop()
+  healthAssessment: string; // Bilan de santé résumé
 
   @Prop()
   premiumUser: boolean; // Indicates if the user has a premium account

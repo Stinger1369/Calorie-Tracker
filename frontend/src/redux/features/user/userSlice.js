@@ -14,6 +14,9 @@ const getAuthHeader = (getState) => {
 
 const initialState = {
   userInfo: null,
+  age: null,
+  bmi: null,
+  recommendedCalories: null,
   loading: false,
   error: null,
 };
@@ -80,7 +83,9 @@ export const deleteUser = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    // Ajouter des reducers personnalisés si nécessaire
+  },
   extraReducers: (builder) => {
     builder
       // Fetch User Info
@@ -91,6 +96,9 @@ const userSlice = createSlice({
       .addCase(fetchUserInfo.fulfilled, (state, action) => {
         state.loading = false;
         state.userInfo = action.payload;
+        state.age = action.payload.age;
+        state.bmi = action.payload.bmi;
+        state.recommendedCalories = action.payload.recommendedCalories;
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         state.loading = false;
@@ -104,6 +112,9 @@ const userSlice = createSlice({
       .addCase(updateUserInfo.fulfilled, (state, action) => {
         state.loading = false;
         state.userInfo = action.payload;
+        state.age = action.payload.age;
+        state.bmi = action.payload.bmi;
+        state.recommendedCalories = action.payload.recommendedCalories;
       })
       .addCase(updateUserInfo.rejected, (state, action) => {
         state.loading = false;
@@ -117,6 +128,9 @@ const userSlice = createSlice({
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.loading = false;
         state.userInfo = null; // On pourrait aussi rediriger l'utilisateur après la suppression
+        state.age = null;
+        state.bmi = null;
+        state.recommendedCalories = null;
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;

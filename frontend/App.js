@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ActivityIndicator, View } from "react-native"; // Ajouté
+import { ActivityIndicator, View } from "react-native";
 
 import { loadFonts } from "./src/utils/loadFonts";
 
@@ -15,6 +15,14 @@ import AuthChoice from "./src/pages/AuthChoice/AuthChoice";
 import ResetPassword from "./src/pages/Login/ResetPassword/ResetPassword";
 import TabNavigator from "./src/navigation/TabNavigator";
 import ProfileEditNavigator from "./src/pages/ProfileSection/ProfileUpdateEdit/ProfileEditNavigator/ProfileEditNavigator";
+import IMCDetails from "./src/pages/ProfileSection/profile/Imc/IMCDetails";
+
+// Import des nouveaux écrans
+import Insuffisant from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Insuffisant/Insuffisant";
+import Normal from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Normal/Normal";
+import Surpoids from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Surpoids/Surpoids";
+import Obesite from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Obesite/Obesite";
+import RecipeScreen from "./src/pages/ProfileSection/profile/Imc/ImcTypes/RecipeScreen";
 
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
@@ -91,6 +99,14 @@ const App = () => {
             component={ProfileEditNavigator}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="IMCDetails" component={IMCDetails} />
+
+          {/* Ajout des nouveaux écrans */}
+          <Stack.Screen name="Insuffisant" component={Insuffisant} />
+          <Stack.Screen name="Normal" component={Normal} />
+          <Stack.Screen name="Surpoids" component={Surpoids} />
+          <Stack.Screen name="Obesite" component={Obesite} />
+          <Stack.Screen name="RecipeScreen" component={RecipeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
