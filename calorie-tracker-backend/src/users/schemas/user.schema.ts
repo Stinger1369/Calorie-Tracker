@@ -79,7 +79,7 @@ export class User extends Document {
   @Prop({ required: false })
   dateOfBirth: Date;
 
-  @Prop()
+  @Prop({ required: true, enum: ['male', 'female', 'other'] })
   gender: string;
 
   @Prop()
@@ -184,6 +184,9 @@ export class User extends Document {
 
   @Prop()
   recommendedCalories: number; // Calorie quotidienne recommandée
+
+  @Prop()
+  caloricNeeds: number; // Besoins caloriques calculés
 
   @Prop()
   healthAssessment: string; // Bilan de santé résumé

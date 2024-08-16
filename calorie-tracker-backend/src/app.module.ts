@@ -5,10 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { FoodConsumptionModule } from './food-consumption/food-consumption.module';
 import { ExerciseModule } from './exercises/exercise.module';
 import { FitnessGoalModule } from './fitness-goals/fitness-goal.module';
+import { RecommendationFoodModule } from './recommendation-food/recommendation-food.module';
+import { StepCountModule } from './step-count/step-count.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// Retirer l'import de AppGateway
-// import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -20,8 +20,10 @@ import { AppService } from './app.service';
     FoodConsumptionModule,
     ExerciseModule,
     FitnessGoalModule,
+    RecommendationFoodModule,
+    StepCountModule,
   ],
   controllers: [AppController],
-  providers: [AppService], // Retirer AppGateway ici
+  providers: [AppService],
 })
 export class AppModule {}

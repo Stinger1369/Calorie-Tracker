@@ -1,3 +1,5 @@
+
+// Fonction pour calculer l'IMC (Indice de Masse Corporelle)
 export function calculateBMI(weight: number, height: number): number {
   if (height > 0) {
     const heightInMeters = height / 100;
@@ -5,3 +7,5 @@ export function calculateBMI(weight: number, height: number): number {
   }
   return 0;
 }
+
+

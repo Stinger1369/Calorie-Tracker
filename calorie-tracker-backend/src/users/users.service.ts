@@ -5,10 +5,27 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { calculateBMI } from '../functions/imc.function';
+import { calculateCaloricNeeds } from '../functions/calculateCaloricNeeds';
+import { getHoroscope } from '../utils/zodiac-signs.util'; // Import de la fonction externalisée
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  private calculateAge(dateOfBirth: Date): number {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     let baseUsername =
@@ -26,9 +43,19 @@ export class UsersService {
       username,
     });
 
-    // Calculer l'IMC lors de la création si les données sont présentes
+    // Calculer l'IMC et les besoins caloriques lors de la création si les données sont présentes
     if (user.weight && user.height) {
       user.bmi = calculateBMI(user.weight, user.height);
+
+      if (user.dateOfBirth && user.gender) {
+        const age = this.calculateAge(user.dateOfBirth);
+        user.recommendedCalories = calculateCaloricNeeds(
+          user.gender as 'male' | 'female' | 'other',
+          user.weight,
+          user.height,
+          age,
+        );
+      }
     }
 
     await user.save();
@@ -56,12 +83,31 @@ export class UsersService {
       .exec();
 
     if (updateUserDto.dateOfBirth) {
-      user.horoscope = this.getHoroscope(updateUserDto.dateOfBirth);
+      const month = new Date(updateUserDto.dateOfBirth).getMonth() + 1;
+      const day = new Date(updateUserDto.dateOfBirth).getDate();
+      user.horoscope = getHoroscope(month, day); // Utilisation de la fonction externalisée
     }
 
-    // Recalculer l'IMC si le poids ou la taille ont été mis à jour
-    if (updateUserDto.weight || updateUserDto.height) {
-      user.bmi = calculateBMI(user.weight, user.height);
+    // Recalculer l'IMC et les besoins caloriques si le poids, la taille, la date de naissance ou le genre ont été mis à jour
+    if (
+      updateUserDto.weight ||
+      updateUserDto.height ||
+      updateUserDto.dateOfBirth ||
+      updateUserDto.gender
+    ) {
+      if (user.weight && user.height) {
+        user.bmi = calculateBMI(user.weight, user.height);
+
+        if (user.dateOfBirth && user.gender) {
+          const age = this.calculateAge(user.dateOfBirth);
+          user.recommendedCalories = calculateCaloricNeeds(
+            user.gender as 'male' | 'female' | 'other',
+            user.weight,
+            user.height,
+            age,
+          );
+        }
+      }
     }
 
     await user.save();
@@ -135,45 +181,5 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     return this.userModel.findById(id).exec();
-  }
-
-  private getHoroscope(dateOfBirth: Date): string {
-    const month = dateOfBirth.getMonth() + 1;
-    const day = dateOfBirth.getDate();
-
-    const zodiacSigns = [
-      { name: 'Capricorn', startDate: [1, 1], endDate: [1, 19] },
-      { name: 'Aquarius', startDate: [1, 20], endDate: [2, 18] },
-      { name: 'Pisces', startDate: [2, 19], endDate: [3, 20] },
-      { name: 'Aries', startDate: [3, 21], endDate: [4, 19] },
-      { name: 'Taurus', startDate: [4, 20], endDate: [5, 20] },
-      { name: 'Gemini', startDate: [5, 21], endDate: [6, 20] },
-      { name: 'Cancer', startDate: [6, 21], endDate: [7, 22] },
-      { name: 'Leo', startDate: [7, 23], endDate: [8, 22] },
-      { name: 'Virgo', startDate: [8, 23], endDate: [9, 22] },
-      { name: 'Libra', startDate: [9, 23], endDate: [10, 22] },
-      { name: 'Scorpio', startDate: [10, 23], endDate: [11, 21] },
-      { name: 'Sagittarius', startDate: [11, 22], endDate: [12, 21] },
-      { name: 'Capricorn', startDate: [12, 22], endDate: [12, 31] },
-    ];
-
-    return (
-      zodiacSigns.find((sign) =>
-        this.isDateInRange(month, day, sign.startDate, sign.endDate),
-      )?.name || 'Unknown'
-    );
-  }
-
-  private isDateInRange(
-    month: number,
-    day: number,
-    start: number[],
-    end: number[],
-  ): boolean {
-    const date = month * 100 + day;
-    const startDate = start[0] * 100 + start[1];
-    const endDate = end[0] * 100 + end[1];
-
-    return date >= startDate && date <= endDate;
   }
 }

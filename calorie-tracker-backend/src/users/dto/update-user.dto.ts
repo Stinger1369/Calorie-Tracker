@@ -8,6 +8,7 @@ import {
   IsArray,
   ValidateNested,
   IsBoolean,
+  IsIn,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { BloodTestResultDto } from './blood-test-result.dto';
@@ -21,6 +22,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
+  @IsIn(['male', 'female', 'other']) // Valider uniquement les valeurs définies dans l'énumération
   @Transform(({ value }) => (value ? value.trim() : null))
   readonly gender?: string;
 
