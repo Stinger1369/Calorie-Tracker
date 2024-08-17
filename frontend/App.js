@@ -23,6 +23,9 @@ import Normal from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Normal/Norma
 import Surpoids from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Surpoids/Surpoids";
 import Obesite from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Obesite/Obesite";
 import RecipeScreen from "./src/pages/ProfileSection/profile/Imc/ImcTypes/RecipeScreen";
+import StepsHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/StepsHistoryScreen";
+import BpmHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/BpmHistoryScreen";
+import KcalHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/KcalHistoryScreen";
 
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
@@ -107,6 +110,9 @@ const App = () => {
           <Stack.Screen name="Surpoids" component={Surpoids} />
           <Stack.Screen name="Obesite" component={Obesite} />
           <Stack.Screen name="RecipeScreen" component={RecipeScreen} />
+          <Stack.Screen name="StepsHistory" component={StepsHistoryScreen} />
+          <Stack.Screen name="KcalHistory" component={KcalHistoryScreen} />
+          <Stack.Screen name="BpmHistory" component={BpmHistoryScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

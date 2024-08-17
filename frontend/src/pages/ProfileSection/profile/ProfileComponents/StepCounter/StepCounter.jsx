@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Pedometer } from "expo-sensors";
-import { fetchSteps, updateSteps } from "../../redux/features/step/stepSlice";
+import {
+  fetchSteps,
+  updateSteps,
+} from "../../../../../redux/features/step/stepSlice";
 import { View, Text, Button } from "react-native";
 
 const StepCounter = ({ userId }) => {

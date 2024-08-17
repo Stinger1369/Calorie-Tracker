@@ -1,51 +1,43 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import { StyleSheet, Dimensions } from "react-native";
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 export default StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    position: 'absolute',
-    bottom: 20,
-    width: width,
-    zIndex: 1000,
+  menuContainer: {
+    position: "absolute",
+    bottom: 0, // Positionne le menu au bas de l'écran
+    width: "100%",
+    backgroundColor: "#0E1331", // Assure que le fond s'aligne avec l'arrière-plan global
+    paddingVertical: 10, // Ajoute un peu d'espacement vertical
+    zIndex: 10,
   },
-  iconButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 15,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
+  circularMenuScrollContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  iconText: {
-    fontSize: 11,
-    color: '#007AFF',
-    fontWeight: 'bold',
+  circularButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#1D233F",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
   },
-  triangleContainer: {
-    position: 'absolute',
-    bottom: 90, // Ajuster selon l'apparence souhaitée
-    left: '50%',
-    transform: [{translateX: -15}],
-    zIndex: 1000,
-  },
-  triangle: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 15,
-    borderRightWidth: 15,
-    borderBottomWidth: 20,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#007AFF',
+  centralButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#FBC02D",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#FBC02D", // Outer glow effect
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
+    marginHorizontal: 20,
   },
 });
