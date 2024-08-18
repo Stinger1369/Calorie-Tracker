@@ -63,6 +63,21 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const handleExerciceApiPress = () => {
+    if (userInfo && userInfo.bmi) {
+      const imc = userInfo.bmi;
+      if (imc < 18.5) {
+        navigation.navigate("InsuffisantExercice"); // Navigate to exercises for underweight
+      } else if (imc >= 18.5 && imc < 24.9) {
+        navigation.navigate("NormalExercice"); // Navigate to exercises for normal weight
+      } else if (imc >= 25 && imc < 29.9) {
+        navigation.navigate("SurpoidsExercice"); // Navigate to exercises for overweight
+      } else {
+        navigation.navigate("ObesiteExercice"); // Navigate to exercises for obesity
+      }
+    }
+  };
+
   const currentDate = moment().format("dddd, DD MMMM");
 
   if (loading) {
@@ -98,6 +113,11 @@ const Profile = ({ navigation }) => {
       />
       <InfoCards userInfo={userInfo} />
       <ActionCard userInfo={userInfo} onIMCPress={handleIMCPress} />
+
+      {/* Nouveau bouton pour afficher les exercices selon l'IMC */}
+      <TouchableOpacity style={styles.button} onPress={handleExerciceApiPress}>
+        <Text style={styles.buttonText}>Voir les exercices recommandés</Text>
+      </TouchableOpacity>
     </View>
   );
 };

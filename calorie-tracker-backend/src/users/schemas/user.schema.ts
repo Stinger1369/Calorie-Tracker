@@ -55,6 +55,9 @@ export class User extends Document {
   @Prop({ required: true })
   firstName: string;
 
+  @Prop({ required: false })
+  dateOfBirth: Date;
+
   @Prop({ required: true })
   lastName: string;
 
@@ -75,9 +78,6 @@ export class User extends Document {
 
   @Prop({ default: false })
   isVerified: boolean;
-
-  @Prop({ required: false })
-  dateOfBirth: Date;
 
   @Prop({ required: true, enum: ['male', 'female', 'other'] })
   gender: string;
@@ -102,6 +102,9 @@ export class User extends Document {
 
   @Prop([String])
   medicalConditions: string[];
+
+  @Prop({ required: false })
+  zodiacSign: string;
 
   @Prop()
   dailyCalorieIntake: number;

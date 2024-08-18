@@ -36,9 +36,8 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    const user = await this.usersService.findOne(id);
-    console.log('User data retrieved for ID:', id, user);
-    return user;
+    // L'ID doit être une chaîne ici.
+    return this.usersService.findOne(id);
   }
 
   @Put(':id/bmi')
@@ -46,7 +45,6 @@ export class UsersController {
     @Param('id') id: string,
     @Body('bmi') bmi: number,
   ): Promise<User> {
-    // Spécifiez que la promesse retourne un `User`
     const updatedUser = await this.usersService.updateBMI(id, bmi);
     console.log('User BMI updated:', updatedUser);
     return updatedUser;

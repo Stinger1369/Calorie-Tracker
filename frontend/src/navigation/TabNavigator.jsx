@@ -59,7 +59,7 @@ const TabNavigator = () => {
       icon: "address-book",
       action: () => navigateToTab("Contact"),
     },
-    { name: "Drawer", icon: "arrow-up", action: toggleDrawer }, // Le bouton central
+    { name: "Drawer", icon: "arrow-up", action: toggleDrawer },
     {
       name: "ProfileTab",
       icon: "user",

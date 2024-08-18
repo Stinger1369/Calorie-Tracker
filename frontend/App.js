@@ -26,7 +26,12 @@ import RecipeScreen from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Recipe
 import StepsHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/StepsHistoryScreen";
 import BpmHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/BpmHistoryScreen";
 import KcalHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/KcalHistoryScreen";
-
+import InsuffisantExercice from "./src/pages/ProfileSection/profile/ExerciceApi/InsuffisantExercice";
+import NormalExercice from "./src/pages/ProfileSection/profile/ExerciceApi/NormalExercice";
+import SurpoidsExercice from "./src/pages/ProfileSection/profile/ExerciceApi/SurpoidsExercice";
+import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/ObesiteExercice";
+import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
+import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
@@ -113,6 +118,19 @@ const App = () => {
           <Stack.Screen name="StepsHistory" component={StepsHistoryScreen} />
           <Stack.Screen name="KcalHistory" component={KcalHistoryScreen} />
           <Stack.Screen name="BpmHistory" component={BpmHistoryScreen} />
+          <Stack.Screen
+            name="InsuffisantExercice"
+            component={InsuffisantExercice}
+          />
+          <Stack.Screen name="NormalExercice" component={NormalExercice} />
+          <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
+          <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
+          <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
+          <Stack.Screen
+            name="HoroscopeDetailsScreen"
+            component={HoroscopeDetailsScreen}
+            options={{ title: "Détails de l'Horoscope" }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

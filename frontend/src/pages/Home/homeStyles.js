@@ -3,47 +3,90 @@ import { StyleSheet, Dimensions } from "react-native";
 export default StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    resizeMode: "cover", // Ensures the background image covers the entire screen
+    resizeMode: "cover",
   },
   container: {
     flex: 1,
-    backgroundColor: "#0E1331", // Couleur de fond sombre
+    backgroundColor: "#0E1331",
     paddingHorizontal: 20,
     paddingTop: "20%",
   },
   header: {
-    width: "100%",
-    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
+  },
+  profileInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
   },
   iconContainer: {
     padding: 10,
   },
-  iconText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#e74c3c",
-  },
   welcomeText: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#ffffff", // White text for readability against the background
-    textAlign: "center",
-    marginVertical: 20,
+    color: "#ffffff",
   },
   dateText: {
     fontSize: 18,
     fontWeight: "400",
     color: "#ffffff",
-    textAlign: "center",
-    marginBottom: 10,
   },
-  zodiacText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FBC02D", // Gold/yellow color to match the zodiac theme
-    textAlign: "center",
+  sectionsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  section: {
+    width: "45%",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
     marginBottom: 20,
+  },
+  sectionText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#ffffff",
+  },
+  sectionChat: {
+    backgroundColor: "#3498db",
+  },
+  sectionDating: {
+    backgroundColor: "#e74c3c",
+  },
+  sectionNutrition: {
+    backgroundColor: "#27ae60",
+  },
+  sectionExercise: {
+    backgroundColor: "#f1c40f",
+  },
+  sectionHoroscope: {
+    backgroundColor: "#9b59b6",
+  },
+  sectionGroupActivities: {
+    backgroundColor: "#1abc9c",
+  },
+  sectionCaloriesNeeded: {
+    backgroundColor: "#e67e22",
+  },
+  sectionCalorieCalculator: {
+    backgroundColor: "#34495e",
+  },
+  sectionMembers: {
+    backgroundColor: "#d35400",
+  },
+  sectionRecipes: {
+    backgroundColor: "#8e44ad",
   },
   modalContainer: {
     flex: 1,

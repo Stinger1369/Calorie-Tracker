@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Modal,
   ImageBackground,
+  Image,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/auth/authSlice";
+import { fetchUserInfo } from "../../redux/features/user/userSlice";
 import styles from "./homeStyles";
 import moment from "moment";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  // Récupérer les informations de l'utilisateur depuis Redux
+  const { userInfo } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const userId = userInfo?._id;
+    if (userId) {
+      dispatch(fetchUserInfo(userId)); // Charger les informations de l'utilisateur
+    }
+  }, [dispatch]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -34,6 +50,37 @@ const Home = () => {
     });
   };
 
+  const handleHoroscopePress = () => {
+    if (userInfo?.dateOfBirth && userInfo?.zodiacSign) {
+      navigation.navigate("HoroscopeDetailsScreen", {
+        zodiacSign: userInfo.zodiacSign,
+        dateOfBirth: userInfo.dateOfBirth,
+      });
+    }
+  };
+
+  const renderProfileIcon = () => {
+    if (userInfo?.imageUrl) {
+      return (
+        <Image
+          source={{ uri: userInfo.imageUrl }}
+          style={styles.profileImage}
+        />
+      );
+    } else {
+      switch (userInfo?.gender) {
+        case "male":
+          return <FontAwesome name="male" size={50} color="#888" />;
+        case "female":
+          return <FontAwesome name="female" size={50} color="#888" />;
+        case "other":
+          return <FontAwesome name="genderless" size={50} color="#888" />;
+        default:
+          return <FontAwesome name="user-circle" size={50} color="#888" />;
+      }
+    }
+  };
+
   // Get the current date formatted
   const currentDate = moment().format("dddd, MMMM Do YYYY");
 
@@ -42,20 +89,117 @@ const Home = () => {
       // source={require("./path_to_your_background_image.png")} // Replace with your background image path
       style={styles.backgroundImage}
     >
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         {/* Header Section */}
         <View style={styles.header}>
+          <View style={styles.profileInfoContainer}>
+            {renderProfileIcon()}
+            <View style={styles.greetingContainer}>
+              <Text style={styles.welcomeText}>
+                Hello {userInfo?.firstName}!
+              </Text>
+              <Text style={styles.dateText}>{currentDate}</Text>
+            </View>
+          </View>
           <TouchableOpacity style={styles.iconContainer} onPress={openModal}>
-            <Text style={styles.iconText}>X</Text>
+            <MaterialCommunityIcons name="logout" size={30} color="#ffffff" />
           </TouchableOpacity>
         </View>
 
-        {/* Main Content */}
-        <Text style={styles.welcomeText}>
-          Bienvenue sur la page d'accueil !
-        </Text>
-        <Text style={styles.dateText}>{currentDate}</Text>
-        <Text style={styles.zodiacText}>Horoscope: Leo</Text>
+        {/* Main Sections */}
+        <View style={styles.sectionsContainer}>
+          <TouchableOpacity
+            style={[styles.section, styles.sectionChat]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons name="chat" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Chat</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionDating]}
+            onPress={() => {}}
+          >
+            <FontAwesome name="heart" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Rencontres</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionNutrition]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Nutrition</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionExercise]}
+            onPress={() => {}}
+          >
+            <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Exercice</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionHoroscope]}
+            onPress={handleHoroscopePress}
+          >
+            <FontAwesome5 name="star" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Horoscope</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionGroupActivities]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons
+              name="account-group"
+              size={40}
+              color="#ffffff"
+            />
+            <Text style={styles.sectionText}>Activités de groupe</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionCaloriesNeeded]}
+            onPress={() => {}}
+          >
+            <FontAwesome5 name="burn" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Calories Needed</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionCalorieCalculator]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons
+              name="calculator"
+              size={40}
+              color="#ffffff"
+            />
+            <Text style={styles.sectionText}>Calculateur de Calories</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionMembers]}
+            onPress={() => {}}
+          >
+            <FontAwesome5 name="users" size={40} color="#ffffff" />
+            <Text style={styles.sectionText}>Membres</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.section, styles.sectionRecipes]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons
+              name="food-apple"
+              size={40}
+              color="#ffffff"
+            />
+            <Text style={styles.sectionText}>Recettes</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Logout Modal */}
         <Modal
@@ -67,7 +211,11 @@ const Home = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.iconText}>X</Text>
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={30}
+                  color="#ffffff"
+                />
               </TouchableOpacity>
               <Text style={styles.modalText}>
                 Souhaitez-vous sauvegarder vos données pour une connexion rapide
@@ -90,7 +238,7 @@ const Home = () => {
             </View>
           </View>
         </Modal>
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 };

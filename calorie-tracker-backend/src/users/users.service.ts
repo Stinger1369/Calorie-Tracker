@@ -6,11 +6,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { calculateBMI } from '../functions/imc.function';
 import { calculateCaloricNeeds } from '../functions/calculateCaloricNeeds';
-import { getHoroscope } from '../utils/zodiac-signs.util'; // Import de la fonction externalisée
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { getHoroscope } from '../utils/zodiac-signs.util';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly httpService: HttpService,
+  ) {}
 
   private calculateAge(dateOfBirth: Date): number {
     const today = new Date();
@@ -25,6 +30,22 @@ export class UsersService {
       age--;
     }
     return age;
+  }
+
+  async updateHoroscope(user: User) {
+    if (user.dateOfBirth) {
+      const dateOfBirthStr = user.dateOfBirth.toISOString().split('T')[0]; // Format YYYY-MM-DD
+      const url = `http://localhost:8000/horoscope?date_of_birth=${dateOfBirthStr}&bmi=${user.bmi}&first_name=${user.firstName}&last_name=${user.lastName}`;
+
+      // Appel à l'API FastAPI pour obtenir l'horoscope
+      const response = await firstValueFrom(this.httpService.get(url));
+      user.horoscope = response.data.horoscope; // Assigner l'horoscope récupéré
+
+      // Utiliser l'utilitaire zodiac-signs.util.ts pour déterminer le signe
+      const month = new Date(user.dateOfBirth).getMonth() + 1;
+      const day = new Date(user.dateOfBirth).getDate();
+      user.zodiacSign = getHoroscope(month, day); // Assigner le signe astrologique
+    }
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -58,6 +79,9 @@ export class UsersService {
       }
     }
 
+    // Déterminer l'horoscope initial via l'API FastAPI et le signe astrologique
+    await this.updateHoroscope(user);
+
     await user.save();
     return user;
   }
@@ -78,14 +102,13 @@ export class UsersService {
       updatedData.username = username;
     }
 
-    const user = await this.userModel
+    let user = await this.userModel
       .findByIdAndUpdate(id, updatedData, { new: true })
       .exec();
 
+    // Mettre à jour l'horoscope et le signe astrologique si la date de naissance est modifiée
     if (updateUserDto.dateOfBirth) {
-      const month = new Date(updateUserDto.dateOfBirth).getMonth() + 1;
-      const day = new Date(updateUserDto.dateOfBirth).getDate();
-      user.horoscope = getHoroscope(month, day); // Utilisation de la fonction externalisée
+      await this.updateHoroscope(user);
     }
 
     // Recalculer l'IMC et les besoins caloriques si le poids, la taille, la date de naissance ou le genre ont été mis à jour
@@ -110,7 +133,9 @@ export class UsersService {
       }
     }
 
-    await user.save();
+    // Sauvegarder les changements
+    await user.save(); // Assurez-vous que toutes les modifications sont enregistrées
+
     return user;
   }
 
@@ -168,7 +193,15 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return this.userModel.findById(id).exec();
+    console.log('ID reçu dans findOne:', id); // Ajoutez cette ligne pour vérifier l'ID
+
+    const user = await this.userModel.findById(id).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
   async delete(id: string): Promise<void> {

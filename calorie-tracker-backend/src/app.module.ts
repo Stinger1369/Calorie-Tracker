@@ -7,6 +7,7 @@ import { ExerciseModule } from './exercises/exercise.module';
 import { FitnessGoalModule } from './fitness-goals/fitness-goal.module';
 import { RecommendationFoodModule } from './recommendation-food/recommendation-food.module';
 import { StepCountModule } from './step-count/step-count.module';
+import { ApiExerciceModule } from './ApiExercice/api-exercice.module'; // Import du module
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -22,6 +23,7 @@ import { AppService } from './app.service';
     FitnessGoalModule,
     RecommendationFoodModule,
     StepCountModule,
+    ApiExerciceModule, // Ajout du module ici
   ],
   controllers: [AppController],
   providers: [AppService],
