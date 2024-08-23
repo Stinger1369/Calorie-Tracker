@@ -6,6 +6,7 @@ import recommendationReducer from "../features/recommendation/recommendationSlic
 import stepReducer from "../features/step/stepSlice";
 import exerciseApiReducer from "../features/exerciseApi/exerciseApiSlice";
 import horiscopeSlice from "../features/horiscopeSlice/horiscopeSlice";
+import imageReducer from "../features/imageSlice/imageSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     steps: stepReducer,
     exerciseApi: exerciseApiReducer,
     horiscope: horiscopeSlice,
+    image: imageReducer,
   },
 });
 

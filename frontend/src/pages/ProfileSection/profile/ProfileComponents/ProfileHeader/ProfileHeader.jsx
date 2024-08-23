@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import styles from "./ProfileHeaderStyle"; // Import the dedicated style file
+import styles from "./ProfileHeaderStyle";
 
 const ProfileHeader = ({ userInfo, currentDate, onEditPress }) => {
   const renderProfileIcon = () => {

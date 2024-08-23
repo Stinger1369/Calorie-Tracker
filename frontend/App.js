@@ -126,11 +126,7 @@ const App = () => {
           <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
           <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
           <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
-          <Stack.Screen
-            name="HoroscopeDetailsScreen"
-            component={HoroscopeDetailsScreen}
-            options={{ title: "Détails de l'Horoscope" }}
-          />
+          <Stack.Screen name="HoroscopeDetailsScreen" component={HoroscopeDetailsScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

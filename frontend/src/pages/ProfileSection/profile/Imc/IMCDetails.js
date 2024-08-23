@@ -1,9 +1,7 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Image, Dimensions } from "react-native";
 import { BarChart } from "react-native-chart-kit";
-import { Dimensions } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import FastImage from "react-native-fast-image";
 import styles from "./IMCDetailsStyles";
 
 const screenWidth = Dimensions.get("window").width;
@@ -75,7 +73,7 @@ const IMCDetails = () => {
       />
 
       {/* Image illustrative en fonction de l'IMC */}
-      <FastImage source={getAdviceImage()} style={styles.adviceImage} />
+      <Image source={getAdviceImage()} style={styles.adviceImage} />
 
       {/* Conseils supplémentaires */}
       <Text style={styles.advice}>

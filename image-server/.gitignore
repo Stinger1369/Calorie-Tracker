@@ -1,0 +1,58 @@
+# .gitignore for Go project with image server
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the go coverage tool
+*.coverprofile
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Directories
+bin/
+pkg/
+dist/
+go/
+
+# Ignore Go modules
+vendor/
+
+# Logs
+*.log
+
+# Dependency directories
+node_modules/
+.DS_Store
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# IDE specific
+.vscode/
+.idea/
+
+# Environment variables
+.env
+.env.*
+
+# Ignore Python virtual environment
+.venv/
+venv/
+env/
+
+# Python-specific ignores
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+pyvenv.cfg

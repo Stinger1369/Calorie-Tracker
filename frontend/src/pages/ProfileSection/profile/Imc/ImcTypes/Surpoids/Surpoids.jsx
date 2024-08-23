@@ -34,8 +34,8 @@ const Surpoids = () => {
   useEffect(() => {
     dispatch(
       fetchRecommendationsByCaloriesRange({
-        minCalories: 500,
-        maxCalories: 2000,
+        minCalories: 100,
+        maxCalories: 450,
       })
     );
   }, [dispatch]);

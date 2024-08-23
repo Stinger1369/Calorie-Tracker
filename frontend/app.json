@@ -6,9 +6,29 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos."
+      }
     },
-    "android": {},
-    "web": {}
+    "android": {
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {},
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app needs access to your photos to let you upload your profile picture."
+        }
+      ]
+    ]
   }
 }

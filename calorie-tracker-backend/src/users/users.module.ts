@@ -5,12 +5,14 @@ import { UsersController } from './users.controller';
 import { User, UserSchema } from './schemas/user.schema';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ScheduleModule.forRoot(),
     HttpModule,
+    ImageModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

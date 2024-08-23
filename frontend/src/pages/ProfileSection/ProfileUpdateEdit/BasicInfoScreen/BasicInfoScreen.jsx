@@ -5,8 +5,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Image,
-  Button,
+  Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -15,14 +14,16 @@ import {
   updateUserInfo,
   fetchUserInfo,
 } from "../../../../redux/features/user/userSlice";
+import { uploadImage } from "../../../../redux/features/imageSlice/imageSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/FontAwesome";
+import ImageSelector from "../../../../components/ImageSelector/ImageSelector";
 import styles from "./BasicInfoScreenStyle";
 
 const BasicInfoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.auth);
+  const { imageUrl: uploadedImageUrl } = useSelector((state) => state.image);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -30,7 +31,6 @@ const BasicInfoScreen = ({ navigation }) => {
   const [gender, setGender] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const [isSaved, setIsSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -66,6 +66,13 @@ const BasicInfoScreen = ({ navigation }) => {
     }
   }, [userInfo]);
 
+  useEffect(() => {
+    if (uploadedImageUrl) {
+      setImageUrl(uploadedImageUrl);
+      setHasChanges(true); // Indique que des changements ont été effectués
+    }
+  }, [uploadedImageUrl]);
+
   const handleSave = () => {
     const updatedData = {
       firstName,
@@ -98,20 +105,24 @@ const BasicInfoScreen = ({ navigation }) => {
     handleInputChange(currentDate, setDateOfBirth);
   };
 
+  const handleImageSelected = (base64Image) => {
+    dispatch(
+      uploadImage({
+        userId: userInfo._id,
+        imageData: base64Image,
+      })
+    );
+  };
+
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.innerContainer}
     >
-      <View style={styles.profileContainer}>
-        <TouchableOpacity style={styles.profileIcon}>
-          {imageUrl ? (
-            <Image source={{ uri: imageUrl }} style={styles.profileImage} />
-          ) : (
-            <Icon name="user-circle" size={100} color="#888" />
-          )}
-        </TouchableOpacity>
-      </View>
+      <ImageSelector
+        imageUrl={imageUrl}
+        onImageSelected={handleImageSelected}
+      />
       <View>
         <Text style={styles.label}>First Name:</Text>
         <TextInput

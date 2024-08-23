@@ -29,14 +29,12 @@ export class UsersController {
   @Get()
   async findAll(): Promise<User[]> {
     const users = await this.usersService.findAll();
-    console.log('All users retrieved:', users);
     return users;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    // L'ID doit être une chaîne ici.
     return this.usersService.findOne(id);
   }
 
@@ -46,7 +44,6 @@ export class UsersController {
     @Body('bmi') bmi: number,
   ): Promise<User> {
     const updatedUser = await this.usersService.updateBMI(id, bmi);
-    console.log('User BMI updated:', updatedUser);
     return updatedUser;
   }
 
@@ -55,9 +52,9 @@ export class UsersController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Body('imageBuffer') imageBuffer: Buffer, // Ajout de l'image buffer dans le corps de la requête
   ): Promise<User> {
-    const updatedUser = await this.usersService.update(id, updateUserDto);
-    console.log('User updated:', updatedUser);
+    const updatedUser = await this.usersService.update(id, updateUserDto, imageBuffer);
     return updatedUser;
   }
 
@@ -65,6 +62,5 @@ export class UsersController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     await this.usersService.delete(id);
-    console.log('User deleted with ID:', id);
   }
 }

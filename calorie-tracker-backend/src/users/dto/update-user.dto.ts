@@ -22,7 +22,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  @IsIn(['male', 'female', 'other']) // Valider uniquement les valeurs définies dans l'énumération
+  @IsIn(['male', 'female', 'other'])
   @Transform(({ value }) => (value ? value.trim() : null))
   readonly gender?: string;
 

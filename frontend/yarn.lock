@@ -2218,13 +2218,6 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-cookies/cookies@^6.2.1":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-cookies/cookies/-/cookies-6.2.1.tgz#54d50b9496400bbdc19e43c155f70f8f918999e3"
-  integrity sha512-D17wCA0DXJkGJIxkL74Qs9sZ3sA+c+kCoGmXVknW7bVw/W+Vv1m/7mWTNi9DLBZSRddhzYw8SU0aJapIaM/g5w==
-  dependencies:
-    invariant "^2.2.4"
-
 "@react-native-picker/picker@2.7.5":
   version "2.7.5"
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.5.tgz#e43fcd65f260fa4f23e974ccb9fb7c1f7a9ff94a"
@@ -2638,16 +2631,16 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "22.4.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.4.0.tgz#c295fe1d6f5f58916cc61dbef8cf65b5b9b71de9"
-  integrity sha512-49AbMDwYUz7EXxKU/r7mXOsxwFr4BYbvB7tWYxVuLdb2ibd30ijjXINSMAHiEEZk5PCRBmW1gUeisn2VMKt3cQ==
+  version "22.4.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.4.1.tgz#9b595d292c65b94c20923159e2ce947731b6fdce"
+  integrity sha512-1tbpb9325+gPnKK0dMm+/LMriX0vKxf6RnB0SZUqfyVkQ4fMgUSySqhxE/y8Jvs4NyF1yHzTfG9KlnkIODxPKg==
   dependencies:
     undici-types "~6.19.2"
 
 "@types/node@^18.0.0":
-  version "18.19.44"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.44.tgz#875a8322d17ff12bf82b3af8c07b9310a00e72f8"
-  integrity sha512-ZsbGerYg72WMXUIE9fYxtvfzLEuq6q8mKERdWFnqTmOvudMxnz+CBNRoOwJ2kNpFOncrKjT1hZwxjlFgQ9qvQA==
+  version "18.19.45"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.45.tgz#a9ebfe4c316a356be7ca11f753ecb2feda6d6bdf"
+  integrity sha512-VZxPKNNhjKmaC1SUYowuXSRSMGyQGmQjvvA1xE4QZ0xce2kLtEhPDS+kqpCPBZYgqblCLQ2DAjSzmgCM5auvhA==
   dependencies:
     undici-types "~5.26.4"
 
@@ -4392,6 +4385,25 @@ expo-font@~12.0.9:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-image-loader@~4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.7.0.tgz#d403106822de80bda12d644c82b7a3b7983c0f0b"
+  integrity sha512-cx+MxxsAMGl9AiWnQUzrkJMJH4eNOGlu7XkLGnAXSJrRoIiciGaKqzeaD326IyCTV+Z1fXvIliSgNW+DscvD8g==
+
+expo-image-manipulator@^12.0.5:
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/expo-image-manipulator/-/expo-image-manipulator-12.0.5.tgz#e3dd2810d27025705f73523cd4ba47b0d091a662"
+  integrity sha512-zJ8yINjckYw/yfoSuICt4yJ9xr112+W9e5QVXwK3nCAHr7sv45RQ5sxte0qppf594TPl+UoV6Tjim7WpoKipRQ==
+  dependencies:
+    expo-image-loader "~4.7.0"
+
+expo-image-picker@^15.0.7:
+  version "15.0.7"
+  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-15.0.7.tgz#eb25abfdb03cb940f0418add3d9814439526b025"
+  integrity sha512-u8qiPZNfDb+ap6PJ8pq2iTO7JKX+ikAUQ0K0c7gXGliKLxoXgDdDmXxz9/6QdICTshJBJlBvI0MwY5NWu7A/uw==
+  dependencies:
+    expo-image-loader "~4.7.0"
+
 expo-keep-awake@~13.0.2:
   version "13.0.2"
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-13.0.2.tgz#5ef31311a339671eec9921b934fdd90ab9652b0e"
@@ -4470,7 +4482,7 @@ expo-web-browser@~13.0.3:
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-13.0.3.tgz#dceb05dbc187b498ca937b02adf385b0232a4e92"
   integrity sha512-HXb7y82ApVJtqk8tManyudtTrCtx8xcUnVzmJECeHCB0SsWSQ+penVLZxJkcyATWoJOsFMnfVSVdrTcpKKGszQ==
 
-expo@^51.0.28:
+expo@^51.0.3:
   version "51.0.28"
   resolved "https://registry.yarnpkg.com/expo/-/expo-51.0.28.tgz#d60cbe6803e29f0c09ba3681462f91e13bc849ef"
   integrity sha512-R+0tSV0Zf5R+DxN4W3mLFlVvYVpiJ+dtYrMmBedIRw0A54we50QRM1jS0Gq2Bdzg2JtainSEApdQXUC6r9j/BA==
@@ -4746,7 +4758,6 @@ fresh@0.5.2:
     "@expo/vector-icons" "^14.0.2"
     "@react-native-async-storage/async-storage" "1.23.1"
     "@react-native-community/datetimepicker" "8.0.1"
-    "@react-native-cookies/cookies" "^6.2.1"
     "@react-native-picker/picker" "2.7.5"
     "@react-navigation/bottom-tabs" "^6.6.1"
     "@react-navigation/drawer" "^6.7.2"
@@ -4754,10 +4765,11 @@ fresh@0.5.2:
     "@react-navigation/native-stack" "^6.11.0"
     "@reduxjs/toolkit" "^2.2.7"
     axios "^1.7.3"
-    expo "^51.0.28"
+    expo "^51.0.3"
     expo-app-loading "^2.1.1"
     expo-constants "~16.0.2"
     expo-font "~12.0.9"
+    expo-image-picker "^15.0.7"
     expo-linking "~6.3.1"
     expo-location "~17.0.1"
     expo-sensors "^13.0.9"
@@ -4766,14 +4778,13 @@ fresh@0.5.2:
     expo-system-ui "~3.0.7"
     expo-web-browser "~13.0.3"
     formik "^2.4.6"
-    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-515b5718-840a-4a43-b3f6-0cc1e8b48c0d-1724019985510/node_modules/frontend"
+    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-aacd6476-b784-4e5c-a7ff-db9f3a60a728-1724301513268/node_modules/frontend"
     lottie-react-native "6.7.0"
     moment "^2.30.1"
     react "18.2.0"
     react-dom "18.2.0"
     react-native "0.74.5"
     react-native-chart-kit "^6.12.0"
-    react-native-fast-image "^8.6.3"
     react-native-gesture-handler "~2.16.1"
     react-native-modal "^13.0.1"
     react-native-reanimated "~3.10.1"
@@ -7634,11 +7645,6 @@ react-native-chart-kit@^6.12.0:
     lodash "^4.17.13"
     paths-js "^0.4.10"
     point-in-polygon "^1.0.1"
-
-react-native-fast-image@^8.6.3:
-  version "8.6.3"
-  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
-  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
 
 react-native-gesture-handler@~2.16.1:
   version "2.16.2"

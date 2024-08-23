@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -7,9 +7,11 @@ import { ExerciseModule } from './exercises/exercise.module';
 import { FitnessGoalModule } from './fitness-goals/fitness-goal.module';
 import { RecommendationFoodModule } from './recommendation-food/recommendation-food.module';
 import { StepCountModule } from './step-count/step-count.module';
-import { ApiExerciceModule } from './ApiExercice/api-exercice.module'; // Import du module
+import { ApiExerciceModule } from './ApiExercice/api-exercice.module';
+import { ImageModule } from './image/image.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoggerMiddleware } from './middleware/LoggerMiddleware'; // Assurez-vous que le chemin est correct
 
 @Module({
   imports: [
@@ -23,9 +25,16 @@ import { AppService } from './app.service';
     FitnessGoalModule,
     RecommendationFoodModule,
     StepCountModule,
-    ApiExerciceModule, // Ajout du module ici
+    ApiExerciceModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL }); // Appliquer le middleware à toutes les routes
+  }
+}

@@ -1,0 +1,7 @@
+tensorflow
+tensorflow_hub
+opencv-python
+pytesseract
+Pillow
+setuptools
+python3-distutils
