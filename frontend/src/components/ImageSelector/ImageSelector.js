@@ -15,32 +15,46 @@ import {
   uploadImage,
   resetImageState,
 } from "../../redux/features/imageSlice/imageSlice";
-import styles from "./ImageSelectorStyle"; // Ensure you have this styles file
+import styles from "./ImageSelectorStyle";
 
 const ImageSelector = () => {
   const dispatch = useDispatch();
   const { imageUrl, loading, error } = useSelector((state) => state.image);
-  const { user } = useSelector((state) => state.auth); // Retrieve the user from Redux
+  const { userInfo } = useSelector((state) => state.user); // Récupération depuis le slice user
   const [userId, setUserId] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null); // Pour l'aperçu local de l'image
 
   useEffect(() => {
     const fetchUserId = async () => {
       console.log("Fetching user ID...");
-      if (user && user._id) {
-        console.log("User ID from Redux:", user._id);
-        setUserId(user._id); // If the user is in Redux, use it
+      if (userInfo && userInfo._id) {
+        console.log("User ID from Redux (userInfo):", userInfo._id);
+        setUserId(userInfo._id);
       } else {
+        console.log("User info not found in Redux, checking AsyncStorage...");
         const storedUser = await AsyncStorage.getItem("user");
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           console.log("User ID from AsyncStorage:", parsedUser._id);
-          setUserId(parsedUser._id); // If the user is in AsyncStorage, use it
+          setUserId(parsedUser._id);
+        } else {
+          console.log("No user found in AsyncStorage either.");
         }
       }
     };
 
     fetchUserId();
-  }, [user]);
+  }, [userInfo]);
+
+  useEffect(() => {
+    // Utiliser l'image récupérée depuis le backend si elle existe
+    if (userInfo && userInfo.imageUrl) {
+      console.log("Image URL from userInfo:", userInfo.imageUrl);
+      setPreviewImage(userInfo.imageUrl);
+    } else {
+      console.log("No image URL found in userInfo.");
+    }
+  }, [userInfo]);
 
   const selectImage = async () => {
     if (!userId) {
@@ -48,14 +62,12 @@ const ImageSelector = () => {
       return;
     }
 
-    console.log("Requesting media library permissions...");
     const { status: libraryStatus } =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     const { status: cameraStatus } =
       await ImagePicker.requestCameraPermissionsAsync();
 
     if (libraryStatus !== "granted" || cameraStatus !== "granted") {
-      console.log("Permissions not granted");
       Alert.alert(
         "Permissions required",
         "We need permission to access your camera and photo library."
@@ -63,7 +75,6 @@ const ImageSelector = () => {
       return;
     }
 
-    console.log("Showing image selection options...");
     Alert.alert(
       "Select Image",
       "Choose an option",
@@ -86,7 +97,6 @@ const ImageSelector = () => {
   };
 
   const openImageLibrary = async () => {
-    console.log("Opening image library...");
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -95,17 +105,17 @@ const ImageSelector = () => {
     });
 
     if (!result.canceled) {
-      console.log("Image selected:", result.assets[0].uri);
+      console.log("Image selected from library:", result.assets[0].uri);
+      setPreviewImage(result.assets[0].uri);
       dispatch(
         uploadImage({ userId, imageBuffer: { uri: result.assets[0].uri } })
       );
     } else {
-      console.log("Image selection canceled");
+      console.log("Image selection canceled.");
     }
   };
 
   const openCamera = async () => {
-    console.log("Opening camera...");
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
@@ -113,12 +123,13 @@ const ImageSelector = () => {
     });
 
     if (!result.canceled) {
-      console.log("Image captured:", result.assets[0].uri);
+      console.log("Image captured from camera:", result.assets[0].uri);
+      setPreviewImage(result.assets[0].uri);
       dispatch(
         uploadImage({ userId, imageBuffer: { uri: result.assets[0].uri } })
       );
     } else {
-      console.log("Camera capture canceled");
+      console.log("Camera capture canceled.");
     }
   };
 
@@ -126,8 +137,11 @@ const ImageSelector = () => {
     <View style={styles.container}>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       <TouchableOpacity style={styles.profileIcon} onPress={selectImage}>
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.profileImage} />
+        {previewImage || imageUrl ? (
+          <Image
+            source={{ uri: previewImage || imageUrl }}
+            style={styles.profileImage}
+          />
         ) : (
           <Icon name="user-circle" size={100} color="#888" />
         )}
@@ -140,7 +154,10 @@ const ImageSelector = () => {
       )}
       <TouchableOpacity
         style={styles.resetButton}
-        onPress={() => dispatch(resetImageState())}
+        onPress={() => {
+          dispatch(resetImageState());
+          setPreviewImage(null);
+        }}
       >
         <Text style={styles.resetButtonText}>Reset Image</Text>
       </TouchableOpacity>

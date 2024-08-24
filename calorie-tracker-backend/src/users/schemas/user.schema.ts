@@ -79,7 +79,7 @@ export class User extends Document {
   @Prop({ default: false })
   isVerified: boolean;
 
-  @Prop({ required: true, enum: ['male', 'female', 'other'] })
+  @Prop({ required: false, enum: ['male', 'female', 'other'] })
   gender: string;
 
   @Prop()
@@ -205,6 +205,9 @@ export class User extends Document {
 
   @Prop({ default: Date.now })
   updatedAt: Date;
+
+  @Prop()
+  imageUrl: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

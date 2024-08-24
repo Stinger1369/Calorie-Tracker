@@ -105,11 +105,11 @@ const BasicInfoScreen = ({ navigation }) => {
     handleInputChange(currentDate, setDateOfBirth);
   };
 
-  const handleImageSelected = (base64Image) => {
+  const handleImageSelected = (uri) => {
     dispatch(
       uploadImage({
         userId: userInfo._id,
-        imageData: base64Image,
+        imageBuffer: { uri }, // Assurez-vous que l'objet contient un uri
       })
     );
   };

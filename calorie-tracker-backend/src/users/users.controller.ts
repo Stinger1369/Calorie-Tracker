@@ -52,9 +52,21 @@ export class UsersController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Body('imageBuffer') imageBuffer: Buffer, // Ajout de l'image buffer dans le corps de la requête
+    @Body('imageUrl') imageUrl: string, // Récupération de l'URL de l'image ici
   ): Promise<User> {
-    const updatedUser = await this.usersService.update(id, updateUserDto, imageBuffer);
+    console.log('--- Début de la mise à jour via le Controller ---');
+    console.log('ID de l’utilisateur:', id);
+    console.log('Données de mise à jour reçues:', updateUserDto);
+    console.log('URL de l’image reçue dans le Controller:', imageUrl);
+
+    const updatedUser = await this.usersService.update(
+      id,
+      updateUserDto,
+      imageUrl,
+    );
+
+    console.log('Utilisateur mis à jour dans le Controller:', updatedUser);
+    console.log('--- Fin de la mise à jour via le Controller ---');
     return updatedUser;
   }
 

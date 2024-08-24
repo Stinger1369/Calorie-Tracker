@@ -11,6 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { calculateBMI } from '../functions/imc.function';
 import { calculateCaloricNeeds } from '../functions/calculateCaloricNeeds';
+import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { getHoroscope } from '../utils/zodiac-signs.util';
@@ -22,6 +23,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly imageService: ImageService, // Injection du service Image
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   private calculateAge(dateOfBirth: Date): number {
@@ -96,29 +98,30 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-    imageBuffer: Buffer,
+    imageUrl: string, // L'URL de l'image est reçue ici
   ): Promise<User> {
+    console.log('--- Début de la méthode update ---');
+    console.log('ID utilisateur reçu:', id);
+    console.log('Données de mise à jour reçues:', updateUserDto);
+    console.log('URL de l’image reçue:', imageUrl);
+
     const updatedData = { ...updateUserDto };
 
-    if (imageBuffer) {
-      try {
-        // Appelle le service pour mettre à jour l'image
-        const imageUrl = await this.imageService.updateImage(
-          id,
-          'profile.jpg',
-          imageBuffer,
-        );
-        // Assigner l'URL de l'image mise à jour
-        updatedData.imageUrl = imageUrl;
-      } catch (error) {
-        throw new HttpException(
-          "Erreur lors du téléchargement de l'image.",
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    // Assigner l'URL complète de l'image si elle est fournie
+    if (imageUrl) {
+      const fullImageUrl = `${this.configService.get<string>('IMAGE_SERVER_URL')}${imageUrl}`;
+      updatedData.imageUrl = fullImageUrl;
+      console.log(
+        'URL complète de l’image assignée à updatedData:',
+        updatedData.imageUrl,
+      );
+    } else {
+      console.log('Aucune URL d’image fournie');
     }
 
+    // Mise à jour du nom d'utilisateur si nécessaire
     if (updateUserDto.username) {
+      console.log('Mise à jour du nom d’utilisateur...');
       let baseUsername = updateUserDto.username.toLowerCase();
       let username = baseUsername;
       let counter = 1;
@@ -129,16 +132,32 @@ export class UsersService {
       }
 
       updatedData.username = username;
+      console.log('Nom d’utilisateur final:', updatedData.username);
     }
 
-    let user = await this.userModel
-      .findByIdAndUpdate(id, updatedData, { new: true })
-      .exec();
+    console.log('Données finales avant mise à jour dans MongoDB:', updatedData);
 
+    let user;
+    try {
+      user = await this.userModel
+        .findByIdAndUpdate(id, updatedData, { new: true })
+        .exec();
+      console.log('Utilisateur mis à jour avec succès dans MongoDB:', user);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour dans MongoDB:', error);
+      throw new HttpException(
+        'Erreur lors de la mise à jour de l’utilisateur',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    // Si la date de naissance a été mise à jour, mettre à jour l’horoscope
     if (updateUserDto.dateOfBirth) {
+      console.log('Mise à jour de l’horoscope...');
       await this.updateHoroscope(user);
     }
 
+    // Recalcul des valeurs liées à l'IMC et aux calories si des données pertinentes sont mises à jour
     if (
       updateUserDto.weight ||
       updateUserDto.height ||
@@ -147,6 +166,7 @@ export class UsersService {
     ) {
       if (user.weight && user.height) {
         user.bmi = calculateBMI(user.weight, user.height);
+        console.log('Nouvel IMC calculé:', user.bmi);
 
         if (user.dateOfBirth && user.gender) {
           const age = this.calculateAge(user.dateOfBirth);
@@ -156,11 +176,26 @@ export class UsersService {
             user.height,
             age,
           );
+          console.log(
+            'Nouveau besoin calorique recommandé:',
+            user.recommendedCalories,
+          );
         }
       }
     }
 
-    await user.save();
+    try {
+      await user.save();
+      console.log('Utilisateur sauvegardé avec succès:', user);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de l’utilisateur:', error);
+      throw new HttpException(
+        'Erreur lors de la sauvegarde de l’utilisateur',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    console.log('--- Fin de la méthode update ---');
     return user;
   }
 
