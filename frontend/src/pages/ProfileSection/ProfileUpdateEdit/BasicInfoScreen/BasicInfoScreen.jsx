@@ -33,6 +33,7 @@ const BasicInfoScreen = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [localImageUri, setLocalImageUri] = useState(null); // Stocker l'image sélectionnée localement
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -69,17 +70,33 @@ const BasicInfoScreen = ({ navigation }) => {
   useEffect(() => {
     if (uploadedImageUrl) {
       setImageUrl(uploadedImageUrl);
-      setHasChanges(true); // Indique que des changements ont été effectués
+      setHasChanges(true); // Marquer le formulaire comme modifié
     }
   }, [uploadedImageUrl]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    let finalImageUrl = imageUrl;
+
+    if (localImageUri) {
+      // Upload de l'image sélectionnée
+      await dispatch(
+        uploadImage({
+          userId: userInfo._id,
+          imageBuffer: { uri: localImageUri },
+        })
+      ).then((action) => {
+        if (action.payload) {
+          finalImageUrl = action.payload;
+        }
+      });
+    }
+
     const updatedData = {
       firstName,
       lastName,
       dateOfBirth: dateOfBirth.toISOString().split("T")[0],
       gender,
-      imageUrl,
+      imageUrl: finalImageUrl,
     };
 
     if (userInfo && userInfo._id) {
@@ -106,12 +123,8 @@ const BasicInfoScreen = ({ navigation }) => {
   };
 
   const handleImageSelected = (uri) => {
-    dispatch(
-      uploadImage({
-        userId: userInfo._id,
-        imageBuffer: { uri }, // Assurez-vous que l'objet contient un uri
-      })
-    );
+    setLocalImageUri(uri); // Stocker l'URI de l'image localement pour l'utiliser lors du save
+    setHasChanges(true); // Marquer le formulaire comme modifié
   };
 
   return (
@@ -119,10 +132,7 @@ const BasicInfoScreen = ({ navigation }) => {
       style={styles.container}
       contentContainerStyle={styles.innerContainer}
     >
-      <ImageSelector
-        imageUrl={imageUrl}
-        onImageSelected={handleImageSelected}
-      />
+      <ImageSelector onImageSelected={handleImageSelected} />
       <View>
         <Text style={styles.label}>First Name:</Text>
         <TextInput
@@ -166,14 +176,20 @@ const BasicInfoScreen = ({ navigation }) => {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.saveButton}
+            style={[
+              styles.saveButton,
+              { backgroundColor: hasChanges ? "#4CAF50" : "#ccc" },
+            ]}
             onPress={handleSave}
             disabled={!hasChanges}
           >
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.nextButton}
+            style={[
+              styles.nextButton,
+              { backgroundColor: isSaved ? "#2196F3" : "#ccc" },
+            ]}
             onPress={handleNext}
             disabled={!isSaved}
           >

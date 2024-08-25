@@ -108,7 +108,7 @@ export class UsersService {
     const updatedData = { ...updateUserDto };
 
     // Assigner l'URL complète de l'image si elle est fournie
-    if (imageUrl) {
+    if (imageUrl && !imageUrl.includes('An error occurred')) {
       const fullImageUrl = `${this.configService.get<string>('IMAGE_SERVER_URL')}${imageUrl}`;
       updatedData.imageUrl = fullImageUrl;
       console.log(
@@ -116,7 +116,7 @@ export class UsersService {
         updatedData.imageUrl,
       );
     } else {
-      console.log('Aucune URL d’image fournie');
+      console.log('Aucune URL d’image valide fournie ou erreur détectée');
     }
 
     // Mise à jour du nom d'utilisateur si nécessaire

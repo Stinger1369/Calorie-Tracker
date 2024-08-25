@@ -12,50 +12,55 @@ export class ImageService {
     private configService: ConfigService,
   ) {}
 
- async uploadImage(
-  fileBuffer: Buffer,
-  userId: string,
-  imageName: string,
-): Promise<string> {
-  console.log('--- Début de la méthode uploadImage ---');
-  console.log('ID utilisateur reçu:', userId);
-  console.log('Nom de l’image reçu:', imageName);
+  async uploadImage(
+    fileBuffer: Buffer,
+    userId: string,
+    imageName: string,
+  ): Promise<string> {
+    console.log('--- Début de la méthode uploadImage ---');
+    console.log('ID utilisateur reçu:', userId);
+    console.log('Nom de l’image reçu:', imageName);
 
-  const formData = new FormData();
-  formData.append('user_id', userId);
-  formData.append('nom', imageName);
-  formData.append('image', fileBuffer, imageName);
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('nom', imageName);
+    formData.append('image', fileBuffer, imageName);
 
-  const imageServerUrl = this.configService.get<string>('IMAGE_SERVER_URL');
-  console.log('URL du serveur d’images:', imageServerUrl);
+    const imageServerUrl = this.configService.get<string>('IMAGE_SERVER_URL');
+    console.log('URL du serveur d’images:', imageServerUrl);
 
-  try {
-    const response = await firstValueFrom(
-      this.httpService.post(
-        `${imageServerUrl}/server-image/ajouter-image`,
-        formData,
-        {
-          headers: formData.getHeaders(),
-        },
-      ),
-    );
-    console.log('Réponse reçue du serveur d’images:', response.data);
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${imageServerUrl}/server-image/ajouter-image`,
+          formData,
+          {
+            headers: formData.getHeaders(),
+          },
+        ),
+      );
+      console.log('Réponse reçue du serveur d’images:', response.data);
 
-    // On suppose que l'URL de l'image est renvoyée dans le champ `link` de la réponse
-    const imageUrl = response.data.link;
-    console.log('URL de l’image extraite:', imageUrl);
+      // Assurez-vous que la réponse contient bien une URL
+      if (!response.data.link) {
+        throw new Error(
+          'Image upload failed: Invalid response from image server',
+        );
+      }
 
-    console.log('--- Fin de la méthode uploadImage ---');
-    return imageUrl;
-  } catch (error) {
-    console.error('Erreur lors de l’upload de l’image:', error);
-    throw new HttpException(
-      'Failed to upload image to external server',
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+      const imageUrl = response.data.link;
+      console.log('URL de l’image extraite:', imageUrl);
+
+      console.log('--- Fin de la méthode uploadImage ---');
+      return imageUrl;
+    } catch (error) {
+      console.error('Erreur lors de l’upload de l’image:', error);
+      throw new HttpException(
+        'Failed to upload image to external server',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
-}
-
 
   async updateImage(
     userId: string,
