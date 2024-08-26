@@ -2218,6 +2218,11 @@
   dependencies:
     invariant "^2.2.4"
 
+"@react-native-community/slider@^4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.5.2.tgz#c3835788dbc1bd83d3778b83ca15533c805db149"
+  integrity sha512-DbFyCyI7rwl0FkBkp0lzEVp+5mNfS5qU/nM2sK2aSguWhj0Odkt1aKHP2iW/ljruOhgS/O4dEixXlne4OdZJDQ==
+
 "@react-native-picker/picker@2.7.5":
   version "2.7.5"
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.5.tgz#e43fcd65f260fa4f23e974ccb9fb7c1f7a9ff94a"
@@ -4769,6 +4774,7 @@ fresh@0.5.2:
     expo-app-loading "^2.1.1"
     expo-constants "~16.0.2"
     expo-font "~12.0.9"
+    expo-image-manipulator "^12.0.5"
     expo-image-picker "^15.0.7"
     expo-linking "~6.3.1"
     expo-location "~17.0.1"
@@ -4778,7 +4784,7 @@ fresh@0.5.2:
     expo-system-ui "~3.0.7"
     expo-web-browser "~13.0.3"
     formik "^2.4.6"
-    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-aacd6476-b784-4e5c-a7ff-db9f3a60a728-1724301513268/node_modules/frontend"
+    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-0e8f66dc-f709-433a-9c2b-6bd9b7271751-1724632454087/node_modules/frontend"
     lottie-react-native "6.7.0"
     moment "^2.30.1"
     react "18.2.0"

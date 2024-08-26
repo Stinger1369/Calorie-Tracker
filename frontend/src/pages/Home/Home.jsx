@@ -59,6 +59,10 @@ const Home = () => {
     }
   };
 
+  const handleRecipesPress = () => {
+    navigation.navigate("RecetteScreen"); // Navigation vers l'écran des recettes
+  };
+
   const renderProfileIcon = () => {
     if (userInfo?.imageUrl) {
       return (
@@ -190,7 +194,7 @@ const Home = () => {
 
           <TouchableOpacity
             style={[styles.section, styles.sectionRecipes]}
-            onPress={() => {}}
+            onPress={handleRecipesPress} // Lien vers l'écran des recettes
           >
             <MaterialCommunityIcons
               name="food-apple"

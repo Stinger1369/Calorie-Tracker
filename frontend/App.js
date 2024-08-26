@@ -32,6 +32,7 @@ import SurpoidsExercice from "./src/pages/ProfileSection/profile/ExerciceApi/Sur
 import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/ObesiteExercice";
 import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
+import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
@@ -108,7 +109,6 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="IMCDetails" component={IMCDetails} />
-
           {/* Ajout des nouveaux écrans */}
           <Stack.Screen name="Insuffisant" component={Insuffisant} />
           <Stack.Screen name="Normal" component={Normal} />
@@ -126,7 +126,11 @@ const App = () => {
           <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
           <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
           <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
-          <Stack.Screen name="HoroscopeDetailsScreen" component={HoroscopeDetailsScreen}/>
+          <Stack.Screen
+            name="HoroscopeDetailsScreen"
+            component={HoroscopeDetailsScreen}
+          />
+          <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
