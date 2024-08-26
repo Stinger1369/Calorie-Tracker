@@ -1,5 +1,7 @@
 import { StyleSheet, Dimensions } from "react-native";
 
+const { width, height } = Dimensions.get("window");
+
 export default StyleSheet.create({
   backgroundImage: {
     flex: 1,
@@ -9,7 +11,7 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: "#0E1331",
     paddingHorizontal: 20,
-    paddingTop: "20%",
+    paddingTop: "15%",
   },
   header: {
     flexDirection: "row",
@@ -31,12 +33,12 @@ export default StyleSheet.create({
     padding: 10,
   },
   welcomeText: {
-    fontSize: 24,
+    fontSize: width * 0.06, // Responsive text size
     fontWeight: "600",
     color: "#ffffff",
   },
   dateText: {
-    fontSize: 18,
+    fontSize: width * 0.045, // Responsive text size
     fontWeight: "400",
     color: "#ffffff",
   },
@@ -47,15 +49,15 @@ export default StyleSheet.create({
     marginTop: 20,
   },
   section: {
-    width: "45%",
-    padding: 20,
+    width: width * 0.4, // Slightly reduced width for each section
+    padding: width * 0.04, // Slightly reduced padding
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 20,
   },
   sectionText: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: width * 0.038, // Slightly reduced font size for text
     color: "#ffffff",
   },
   sectionChat: {

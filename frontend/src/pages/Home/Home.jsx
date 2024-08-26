@@ -7,6 +7,7 @@ import {
   ImageBackground,
   Image,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,36 +19,30 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
+// Récupération des dimensions de l'écran
+const { width, height } = Dimensions.get("window");
+
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // Récupérer les informations de l'utilisateur depuis Redux
   const { userInfo } = useSelector((state) => state.user);
 
   useEffect(() => {
     const userId = userInfo?._id;
     if (userId) {
-      dispatch(fetchUserInfo(userId)); // Charger les informations de l'utilisateur
+      dispatch(fetchUserInfo(userId));
     }
   }, [dispatch]);
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  const openModal = () => setModalVisible(true);
+  const closeModal = () => setModalVisible(false);
 
   const handleLogout = async (saveData) => {
     closeModal();
     dispatch(logout({ saveData }));
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Welcom" }],
-    });
+    navigation.reset({ index: 0, routes: [{ name: "Welcom" }] });
   };
 
   const handleHoroscopePress = () => {
@@ -59,9 +54,7 @@ const Home = () => {
     }
   };
 
-  const handleRecipesPress = () => {
-    navigation.navigate("RecetteScreen"); // Navigation vers l'écran des recettes
-  };
+  const handleRecipesPress = () => navigation.navigate("RecetteScreen");
 
   const renderProfileIcon = () => {
     if (userInfo?.imageUrl) {
@@ -85,14 +78,10 @@ const Home = () => {
     }
   };
 
-  // Get the current date formatted
   const currentDate = moment().format("dddd, MMMM Do YYYY");
 
   return (
-    <ImageBackground
-      // source={require("./path_to_your_background_image.png")} // Replace with your background image path
-      style={styles.backgroundImage}
-    >
+    <ImageBackground style={styles.backgroundImage}>
       <ScrollView style={styles.container}>
         {/* Header Section */}
         <View style={styles.header}>
@@ -194,7 +183,7 @@ const Home = () => {
 
           <TouchableOpacity
             style={[styles.section, styles.sectionRecipes]}
-            onPress={handleRecipesPress} // Lien vers l'écran des recettes
+            onPress={handleRecipesPress}
           >
             <MaterialCommunityIcons
               name="food-apple"

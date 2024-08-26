@@ -13,8 +13,8 @@ import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecommendationsByCaloriesRange } from "../../../redux/features/recommendation/recommendationSlice";
 import { useNavigation } from "@react-navigation/native";
-import { getHostname } from "../../../hostname"; // Pour récupérer l'URL de base du serveur
-import styles from "./RecipesScreenStyles"; // Assurez-vous d'ajouter un fichier de styles pour cette page
+import { getHostname } from "../../../hostname";
+import styles from "./RecipesScreenStyles";
 
 const truncateTitle = (title) => {
   const words = title.split(" ");
@@ -35,23 +35,28 @@ const RecipesScreen = () => {
 
   const [minCalories, setMinCalories] = useState(500); // Valeur par défaut minimale
   const [maxCalories, setMaxCalories] = useState(2000); // Valeur par défaut maximale
-  const [season, setSeason] = useState("forallseason"); // Valeur par défaut pour la saison
+  const [season, setSeason] = useState("forallseason");
+
+  const handleMinCaloriesChange = (value) => {
+    setMinCalories(value);
+    if (value >= maxCalories - 100) {
+      setMaxCalories(Math.min(value + 100, 5000));
+    }
+  };
+
+  const handleMaxCaloriesChange = (value) => {
+    // Bloque le max si l'utilisateur essaie de le rendre inférieur au min + 100
+    if (value >= minCalories + 100) {
+      setMaxCalories(value);
+    }
+  };
 
   const handleApplyFilters = () => {
-    // Validation pour s'assurer que maxCalories est supérieur à minCalories
-    if (maxCalories <= minCalories) {
-      alert(
-        "Le maximum des calories doit être supérieur au minimum des calories."
-      );
-      return;
-    }
-
-    // Appliquer les filtres lorsque le bouton de validation est pressé
     dispatch(
       fetchRecommendationsByCaloriesRange({
         minCalories,
         maxCalories,
-        season, // Ajouter la saison à la requête
+        season,
       })
     );
   };
@@ -98,19 +103,19 @@ const RecipesScreen = () => {
         <Slider
           style={styles.slider}
           minimumValue={0}
-          maximumValue={5000} // Fixez la plage maximale de calories
+          maximumValue={4900} // Limite pour le slider de minCalories
           step={50}
           value={minCalories}
-          onValueChange={(value) => setMinCalories(value)}
+          onValueChange={handleMinCaloriesChange}
         />
         <Text style={styles.sliderLabel}>Max Calories</Text>
         <Slider
           style={styles.slider}
-          minimumValue={0} // Fixez la plage minimale de calories
-          maximumValue={5000} // Fixez la plage maximale de calories
+          minimumValue={minCalories + 100} // Limite pour empêcher le max d'être inférieur au min
+          maximumValue={5000}
           step={50}
           value={maxCalories}
-          onValueChange={(value) => setMaxCalories(value)}
+          onValueChange={handleMaxCaloriesChange}
         />
       </View>
 
@@ -127,7 +132,7 @@ const RecipesScreen = () => {
               style={styles.recipeContainer}
               onPress={() =>
                 navigation.navigate("RecipeScreen", {
-                  recipe, // Passer toutes les données de la recette à RecipeScreen
+                  recipe,
                 })
               }
             >
