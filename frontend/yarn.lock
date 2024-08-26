@@ -4414,6 +4414,11 @@ expo-keep-awake@~13.0.2:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-13.0.2.tgz#5ef31311a339671eec9921b934fdd90ab9652b0e"
   integrity sha512-kKiwkVg/bY0AJ5q1Pxnm/GvpeB6hbNJhcFsoOWDh2NlpibhCLaHL826KHUM+WsnJRbVRxJ+K9vbPRHEMvFpVyw==
 
+expo-linear-gradient@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-13.0.2.tgz#21bd7bc7c71ef4f7c089521daa16db729d2aec5f"
+  integrity sha512-EDcILUjRKu4P1rtWcwciN6CSyGtH7Bq4ll3oTRV7h3h8oSzSilH1g6z7kTAMlacPBKvMnkkWOGzW6KtgMKEiTg==
+
 expo-linking@~6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-6.3.1.tgz#05aef8a42bd310391d0b00644be40d80ece038d9"
@@ -4763,6 +4768,7 @@ fresh@0.5.2:
     "@expo/vector-icons" "^14.0.2"
     "@react-native-async-storage/async-storage" "1.23.1"
     "@react-native-community/datetimepicker" "8.0.1"
+    "@react-native-community/slider" "^4.5.2"
     "@react-native-picker/picker" "2.7.5"
     "@react-navigation/bottom-tabs" "^6.6.1"
     "@react-navigation/drawer" "^6.7.2"
@@ -4784,7 +4790,7 @@ fresh@0.5.2:
     expo-system-ui "~3.0.7"
     expo-web-browser "~13.0.3"
     formik "^2.4.6"
-    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-0e8f66dc-f709-433a-9c2b-6bd9b7271751-1724632454087/node_modules/frontend"
+    frontend "file:C:/Users/bilel/AppData/Local/Yarn/Cache/v6/npm-frontend-1.0.0-c8b781e9-025a-4ead-9c65-8b6a54b7d455-1724710468564/node_modules/frontend"
     lottie-react-native "6.7.0"
     moment "^2.30.1"
     react "18.2.0"

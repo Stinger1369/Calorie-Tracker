@@ -1,0 +1,36 @@
+# Environnements virtuels
+venv/
+.env
+
+# Configurations de l'éditeur
+.vscode/
+.idea/
+*.swp
+
+# Caches Python
+__pycache__/
+*.py[cod]
+
+# Packages d'installation
+*.egg-info/
+dist/
+build/
+
+# Journaux
+*.log
+
+# Fichiers de compilation
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers OpenAI API
+openai.log
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.yml
+Dockerfile

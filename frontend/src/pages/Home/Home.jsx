@@ -87,7 +87,7 @@ const Home = () => {
       <ImageBackground style={styles.backgroundImage}>
         <ScrollView
           style={styles.container}
-          contentContainerStyle={{ paddingBottom: 50, flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: "10%", flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >

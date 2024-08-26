@@ -4,12 +4,13 @@ const { width } = Dimensions.get("window");
 
 export default StyleSheet.create({
   menuContainer: {
-    position: "absolute",
+    //position: "absolute",
     bottom: 0, // Positionne le menu au bas de l'écran
     width: "100%",
     backgroundColor: "#0E1331", // Assure que le fond s'aligne avec l'arrière-plan global
-    paddingVertical: 10, // Ajoute un peu d'espacement vertical
+    //paddingVertical: 10, // Ajoute un peu d'espacement vertical
     zIndex: 10,
+    paddingTop: 10,
   },
   circularMenuScrollContainer: {
     flexDirection: "row",
