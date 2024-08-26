@@ -50,7 +50,7 @@ export default StyleSheet.create({
   },
   section: {
     width: "47%",
-    height: height * 0.13, // Hauteur ajustée pour tenir compte de la hauteur totale de l'écran
+    height: height * 0.13,
     paddingVertical: "5%",
     borderRadius: 10,
     alignItems: "center",
@@ -102,12 +102,16 @@ export default StyleSheet.create({
     width: "80%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 20,
+    paddingVertical: 50,
+    paddingHorizontal: 20,
     alignItems: "center",
+    position: "relative",
   },
   closeButton: {
-    alignSelf: "flex-end",
-    marginBottom: 10,
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1,
   },
   modalText: {
     fontSize: 18,

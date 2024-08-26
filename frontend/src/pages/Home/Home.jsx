@@ -8,6 +8,8 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,9 +20,6 @@ import moment from "moment";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
-// Récupération des dimensions de l'écran
-const { width, height } = Dimensions.get("window");
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -81,158 +80,174 @@ const Home = () => {
   const currentDate = moment().format("dddd, MMMM Do YYYY");
 
   return (
-    <ImageBackground style={styles.backgroundImage}>
-      <ScrollView style={styles.container}>
-        {/* Header Section */}
-        <View style={styles.header}>
-          <View style={styles.profileInfoContainer}>
-            {renderProfileIcon()}
-            <View style={styles.greetingContainer}>
-              <Text style={styles.welcomeText}>
-                Hello {userInfo?.firstName}!
-              </Text>
-              <Text style={styles.dateText}>{currentDate}</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.iconContainer} onPress={openModal}>
-            <MaterialCommunityIcons name="logout" size={30} color="#ffffff" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Main Sections */}
-        <View style={styles.sectionsContainer}>
-          <TouchableOpacity
-            style={[styles.section, styles.sectionChat]}
-            onPress={() => {}}
-          >
-            <MaterialCommunityIcons name="chat" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Chat</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionDating]}
-            onPress={() => {}}
-          >
-            <FontAwesome name="heart" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Rencontres</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionNutrition]}
-            onPress={() => {}}
-          >
-            <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Nutrition</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionExercise]}
-            onPress={() => {}}
-          >
-            <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Exercice</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionHoroscope]}
-            onPress={handleHoroscopePress}
-          >
-            <FontAwesome5 name="star" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Horoscope</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionGroupActivities]}
-            onPress={() => {}}
-          >
-            <MaterialCommunityIcons
-              name="account-group"
-              size={40}
-              color="#ffffff"
-            />
-            <Text style={styles.sectionText}>Activités de groupe</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionCaloriesNeeded]}
-            onPress={() => {}}
-          >
-            <FontAwesome5 name="burn" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Calories Needed</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionCalorieCalculator]}
-            onPress={() => {}}
-          >
-            <MaterialCommunityIcons
-              name="calculator"
-              size={40}
-              color="#ffffff"
-            />
-            <Text style={styles.sectionText}>Calculateur de Calories</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionMembers]}
-            onPress={() => {}}
-          >
-            <FontAwesome5 name="users" size={40} color="#ffffff" />
-            <Text style={styles.sectionText}>Membres</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.section, styles.sectionRecipes]}
-            onPress={handleRecipesPress}
-          >
-            <MaterialCommunityIcons
-              name="food-apple"
-              size={40}
-              color="#ffffff"
-            />
-            <Text style={styles.sectionText}>Recettes</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Logout Modal */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ImageBackground style={styles.backgroundImage}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 50, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <MaterialCommunityIcons
-                  name="logout"
-                  size={30}
-                  color="#ffffff"
-                />
-              </TouchableOpacity>
-              <Text style={styles.modalText}>
-                Souhaitez-vous sauvegarder vos données pour une connexion rapide
-                la prochaine fois?
-              </Text>
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => handleLogout(true)}
-                >
-                  <Text style={styles.modalButtonText}>Oui</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => handleLogout(false)}
-                >
-                  <Text style={styles.modalButtonText}>Non</Text>
-                </TouchableOpacity>
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.profileInfoContainer}>
+              {renderProfileIcon()}
+              <View style={styles.greetingContainer}>
+                <Text style={styles.welcomeText}>
+                  Hello {userInfo?.firstName}!
+                </Text>
+                <Text style={styles.dateText}>{currentDate}</Text>
               </View>
             </View>
+            <TouchableOpacity style={styles.iconContainer} onPress={openModal}>
+              <MaterialCommunityIcons name="logout" size={30} color="#ffffff" />
+            </TouchableOpacity>
           </View>
-        </Modal>
-      </ScrollView>
-    </ImageBackground>
+
+          {/* Main Sections */}
+          <View style={styles.sectionsContainer}>
+            <TouchableOpacity
+              style={[styles.section, styles.sectionChat]}
+              onPress={() => {}}
+            >
+              <MaterialCommunityIcons name="chat" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Chat</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionDating]}
+              onPress={() => {}}
+            >
+              <FontAwesome name="heart" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Rencontres</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionNutrition]}
+              onPress={() => {}}
+            >
+              <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Nutrition</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionExercise]}
+              onPress={() => {}}
+            >
+              <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Exercice</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionHoroscope]}
+              onPress={handleHoroscopePress}
+            >
+              <FontAwesome5 name="star" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Horoscope</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionGroupActivities]}
+              onPress={() => {}}
+            >
+              <MaterialCommunityIcons
+                name="account-group"
+                size={40}
+                color="#ffffff"
+              />
+              <Text style={styles.sectionText}>Activités de groupe</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionCaloriesNeeded]}
+              onPress={() => {}}
+            >
+              <FontAwesome5 name="burn" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Calories Needed</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionCalorieCalculator]}
+              onPress={() => {}}
+            >
+              <MaterialCommunityIcons
+                name="calculator"
+                size={40}
+                color="#ffffff"
+              />
+              <Text style={styles.sectionText}>Calculateur de Calories</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionMembers]}
+              onPress={() => {}}
+            >
+              <FontAwesome5 name="users" size={40} color="#ffffff" />
+              <Text style={styles.sectionText}>Membres</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.section, styles.sectionRecipes]}
+              onPress={handleRecipesPress}
+            >
+              <MaterialCommunityIcons
+                name="food-apple"
+                size={40}
+                color="#ffffff"
+              />
+              <Text style={styles.sectionText}>Recettes</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Logout Modal */}
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={closeModal}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                {/* Bouton de fermeture en haut à droite */}
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={closeModal}
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={30}
+                    color="#e74c3c"
+                  />
+                </TouchableOpacity>
+
+                <Text style={styles.modalText}>
+                  Souhaitez-vous sauvegarder vos données pour une connexion
+                  rapide la prochaine fois?
+                </Text>
+
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => handleLogout(true)}
+                  >
+                    <Text style={styles.modalButtonText}>Oui</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => handleLogout(false)}
+                  >
+                    <Text style={styles.modalButtonText}>Non</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </ScrollView>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
