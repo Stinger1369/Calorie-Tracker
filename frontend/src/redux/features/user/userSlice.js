@@ -5,6 +5,11 @@ import hostname from "../../../hostname";
 // Fonction utilitaire pour obtenir le token JWT depuis le store
 const getAuthHeader = (getState) => {
   const token = getState().auth.token;
+  if (!token) {
+    console.error("No token found in state");
+  } else {
+    console.log("Token found:", token);
+  }
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -26,16 +31,20 @@ export const fetchUserInfo = createAsyncThunk(
   "user/fetchUserInfo",
   async (userId, { rejectWithValue, getState }) => {
     try {
+      console.log(`Fetching user info for userId: ${userId}`);
       const response = await axios.get(
         `${hostname}/users/${userId}`,
         getAuthHeader(getState)
       );
+      console.log("User info fetched successfully:", response.data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
+        console.error("Error fetching user info:", error.response.data);
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue("An error occurred");
+      console.error("Unknown error fetching user info:", error);
+      return rejectWithValue("An error occurred while fetching user info");
     }
   }
 );
@@ -89,21 +98,24 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Fetch User Info
-      .addCase(fetchUserInfo.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserInfo.fulfilled, (state, action) => {
-        state.loading = false;
-        state.userInfo = action.payload;
-        state.age = action.payload.age;
-        state.bmi = action.payload.bmi;
-        state.recommendedCalories = action.payload.recommendedCalories;
-      })
-      .addCase(fetchUserInfo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Failed to fetch user info";
-      })
+       .addCase(fetchUserInfo.pending, (state) => {
+      console.log("Fetching user info... (pending)");
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchUserInfo.fulfilled, (state, action) => {
+      console.log("User info fetched successfully (fulfilled):", action.payload);
+      state.loading = false;
+      state.userInfo = action.payload;
+      state.age = action.payload.age;
+      state.bmi = action.payload.bmi;
+      state.recommendedCalories = action.payload.recommendedCalories;
+    })
+    .addCase(fetchUserInfo.rejected, (state, action) => {
+      console.error("Failed to fetch user info (rejected):", action.payload);
+      state.loading = false;
+      state.error = action.payload || "Failed to fetch user info";
+    })
       // Update User Info
       .addCase(updateUserInfo.pending, (state) => {
         state.loading = true;

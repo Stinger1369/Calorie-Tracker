@@ -100,5 +100,4 @@ def generate_horoscope(sign, first_name, last_name, bmi):
     )
 
     # Retourner l'horoscope généré
-    return response['choices'][0]['message']['content'].strip()
-
+    return response.choices[0].message['content'].strip()

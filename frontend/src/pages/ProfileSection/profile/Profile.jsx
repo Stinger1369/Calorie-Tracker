@@ -15,42 +15,51 @@ const Profile = ({ navigation }) => {
   const { userInfo, loading, error } = useSelector((state) => state.user);
   const { user, token } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        let userId = user?._id;
-        let storedToken = token;
+useEffect(() => {
+  const loadUserData = async () => {
+    try {
+      let userId = user?._id;
+      let storedToken = token;
 
-        if (!userId || !storedToken) {
-          const storedUser = await AsyncStorage.getItem("user");
-          storedToken = await AsyncStorage.getItem("token");
+      if (!userId || !storedToken) {
+        const storedUser = await AsyncStorage.getItem("user");
+        storedToken = await AsyncStorage.getItem("token");
 
-          if (storedUser && storedToken) {
-            const parsedUser = JSON.parse(storedUser);
-            userId = parsedUser?._id;
+        if (storedUser && storedToken) {
+          const parsedUser = JSON.parse(storedUser);
+          userId = parsedUser?._id;
 
-            dispatch(restoreToken({ user: parsedUser, token: storedToken }));
-          }
+          dispatch(restoreToken({ user: parsedUser, token: storedToken }));
         }
-
-        if (userId) {
-          dispatch(fetchUserInfo(userId));
-        }
-      } catch (error) {
-        console.error("Failed to load user data:", error);
       }
-    };
 
-    loadUserData();
-  }, [dispatch, user, token]);
+      if (userId && storedToken) {
+        dispatch(fetchUserInfo(userId));
+      }
+    } catch (error) {
+      console.error("Failed to load user data:", error);
+    }
+  };
+
+  loadUserData();
+}, [dispatch, user, token]);
+
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error loading user data:", error);
+    }
+  }, [error]);
 
   const handleUpdateUser = () => {
+    console.log("Navigating to ProfileEdit screen");
     navigation.navigate("ProfileEdit");
   };
 
   const handleIMCPress = () => {
     if (userInfo && userInfo.bmi) {
       const imc = userInfo.bmi;
+      console.log("User BMI:", imc);
       if (imc < 18.5) {
         navigation.navigate("Insuffisant");
       } else if (imc >= 18.5 && imc < 24.9) {
@@ -60,27 +69,33 @@ const Profile = ({ navigation }) => {
       } else {
         navigation.navigate("Obesite");
       }
+    } else {
+      console.warn("User BMI data is not available.");
     }
   };
 
   const handleExerciceApiPress = () => {
     if (userInfo && userInfo.bmi) {
       const imc = userInfo.bmi;
+      console.log("User BMI for exercise:", imc);
       if (imc < 18.5) {
-        navigation.navigate("InsuffisantExercice"); // Navigate to exercises for underweight
+        navigation.navigate("InsuffisantExercice");
       } else if (imc >= 18.5 && imc < 24.9) {
-        navigation.navigate("NormalExercice"); // Navigate to exercises for normal weight
+        navigation.navigate("NormalExercice");
       } else if (imc >= 25 && imc < 29.9) {
-        navigation.navigate("SurpoidsExercice"); // Navigate to exercises for overweight
+        navigation.navigate("SurpoidsExercice");
       } else {
-        navigation.navigate("ObesiteExercice"); // Navigate to exercises for obesity
+        navigation.navigate("ObesiteExercice");
       }
+    } else {
+      console.warn("User BMI data is not available for exercise.");
     }
   };
 
   const currentDate = moment().format("dddd, DD MMMM");
 
   if (loading) {
+    console.log("Loading user data...");
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#ffffff" />
@@ -89,6 +104,7 @@ const Profile = ({ navigation }) => {
   }
 
   if (error) {
+    console.error("Error state encountered:", error);
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
@@ -97,12 +113,15 @@ const Profile = ({ navigation }) => {
   }
 
   if (!userInfo) {
+    console.warn("No user information available.");
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>No user information available.</Text>
       </View>
     );
   }
+
+  console.log("User information loaded successfully:", userInfo);
 
   return (
     <View style={styles.container}>
@@ -114,7 +133,6 @@ const Profile = ({ navigation }) => {
       <InfoCards userInfo={userInfo} />
       <ActionCard userInfo={userInfo} onIMCPress={handleIMCPress} />
 
-      {/* Nouveau bouton pour afficher les exercices selon l'IMC */}
       <TouchableOpacity style={styles.button} onPress={handleExerciceApiPress}>
         <Text style={styles.buttonText}>Voir les exercices recommandés</Text>
       </TouchableOpacity>
