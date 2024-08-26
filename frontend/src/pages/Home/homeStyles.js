@@ -10,8 +10,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0E1331",
-    paddingHorizontal: 20,
-    paddingTop: "15%",
+    paddingHorizontal: "5%",
+    paddingTop: "10%",
   },
   header: {
     flexDirection: "row",
@@ -33,12 +33,12 @@ export default StyleSheet.create({
     padding: 10,
   },
   welcomeText: {
-    fontSize: width * 0.06, // Responsive text size
+    fontSize: width * 0.06,
     fontWeight: "600",
     color: "#ffffff",
   },
   dateText: {
-    fontSize: width * 0.045, // Responsive text size
+    fontSize: width * 0.045,
     fontWeight: "400",
     color: "#ffffff",
   },
@@ -49,16 +49,18 @@ export default StyleSheet.create({
     marginTop: 20,
   },
   section: {
-    width: width * 0.4, // Slightly reduced width for each section
-    padding: width * 0.04, // Slightly reduced padding
+    width: "47%",
+    height: height * 0.13, // Hauteur ajustée pour tenir compte de la hauteur totale de l'écran
+    paddingVertical: "5%",
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: "5%",
   },
   sectionText: {
     marginTop: 10,
-    fontSize: width * 0.038, // Slightly reduced font size for text
+    fontSize: width * 0.038,
     color: "#ffffff",
+    textAlign: "center",
   },
   sectionChat: {
     backgroundColor: "#3498db",
