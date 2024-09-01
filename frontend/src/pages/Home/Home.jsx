@@ -58,7 +58,7 @@ const Home = () => {
 
   const handleRecipesPress = () => navigation.navigate("RecetteScreen");
 const handleNutritionPress = () => {
-  navigation.navigate("ScanCode"); // Navigate to the ScanCode screen
+  navigation.navigate("ScanTabs"); // Navigate to the ScanCode screen
 };
   const renderProfileIcon = () => {
     if (userInfo?.imageUrl) {

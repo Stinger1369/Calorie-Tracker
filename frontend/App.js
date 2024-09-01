@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { ActivityIndicator, View } from "react-native";
 
 import { loadFonts } from "./src/utils/loadFonts";
@@ -33,13 +34,25 @@ import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/Obes
 import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
-import ScanCode from "./src/pages/SacnCode/ScanCode";
+import ScanCode from "./src/pages/ScanCode/ScanCode";
+import ScanHistory from "./src/pages/ScanCode/ScanHistory";
+import ProductDetails from "./src/pages/ScanCode/ProductDetails";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
 enableScreens();
 
 const Stack = createNativeStackNavigator();
+const Tab = createMaterialTopTabNavigator();
+
+const ScanTabNavigator = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Scanner" component={ScanCode} />
+      <Tab.Screen name="Historique" component={ScanHistory} />
+    </Tab.Navigator>
+  );
+};
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -132,7 +145,12 @@ const App = () => {
             component={HoroscopeDetailsScreen}
           />
           <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
-          <Stack.Screen name="ScanCode" component={ScanCode} />
+          <Stack.Screen
+            name="ScanTabs" // Utiliser ScanTabs pour le top tab
+            component={ScanTabNavigator}
+            options={{ title: "Scanner & Historique" }}
+          />
+          <Stack.Screen name="ProductDetails" component={ProductDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
