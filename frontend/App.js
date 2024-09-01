@@ -33,6 +33,7 @@ import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/Obes
 import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
+import ScanCode from "./src/pages/SacnCode/ScanCode";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
@@ -76,7 +77,7 @@ const App = () => {
           <Stack.Screen
             name="Register"
             component={Register}
-            options={{ headerShown: false }}
+            options={{ headerShown: true }}
           />
           <Stack.Screen
             name="VerifyEmail"
@@ -91,7 +92,7 @@ const App = () => {
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ headerShown: false }}
+            options={{ headerShown: true }}
           />
           <Stack.Screen
             name="Logout"
@@ -131,6 +132,7 @@ const App = () => {
             component={HoroscopeDetailsScreen}
           />
           <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
+          <Stack.Screen name="ScanCode" component={ScanCode} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -53,3 +53,6 @@ Join our community of developers creating universal apps.
 C:\Users\bilel\.android\avd\Pixel8.avd\config.ini
 hw.gpu.mode=swiftshader_indirect
 hw.gpu.enabled=yes
+
+use version yarn
+yarn policies set-version 1.22.22

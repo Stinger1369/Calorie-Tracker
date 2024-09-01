@@ -15,35 +15,34 @@ const Profile = ({ navigation }) => {
   const { userInfo, loading, error } = useSelector((state) => state.user);
   const { user, token } = useSelector((state) => state.auth);
 
-useEffect(() => {
-  const loadUserData = async () => {
-    try {
-      let userId = user?._id;
-      let storedToken = token;
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        let userId = user?._id;
+        let storedToken = token;
 
-      if (!userId || !storedToken) {
-        const storedUser = await AsyncStorage.getItem("user");
-        storedToken = await AsyncStorage.getItem("token");
+        if (!userId || !storedToken) {
+          const storedUser = await AsyncStorage.getItem("user");
+          storedToken = await AsyncStorage.getItem("token");
 
-        if (storedUser && storedToken) {
-          const parsedUser = JSON.parse(storedUser);
-          userId = parsedUser?._id;
+          if (storedUser && storedToken) {
+            const parsedUser = JSON.parse(storedUser);
+            userId = parsedUser?._id;
 
-          dispatch(restoreToken({ user: parsedUser, token: storedToken }));
+            dispatch(restoreToken({ user: parsedUser, token: storedToken }));
+          }
         }
+
+        if (userId && storedToken) {
+          dispatch(fetchUserInfo(userId));
+        }
+      } catch (error) {
+        console.error("Failed to load user data:", error);
       }
+    };
 
-      if (userId && storedToken) {
-        dispatch(fetchUserInfo(userId));
-      }
-    } catch (error) {
-      console.error("Failed to load user data:", error);
-    }
-  };
-
-  loadUserData();
-}, [dispatch, user, token]);
-
+    loadUserData();
+  }, [dispatch, user, token]);
 
   useEffect(() => {
     if (error) {
@@ -52,14 +51,12 @@ useEffect(() => {
   }, [error]);
 
   const handleUpdateUser = () => {
-    console.log("Navigating to ProfileEdit screen");
     navigation.navigate("ProfileEdit");
   };
 
   const handleIMCPress = () => {
     if (userInfo && userInfo.bmi) {
       const imc = userInfo.bmi;
-      console.log("User BMI:", imc);
       if (imc < 18.5) {
         navigation.navigate("Insuffisant");
       } else if (imc >= 18.5 && imc < 24.9) {
@@ -77,7 +74,6 @@ useEffect(() => {
   const handleExerciceApiPress = () => {
     if (userInfo && userInfo.bmi) {
       const imc = userInfo.bmi;
-      console.log("User BMI for exercise:", imc);
       if (imc < 18.5) {
         navigation.navigate("InsuffisantExercice");
       } else if (imc >= 18.5 && imc < 24.9) {
@@ -95,7 +91,6 @@ useEffect(() => {
   const currentDate = moment().format("dddd, DD MMMM");
 
   if (loading) {
-    console.log("Loading user data...");
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#ffffff" />
@@ -104,7 +99,6 @@ useEffect(() => {
   }
 
   if (error) {
-    console.error("Error state encountered:", error);
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
@@ -113,15 +107,12 @@ useEffect(() => {
   }
 
   if (!userInfo) {
-    console.warn("No user information available.");
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>No user information available.</Text>
       </View>
     );
   }
-
-  console.log("User information loaded successfully:", userInfo);
 
   return (
     <View style={styles.container}>

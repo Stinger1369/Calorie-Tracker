@@ -50,11 +50,16 @@ const Home = () => {
         zodiacSign: userInfo.zodiacSign,
         dateOfBirth: userInfo.dateOfBirth,
       });
+    } else {
+      console.warn("Horoscope not available for this user.");
     }
   };
+  
 
   const handleRecipesPress = () => navigation.navigate("RecetteScreen");
-
+const handleNutritionPress = () => {
+  navigation.navigate("ScanCode"); // Navigate to the ScanCode screen
+};
   const renderProfileIcon = () => {
     if (userInfo?.imageUrl) {
       return (
@@ -125,13 +130,16 @@ const Home = () => {
               <Text style={styles.sectionText}>Rencontres</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionNutrition]}
-              onPress={() => {}}
-            >
-              <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Nutrition</Text>
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.section, styles.sectionNutrition]}
+                onPress={handleNutritionPress} // Call the function here
+              >
+                <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
+                <Text style={styles.sectionText}>Nutrition</Text>
+              </TouchableOpacity>
+              {/* Other sections */}
+
 
             <TouchableOpacity
               style={[styles.section, styles.sectionExercise]}

@@ -1,7 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
-  container: {
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  formContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

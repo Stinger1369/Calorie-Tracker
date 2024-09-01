@@ -1,5 +1,5 @@
 // Configuration explicite des variables, sans dépendre d'un fichier .env
-const LOCALHOST_IP = "http://192.168.1.97"; // Replace with your machine's actual IP address
+const LOCALHOST_IP = "http://192.168.1.186"; // Replace with your machine's actual IP address
 const DEFAULT_PORT = "3000"; // Port par défaut
 
 let settings = {

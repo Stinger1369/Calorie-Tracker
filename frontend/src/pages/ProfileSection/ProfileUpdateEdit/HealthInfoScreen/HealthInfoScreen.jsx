@@ -12,7 +12,7 @@ import styles from "./HealthInfoScreenStyle";
 const HealthInfoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.user);
-  const { user } = useSelector((state) => state.auth);
+  const { user,token  } = useSelector((state) => state.auth);
 
   const [weight, setWeight] = useState(null); // Valeur par défaut du poids
   const [height, setHeight] = useState(null); // Valeur par défaut de la taille
@@ -23,21 +23,39 @@ const HealthInfoScreen = ({ navigation }) => {
 
   useEffect(() => {
     const loadUserData = async () => {
-      let userId = user?._id;
-
-      if (!userId) {
-        const storedUser = await AsyncStorage.getItem("user");
-        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-        userId = parsedUser?._id;
-      }
-
-      if (userId) {
-        dispatch(fetchUserInfo(userId));
+      try {
+        let userId = user?._id;
+        let storedToken = token;
+  
+        console.log("User ID:", userId);
+        console.log("Stored Token:", storedToken);
+  
+        if (!userId || !storedToken) {
+          const storedUser = await AsyncStorage.getItem("user");
+          storedToken = await AsyncStorage.getItem("token");
+  
+          console.log("Stored User:", storedUser);
+          console.log("Stored Token:", storedToken);
+  
+          if (storedUser && storedToken) {
+            const parsedUser = JSON.parse(storedUser);
+            userId = parsedUser?._id;
+  
+            dispatch(restoreToken({ user: parsedUser, token: storedToken }));
+          }
+        }
+  
+        if (userId && storedToken) {
+          await dispatch(fetchUserInfo(userId));
+        }
+      } catch (error) {
+        console.error("Failed to load user data:", error);
       }
     };
-
+  
     loadUserData();
-  }, [dispatch, user]);
+  }, [dispatch, user, token]);
+  
 
   useEffect(() => {
     if (userInfo) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TextInput, TouchableOpacity} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {registerUser} from '../../../redux/features/auth/authSlice';
 import {useNavigation} from '@react-navigation/native';
@@ -28,11 +28,8 @@ const Register = () => {
 
   const handleRegister = async values => {
     try {
-      // Envoyer les nouvelles données pour l'inscription
       const response = await dispatch(registerUser(values)).unwrap();
       console.log('Response from server after registration:', response);
-
-      // Naviguer vers l'écran de vérification de l'email
       navigation.navigate('VerifyEmail');
     } catch (err) {
       console.log("Erreur lors de l'inscription :", err);
@@ -40,77 +37,87 @@ const Register = () => {
   };
 
   return (
-    <Formik
-      initialValues={{
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={handleRegister}>
-      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
-        <View style={styles.container}>
-          <Text style={styles.title}>Inscription</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Prénom"
-            onChangeText={handleChange('firstName')}
-            onBlur={handleBlur('firstName')}
-            value={values.firstName}
-          />
-          {touched.firstName && errors.firstName && (
-            <Text style={styles.errorText}>{errors.firstName}</Text>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Nom"
-            onChangeText={handleChange('lastName')}
-            onBlur={handleBlur('lastName')}
-            value={values.lastName}
-          />
-          {touched.lastName && errors.lastName && (
-            <Text style={styles.errorText}>{errors.lastName}</Text>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            onChangeText={handleChange('email')}
-            onBlur={handleBlur('email')}
-            value={values.email}
-          />
-          {touched.email && errors.email && (
-            <Text style={styles.errorText}>{errors.email}</Text>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Mot de passe"
-            secureTextEntry
-            onChangeText={handleChange('password')}
-            onBlur={handleBlur('password')}
-            value={values.password}
-          />
-          {touched.password && errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmer le mot de passe"
-            secureTextEntry
-            onChangeText={handleChange('confirmPassword')}
-            onBlur={handleBlur('confirmPassword')}
-            value={values.confirmPassword}
-          />
-          {touched.confirmPassword && errors.confirmPassword && (
-            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-          )}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>S'inscrire</Text>
-          </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.formContainer}>
+          <Formik
+            initialValues={{
+              firstName: '',
+              lastName: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+            }}
+            validationSchema={validationSchema}
+            onSubmit={handleRegister}>
+            {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+              <>
+                <Text style={styles.title}>Inscription</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Prénom"
+                  onChangeText={handleChange('firstName')}
+                  onBlur={handleBlur('firstName')}
+                  value={values.firstName}
+                />
+                {touched.firstName && errors.firstName && (
+                  <Text style={styles.errorText}>{errors.firstName}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nom"
+                  onChangeText={handleChange('lastName')}
+                  onBlur={handleBlur('lastName')}
+                  value={values.lastName}
+                />
+                {touched.lastName && errors.lastName && (
+                  <Text style={styles.errorText}>{errors.lastName}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                />
+                {touched.email && errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mot de passe"
+                  secureTextEntry
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                />
+                {touched.password && errors.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirmer le mot de passe"
+                  secureTextEntry
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
+                />
+                {touched.confirmPassword && errors.confirmPassword && (
+                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                )}
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                  <Text style={styles.buttonText}>S'inscrire</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </Formik>
         </View>
-      )}
-    </Formik>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
