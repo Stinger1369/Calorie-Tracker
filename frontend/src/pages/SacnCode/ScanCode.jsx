@@ -2,23 +2,23 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
-  TextInput,
-  Button,
-  Image,
   TouchableOpacity,
 } from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
 import { useSelector } from "react-redux";
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Assurez-vous d'avoir installé ce package
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from "./ScanCodeStyles";
 
 const ScanCode = () => {
   const [code, setCode] = useState("");
   const [response, setResponse] = useState(null);
   const ws = useRef(null);
-  const [isWsConnected, setIsWsConnected] = useState(false);
-  const [userId, setUserId] = useState(null); // Stocker l'ID utilisateur
+  const [hasPermission, setHasPermission] = useState(null);
+  const [isScanning, setIsScanning] = useState(false);
 
-  // Récupérer l'ID utilisateur depuis Redux
+  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [userId, setUserId] = useState(null); 
+
   const reduxUserId = useSelector((state) => state.auth?.user?._id);
 
   useEffect(() => {
@@ -68,13 +68,13 @@ const ScanCode = () => {
 
         ws.current.onerror = (error) => {
           console.error("WebSocket error:", error);
-          setTimeout(connectWebSocket, 5000); // Tentative de reconnexion après 5 secondes
+          setTimeout(connectWebSocket, 5000); 
         };
 
         ws.current.onclose = (event) => {
           console.log("WebSocket connection closed", event.reason);
           setIsWsConnected(false);
-          setTimeout(connectWebSocket, 5000); // Tentative de reconnexion après 5 secondes
+          setTimeout(connectWebSocket, 5000);
         };
       } else {
         console.log("WebSocket is already connected or connecting");
@@ -82,6 +82,19 @@ const ScanCode = () => {
     };
 
     connectWebSocket();
+
+    const requestPermissions = async () => {
+      try {
+        console.log("Requesting camera permission...");
+        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        setHasPermission(status === "granted");
+        console.log("Camera permission status:", status);
+      } catch (error) {
+        console.error("Error requesting camera permission:", error);
+      }
+    };
+
+    requestPermissions();
 
     return () => {
       console.log("Cleaning up: Closing WebSocket connection");
@@ -92,15 +105,15 @@ const ScanCode = () => {
     };
   }, [userId]);
 
-  const handleSendCode = () => {
-    console.log("Attempting to send code:", code);
+  const handleSendCode = (scannedCode) => {
+    console.log("Attempting to send code:", scannedCode);
     if (
       userId &&
       isWsConnected &&
       ws.current &&
       ws.current.readyState === WebSocket.OPEN
     ) {
-      const message = JSON.stringify({ code, user_id: userId, lang: "fr" });
+      const message = JSON.stringify({ code: scannedCode, user_id: userId, lang: "fr" });
       console.log("Sending message:", message);
       ws.current.send(message);
     } else {
@@ -108,56 +121,54 @@ const ScanCode = () => {
     }
   };
 
+  const handleBarCodeScanned = ({ type, data }) => {
+    setIsScanning(false);
+    console.log(`Barcode scanned: ${data}, type: ${type}`);
+    setCode(data);
+    handleSendCode(data);
+  };
+
+  if (hasPermission === null) {
+    console.log("Waiting for camera permission...");
+    return <Text>Requesting camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    console.log("Camera permission denied");
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Enter a Product Code</Text>
+      <Text style={styles.title}>Scan a Product Code</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter barcode"
-        value={code}
-        onChangeText={setCode}
-        keyboardType="numeric"
-      />
+      {isScanning && (
+        <BarCodeScanner
+          onBarCodeScanned={handleBarCodeScanned}
+          style={styles.camera}
+        />
+      )}
 
-      <Button title="Send Code" onPress={handleSendCode} />
+      {!isScanning && (
+        <TouchableOpacity onPress={() => setIsScanning(true)}>
+          <Text>Tap to Scan Again</Text>
+        </TouchableOpacity>
+      )}
 
       {response && (
         <View style={styles.responseContainer}>
           <Text style={styles.responseText}>Product Information:</Text>
-          {response.product_name ? (
-            <Text>Product Name: {response.product_name}</Text>
-          ) : (
-            <Text>Product Name: N/A</Text>
-          )}
-          {response.brands && <Text>Brands: {response.brands}</Text>}
-          {response.categories && (
-            <Text>Categories: {response.categories}</Text>
-          )}
-          {response.nutriscore && (
-            <Text>Nutriscore: {response.nutriscore}</Text>
-          )}
-          {response.quantity && <Text>Quantity: {response.quantity}</Text>}
+          <Text>Product Name: {response.product_name || "N/A"}</Text>
+          <Text>Brands: {response.brands || "N/A"}</Text>
+          <Text>Categories: {response.categories || "N/A"}</Text>
+          <Text>Nutriscore: {response.nutriscore || "N/A"}</Text>
+          <Text>Quantity: {response.quantity || "N/A"}</Text>
           {response.nutriments && (
             <>
-              {response.nutriments.energy_kcal && (
-                <Text> - Energy (kcal): {response.nutriments.energy_kcal}</Text>
-              )}
-              {response.nutriments.proteins && (
-                <Text> - Proteins: {response.nutriments.proteins}</Text>
-              )}
-              {response.nutriments.sugars && (
-                <Text> - Sugars: {response.nutriments.sugars}</Text>
-              )}
-              {response.nutriments.saturated_fat && (
-                <Text>
-                  {" "}
-                  - Saturated Fat: {response.nutriments.saturated_fat}
-                </Text>
-              )}
-              {response.nutriments.salt && (
-                <Text> - Salt: {response.nutriments.salt}</Text>
-              )}
+              <Text> - Energy (kcal): {response.nutriments.energy_kcal || "N/A"}</Text>
+              <Text> - Proteins: {response.nutriments.proteins || "N/A"}</Text>
+              <Text> - Sugars: {response.nutriments.sugars || "N/A"}</Text>
+              <Text> - Saturated Fat: {response.nutriments.saturated_fat || "N/A"}</Text>
+              <Text> - Salt: {response.nutriments.salt || "N/A"}</Text>
             </>
           )}
         </View>
