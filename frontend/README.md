@@ -56,3 +56,11 @@ hw.gpu.enabled=yes
 
 use version yarn
 yarn policies set-version 1.22.22
+
+
+
+multisession
+tmux new -s imageserver
+cd image-server
+go run main.go
+Ctrl + b, puis d

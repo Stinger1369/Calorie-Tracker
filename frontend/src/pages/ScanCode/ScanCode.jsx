@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { useSelector } from "react-redux";
 import styles from "./ScanCodeStyles";
@@ -72,7 +72,7 @@ const ScanCode = () => {
       ws.current &&
       ws.current.readyState === WebSocket.OPEN
     ) {
-      const message = JSON.stringify({ code: scannedCode, user_id: userId, lang: "fr" });
+      const message = JSON.stringify({ code: scannedCode, user_id: userId });
       ws.current.send(message);
     } else {
       console.error("WebSocket is not connected or User ID is missing.");
@@ -105,28 +105,64 @@ const ScanCode = () => {
 
       {!isScanning && (
         <TouchableOpacity onPress={() => setIsScanning(true)}>
-          <Text>Tap to Scan Again</Text>
+          <Text style={styles.scanButtonText}>Tap to Scan Again</Text>
         </TouchableOpacity>
       )}
 
       {response && (
-        <View style={styles.responseContainer}>
-          <Text style={styles.responseText}>Product Information:</Text>
-          <Text>Product Name: {response.product_name || "N/A"}</Text>
-          <Text>Brands: {response.brands || "N/A"}</Text>
-          <Text>Categories: {response.categories || "N/A"}</Text>
-          <Text>Nutriscore: {response.nutriscore || "N/A"}</Text>
-          <Text>Quantity: {response.quantity || "N/A"}</Text>
-          {response.nutriments && (
-            <>
-              <Text> - Energy (kcal): {response.nutriments.energy_kcal || "N/A"}</Text>
-              <Text> - Proteins: {response.nutriments.proteins || "N/A"}</Text>
-              <Text> - Sugars: {response.nutriments.sugars || "N/A"}</Text>
-              <Text> - Saturated Fat: {response.nutriments.saturated_fat || "N/A"}</Text>
-              <Text> - Salt: {response.nutriments.salt || "N/A"}</Text>
-            </>
-          )}
-        </View>
+        <ScrollView style={styles.scrollViewContainer}>
+          <View style={styles.responseContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageScrollContainer}>
+              {response.image_urls && response.image_urls.image_url ? (
+                <>
+                  <Image
+                    source={{ uri: response.image_urls.image_url }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                  {response.image_urls.image_ingredients_url && (
+                    <Image
+                      source={{ uri: response.image_urls.image_ingredients_url }}
+                      style={styles.image}
+                      resizeMode="contain"
+                    />
+                  )}
+                  {response.image_urls.image_nutrition_url && (
+                    <Image
+                      source={{ uri: response.image_urls.image_nutrition_url }}
+                      style={styles.image}
+                      resizeMode="contain"
+                    />
+                  )}
+                </>
+              ) : (
+                <Text style={styles.noImageIcon}>📦</Text>
+              )}
+            </ScrollView>
+
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{response.product_name || "N/A"}</Text>
+              <Text style={styles.productDetail}>Brands: {response.brands || "N/A"}</Text>
+              <Text style={styles.productDetail}>Categories: {response.categories || "N/A"}</Text>
+              <Text style={styles.productDetail}>Nutriscore: {response.nutriscore || "N/A"}</Text>
+              <Text style={styles.productDetail}>Quantity: {response.quantity || "N/A"}</Text>
+
+              {/* Affichage de l'indicateur de santé */}
+              <Text style={[styles.productDetail, { color: response.is_healthy ? 'green' : 'red' }]}>
+                Health Status: {response.is_healthy ? 'Healthy' : 'Unhealthy'}
+              </Text>
+
+              {/* Afficher seulement les nutriments qui ne sont pas nuls */}
+              {response.nutriments && Object.keys(response.nutriments).map((key) => {
+                const value = response.nutriments[key];
+                if (value !== null) {
+                  return <Text style={styles.nutrient} key={key}>{key.replace('_', ' ').replace('-', ' ')}: {value}</Text>;
+                }
+                return null;
+              })}
+            </View>
+          </View>
+        </ScrollView>
       )}
     </View>
   );

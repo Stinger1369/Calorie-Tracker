@@ -1,25 +1,29 @@
 package db
 
 import (
-	"context"
-	"fmt"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
+    "context"
+    "fmt"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "log"
 )
 
-// ConnectDB se connecte à MongoDB et retourne un client MongoDB
 func ConnectDB() *mongo.Client {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017").SetMaxPoolSize(100)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
+    // Remplacez "mongodb://localhost:27017/openfoodfacts" par l'URI correct si nécessaire
+    clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/openfoodfacts").SetMaxPoolSize(100)
 
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Connected to MongoDB!")
-	return client
+    // Connexion à MongoDB
+    client, err := mongo.Connect(context.TODO(), clientOptions)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Vérification de la connexion
+    err = client.Ping(context.TODO(), nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Println("Connected to MongoDB!")
+    return client
 }
