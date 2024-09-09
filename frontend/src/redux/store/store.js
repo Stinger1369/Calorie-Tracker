@@ -19,6 +19,10 @@ const store = configureStore({
     horiscope: horiscopeSlice,
     image: imageReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Désactive le middleware pour améliorer les performances
+    }),
 });
 
 export default store;

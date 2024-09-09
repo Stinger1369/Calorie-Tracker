@@ -37,8 +37,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // Utiliser un chemin absolu pour les fichiers statiques
-  const staticAssetsPath =
-    'H:/calorie/calorie-tracker-backend/src/assets/Images/FoodImages';
+  const staticAssetsPath = 'J:/calorie/backend/src/assets/Images/FoodImages';
   console.log('Chemin absolu vers les images:', staticAssetsPath);
 
   // Vérifier si le dossier existe
@@ -59,7 +58,7 @@ async function bootstrap() {
 
   // Ajouter le dossier public pour le module d'images
   app.useStaticAssets(join(__dirname, '..', 'public'), {
-    prefix: '/images/', // Chemin pour accéder aux images du module d'images
+    prefix: '/images/',
   });
 
   // Middleware pour logger toutes les requêtes

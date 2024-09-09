@@ -32,6 +32,9 @@ import NormalExercice from "./src/pages/ProfileSection/profile/ExerciceApi/Norma
 import SurpoidsExercice from "./src/pages/ProfileSection/profile/ExerciceApi/SurpoidsExercice";
 import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/ObesiteExercice";
 import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
+import FitnessExercices from './src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/FitnessExercices';
+import ExerciseListScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseListScreen";
+import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import ScanCode from "./src/pages/ScanCode/ScanCode";
@@ -140,6 +143,11 @@ const App = () => {
           <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
           <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
           <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
+          <Stack.Screen name="FitnessExercices" component={FitnessExercices} />
+          <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
+          <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{ title: 'Exercise Details' }} />
+
+
           <Stack.Screen
             name="HoroscopeDetailsScreen"
             component={HoroscopeDetailsScreen}

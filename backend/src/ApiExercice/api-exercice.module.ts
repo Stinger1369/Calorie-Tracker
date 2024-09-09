@@ -1,11 +1,23 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { ExerciseApiService } from './exercise-api.service';
-import { ExerciseApiController } from './exercise-api.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { FitnessExerciseApiController } from './fitness-exercise-api.controller';
+import { FitnessExerciseApiService } from './fitness-exercise-api.service';
+import {
+  FitnessExercise,
+  FitnessExerciseSchema,
+} from './schemas/fitness-exercise.schema';
 
 @Module({
-  imports: [HttpModule], // Utilisez HttpModule ici
-  controllers: [ExerciseApiController],
-  providers: [ExerciseApiService],
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: FitnessExercise.name,
+        schema: FitnessExerciseSchema,
+        collection: 'fitnessExercice',
+      },
+    ]),
+  ],
+  controllers: [FitnessExerciseApiController],
+  providers: [FitnessExerciseApiService],
 })
-export class ApiExerciceModule {}
+export class FitnessExerciseModule {}

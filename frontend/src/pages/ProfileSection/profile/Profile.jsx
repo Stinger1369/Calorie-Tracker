@@ -17,29 +17,32 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     const loadUserData = async () => {
-      try {
-        let userId = user?._id;
-        let storedToken = token;
+  try {
+    let userId = user?._id;
+    let storedToken = token;
 
-        if (!userId || !storedToken) {
-          const storedUser = await AsyncStorage.getItem("user");
-          storedToken = await AsyncStorage.getItem("token");
+    if (!userId || !storedToken) {
+      const storedUser = await AsyncStorage.getItem("user");
+      storedToken = await AsyncStorage.getItem("token");
 
-          if (storedUser && storedToken) {
-            const parsedUser = JSON.parse(storedUser);
-            userId = parsedUser?._id;
+      console.log("Stored token:", storedToken); // Log pour vérifier
 
-            dispatch(restoreToken({ user: parsedUser, token: storedToken }));
-          }
-        }
+      if (storedUser && storedToken) {
+        const parsedUser = JSON.parse(storedUser);
+        userId = parsedUser?._id;
 
-        if (userId && storedToken) {
-          dispatch(fetchUserInfo(userId));
-        }
-      } catch (error) {
-        console.error("Failed to load user data:", error);
+        dispatch(restoreToken({ user: parsedUser, token: storedToken }));
       }
-    };
+    }
+
+    if (userId && storedToken) {
+      dispatch(fetchUserInfo(userId));
+    }
+  } catch (error) {
+    console.error("Failed to load user data:", error);
+  }
+};
+
 
     loadUserData();
   }, [dispatch, user, token]);

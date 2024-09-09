@@ -24,7 +24,6 @@ export class CreateUserDto {
   @MinLength(6)
   readonly password: string;
 
-
   @IsOptional()
   @IsString()
   readonly verificationCode?: string;

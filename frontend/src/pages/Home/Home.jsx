@@ -141,13 +141,14 @@ const handleNutritionPress = () => {
               {/* Other sections */}
 
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionExercise]}
-              onPress={() => {}}
-            >
-              <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Exercice</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+  style={[styles.section, styles.sectionExercise]}
+  onPress={() => navigation.navigate("FitnessExercices")}
+>
+  <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
+  <Text style={styles.sectionText}>Exercice</Text>
+</TouchableOpacity>
+
 
             <TouchableOpacity
               style={[styles.section, styles.sectionHoroscope]}

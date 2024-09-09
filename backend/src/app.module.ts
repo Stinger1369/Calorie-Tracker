@@ -7,7 +7,7 @@ import { ExerciseModule } from './exercises/exercise.module';
 import { FitnessGoalModule } from './fitness-goals/fitness-goal.module';
 import { RecommendationFoodModule } from './recommendation-food/recommendation-food.module';
 import { StepCountModule } from './step-count/step-count.module';
-import { ApiExerciceModule } from './ApiExercice/api-exercice.module';
+import { FitnessExerciseModule } from './ApiExercice/api-exercice.module';
 import { ImageModule } from './image/image.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -25,7 +25,7 @@ import { LoggerMiddleware } from './middleware/LoggerMiddleware'; // Assurez-vou
     FitnessGoalModule,
     RecommendationFoodModule,
     StepCountModule,
-    ApiExerciceModule,
+    FitnessExerciseModule,
     ImageModule,
   ],
   controllers: [AppController],

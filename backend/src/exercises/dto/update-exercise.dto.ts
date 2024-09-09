@@ -20,7 +20,7 @@ export class UpdateExerciseDto {
   @IsNumber()
   readonly caloriesBurned?: number;
 
-@IsOptional()
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
   readonly date?: Date;
