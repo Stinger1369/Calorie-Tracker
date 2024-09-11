@@ -15,13 +15,7 @@ export class FitnessExerciseApiService {
     return this.fitnessExerciseModel.find().exec();
   }
 
-  async getAllMuscleGroups(): Promise<string[]> {
-    const muscleGroups = await this.fitnessExerciseModel
-      .distinct('muscleGroup')
-      .exec();
-    return muscleGroups;
-  }
-
+  // Récupérer les exercices par groupe musculaire
   async getExercisesByMuscleGroup(
     muscleGroup: string,
   ): Promise<FitnessExercise[]> {
@@ -30,12 +24,27 @@ export class FitnessExerciseApiService {
       .exec();
   }
 
+  // Récupérer les exercices par titre
   async getExercisesByTitle(title: string): Promise<FitnessExercise[]> {
     return this.fitnessExerciseModel
       .find({ title: { $regex: title, $options: 'i' } })
       .exec();
   }
 
+  // Nouvelle méthode pour récupérer les exercices par groupe musculaire et titre
+  async getExercisesByMuscleGroupAndTitle(
+    muscleGroup: string,
+    title: string,
+  ): Promise<FitnessExercise[]> {
+    return this.fitnessExerciseModel
+      .find({
+        muscleGroup: { $regex: muscleGroup, $options: 'i' },
+        title: { $regex: title, $options: 'i' },
+      })
+      .exec();
+  }
+
+  // Récupérer les exercices dans une plage de calories
   async getExercisesByCalories(
     minCalories: number,
     maxCalories: number,
@@ -45,24 +54,25 @@ export class FitnessExerciseApiService {
       .exec();
   }
 
-  async getExercisesByExactCalories(
-    calories: number,
-  ): Promise<FitnessExercise[]> {
-    return this.fitnessExerciseModel.find({ calories }).exec();
+  // Récupérer les exercices par type (e.g., Musculation, Cardio)
+  async getExercisesByType(type: string): Promise<FitnessExercise[]> {
+    return this.fitnessExerciseModel
+      .find({ Type_Exercice: { $regex: type, $options: 'i' } })
+      .exec();
   }
 
+  // Récupérer les exercices selon le type de répétition et la plage
+  async getExercisesByReps(
+    repsType: string,
+    range: string,
+  ): Promise<FitnessExercise[]> {
+    return this.fitnessExerciseModel
+      .find({ [`${repsType}.repetitions`]: { $regex: range, $options: 'i' } })
+      .exec();
+  }
+
+  // Récupérer un exercice par ID
   async getExerciseById(id: string): Promise<FitnessExercise> {
     return this.fitnessExerciseModel.findById(id).exec();
-  }
-
-  async createExercise(
-    fitnessExercise: FitnessExercise,
-  ): Promise<FitnessExercise> {
-    const newFitnessExercise = new this.fitnessExerciseModel(fitnessExercise);
-    return newFitnessExercise.save();
-  }
-
-  async deleteExercise(id: string): Promise<FitnessExercise> {
-    return this.fitnessExerciseModel.findByIdAndDelete(id).exec();
   }
 }

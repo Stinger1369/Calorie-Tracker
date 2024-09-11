@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import hostname from "../../../hostname";
 
 // Fonction utilitaire pour obtenir le token JWT depuis le store
@@ -19,12 +20,31 @@ const getAuthHeader = (getState) => {
 
 const initialState = {
   userInfo: null,
+  userId: null,
   age: null,
   bmi: null,
   recommendedCalories: null,
   loading: false,
   error: null,
 };
+
+// Action pour récupérer le userId depuis AsyncStorage
+export const fetchUserId = createAsyncThunk(
+  "user/fetchUserId",
+  async (_, { rejectWithValue }) => {
+    try {
+      const storedUser = await AsyncStorage.getItem("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        return parsedUser.id;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching user ID from AsyncStorage:", error);
+      return rejectWithValue("Failed to fetch user ID from AsyncStorage");
+    }
+  }
+);
 
 // Action pour récupérer les informations de l'utilisateur
 export const fetchUserInfo = createAsyncThunk(
@@ -97,25 +117,29 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch User ID
+      .addCase(fetchUserId.fulfilled, (state, action) => {
+        state.userId = action.payload;
+      })
       // Fetch User Info
-       .addCase(fetchUserInfo.pending, (state) => {
-      console.log("Fetching user info... (pending)");
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(fetchUserInfo.fulfilled, (state, action) => {
-      console.log("User info fetched successfully (fulfilled):", action.payload);
-      state.loading = false;
-      state.userInfo = action.payload;
-      state.age = action.payload.age;
-      state.bmi = action.payload.bmi;
-      state.recommendedCalories = action.payload.recommendedCalories;
-    })
-    .addCase(fetchUserInfo.rejected, (state, action) => {
-      console.error("Failed to fetch user info (rejected):", action.payload);
-      state.loading = false;
-      state.error = action.payload || "Failed to fetch user info";
-    })
+      .addCase(fetchUserInfo.pending, (state) => {
+        console.log("Fetching user info... (pending)");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserInfo.fulfilled, (state, action) => {
+        console.log("User info fetched successfully (fulfilled):", action.payload);
+        state.loading = false;
+        state.userInfo = action.payload;
+        state.age = action.payload.age;
+        state.bmi = action.payload.bmi;
+        state.recommendedCalories = action.payload.recommendedCalories;
+      })
+      .addCase(fetchUserInfo.rejected, (state, action) => {
+        console.error("Failed to fetch user info (rejected):", action.payload);
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch user info";
+      })
       // Update User Info
       .addCase(updateUserInfo.pending, (state) => {
         state.loading = true;
@@ -139,7 +163,8 @@ const userSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.userInfo = null; // On pourrait aussi rediriger l'utilisateur après la suppression
+        state.userInfo = null;
+        state.userId = null;
         state.age = null;
         state.bmi = null;
         state.recommendedCalories = null;

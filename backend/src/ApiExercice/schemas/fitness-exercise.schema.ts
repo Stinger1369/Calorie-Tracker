@@ -23,6 +23,20 @@ export class FitnessExercise extends Document {
 
   @Prop()
   calories?: number;
+
+  @Prop({ type: Object })
+  calories_depensée?: {
+    Homme: number;
+    Femme: number;
+    Autres: number;
+  };
+
+  @Prop({ type: Object })
+  calories_depense_repetition?: {
+    Homme: number;
+    Femme: number;
+    Autres: number;
+  };
 }
 
 export const FitnessExerciseSchema =

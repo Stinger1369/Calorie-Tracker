@@ -13,12 +13,7 @@ export class FitnessExerciseApiController {
     return this.fitnessExerciseApiService.getAllExercises();
   }
 
-  // Route pour obtenir tous les groupes musculaires uniques
-  @Get('muscleGroups')
-  async getAllMuscleGroups() {
-    return this.fitnessExerciseApiService.getAllMuscleGroups();
-  }
-
+  // Route pour obtenir les exercices par groupe musculaire
   @Get('muscleGroup/:muscleGroup')
   async getExercisesByMuscleGroup(@Param('muscleGroup') muscleGroup: string) {
     return this.fitnessExerciseApiService.getExercisesByMuscleGroup(
@@ -26,11 +21,25 @@ export class FitnessExerciseApiController {
     );
   }
 
+  // Route pour obtenir les exercices par titre
   @Get('title/:title')
   async getExercisesByTitle(@Param('title') title: string) {
     return this.fitnessExerciseApiService.getExercisesByTitle(title);
   }
 
+  // Nouvelle route pour obtenir les exercices par groupe musculaire et titre
+  @Get('muscleGroup/:muscleGroup/title/:title')
+  async getExercisesByMuscleGroupAndTitle(
+    @Param('muscleGroup') muscleGroup: string,
+    @Param('title') title: string,
+  ) {
+    return this.fitnessExerciseApiService.getExercisesByMuscleGroupAndTitle(
+      muscleGroup,
+      title,
+    );
+  }
+
+  // Route pour obtenir les exercices selon une plage de calories
   @Get('calories')
   async getExercisesByCalories(
     @Query('min') minCalories: number,
@@ -42,11 +51,22 @@ export class FitnessExerciseApiController {
     );
   }
 
-  @Get('calories/:calories')
-  async getExercisesByExactCalories(@Param('calories') calories: number) {
-    return this.fitnessExerciseApiService.getExercisesByExactCalories(calories);
+  // Route pour obtenir un exercice par son type (e.g., Musculation, Cardio)
+  @Get('type/:type')
+  async getExercisesByType(@Param('type') type: string) {
+    return this.fitnessExerciseApiService.getExercisesByType(type);
   }
 
+  // Route pour obtenir les exercices par répétitions
+  @Get('reps/:repsType/:range')
+  async getExercisesByReps(
+    @Param('repsType') repsType: string,
+    @Param('range') range: string,
+  ) {
+    return this.fitnessExerciseApiService.getExercisesByReps(repsType, range);
+  }
+
+  // Route pour obtenir un exercice par son ID
   @Get(':id')
   async getExerciseById(@Param('id') id: string) {
     return this.fitnessExerciseApiService.getExerciseById(id);

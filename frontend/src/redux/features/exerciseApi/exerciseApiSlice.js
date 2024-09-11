@@ -24,7 +24,7 @@ export const fetchExercises = createAsyncThunk(
   async (_, { rejectWithValue, getState }) => {
     try {
       const response = await axios.get(
-        `${hostname}/fitnessExercice/`, // Ajoutez un '/' ici pour appeler la bonne route
+        `${hostname}/fitnessExercice/`,
         getAuthHeader(getState)
       );
       return response.data;
@@ -81,6 +81,28 @@ export const fetchExercisesByMuscleGroup = createAsyncThunk(
   }
 );
 
+// Fetch exercises by calories range
+export const fetchExercisesByCaloriesRange = createAsyncThunk(
+  "exerciseApi/fetchExercisesByCaloriesRange",
+  async ({ minCalories, maxCalories }, { rejectWithValue, getState }) => {
+    try {
+      const response = await axios.get(
+        `${hostname}/fitnessExercice/calories`,
+        {
+          params: { min: minCalories, max: maxCalories },
+          ...getAuthHeader(getState),
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue("An error occurred while fetching exercises by calorie range");
+    }
+  }
+);
+
 // Fetch exercises by exact calories
 export const fetchExercisesByExactCalories = createAsyncThunk(
   "exerciseApi/fetchExercisesByExactCalories",
@@ -100,16 +122,15 @@ export const fetchExercisesByExactCalories = createAsyncThunk(
   }
 );
 
-// Fetch exercises by calories range
-export const fetchExercisesByCaloriesRange = createAsyncThunk(
-  "exerciseApi/fetchExercisesByCaloriesRange",
-  async ({ minCalories, maxCalories }, { rejectWithValue, getState }) => {
+// Fetch exercises by muscle group and title (only title and imageUrl)
+export const fetchExercisesByMuscleGroupAndTitle = createAsyncThunk(
+  "exerciseApi/fetchExercisesByMuscleGroupAndTitle",
+  async ({ muscleGroup, title }, { rejectWithValue, getState }) => {
     try {
-      const daysInMonth = getDaysInCurrentMonth();
       const response = await axios.get(
-        `${hostname}/fitnessExercice/calories-range`,
+        `${hostname}/fitnessExercice/muscleGroup/${muscleGroup}/title/${title}`,
         {
-          params: { minCalories, maxCalories, limit: daysInMonth, offset: 0 },
+          params: { fields: "title,imageUrl" }, // Request only title and imageUrl
           ...getAuthHeader(getState),
         }
       );
@@ -118,10 +139,11 @@ export const fetchExercisesByCaloriesRange = createAsyncThunk(
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue("An error occurred while fetching exercises");
+      return rejectWithValue("An error occurred while fetching exercises by muscle group and title");
     }
   }
 );
+
 
 // Fetch a specific exercise by ID
 export const fetchExerciseById = createAsyncThunk(
@@ -177,7 +199,6 @@ const exerciseApiSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Gestion de la récupération des exercices
       .addCase(fetchExercises.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -191,13 +212,12 @@ const exerciseApiSlice = createSlice({
         state.error = action.payload || "Failed to fetch exercises";
       })
 
-      // Gestion de la récupération des groupes musculaires
       .addCase(fetchMuscleGroups.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchMuscleGroups.fulfilled, (state, action) => {
-        state.muscleGroups = action.payload; // Remplir les groupes musculaires
+        state.muscleGroups = action.payload;
         state.loading = false;
       })
       .addCase(fetchMuscleGroups.rejected, (state, action) => {
@@ -205,7 +225,6 @@ const exerciseApiSlice = createSlice({
         state.error = action.payload || "Failed to fetch muscle groups";
       })
 
-      // Gestion de la récupération d'exercices par groupe musculaire
       .addCase(fetchExercisesByMuscleGroup.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -219,19 +238,55 @@ const exerciseApiSlice = createSlice({
         state.error = action.payload || "Failed to fetch exercises by muscle group";
       })
 
-      // Gestion de la récupération d'un exercice aléatoire par groupe musculaire
-      .addCase(fetchRandomExerciseByMuscleGroup.pending, (state) => {
+       .addCase(fetchExercisesByMuscleGroupAndTitle.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchRandomExerciseByMuscleGroup.fulfilled, (state, action) => {
-        const { muscleGroup, randomExercise } = action.payload;
-        state.randomExercisesByMuscleGroup[muscleGroup] = randomExercise; // Stocker l'exercice aléatoire
+      .addCase(fetchExercisesByMuscleGroupAndTitle.fulfilled, (state, action) => {
+        state.data = action.payload;
         state.loading = false;
       })
-      .addCase(fetchRandomExerciseByMuscleGroup.rejected, (state, action) => {
+      .addCase(fetchExercisesByMuscleGroupAndTitle.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch random exercise by muscle group";
+        state.error = action.payload || "Failed to fetch exercises by muscle group";
+      })
+      .addCase(fetchExercisesByCaloriesRange.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExercisesByCaloriesRange.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchExercisesByCaloriesRange.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch exercises by calorie range";
+      })
+
+      .addCase(fetchExercisesByExactCalories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExercisesByExactCalories.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchExercisesByExactCalories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch exercises by exact calories";
+      })
+
+      .addCase(fetchExerciseById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExerciseById.fulfilled, (state, action) => {
+        state.data = [action.payload];
+        state.loading = false;
+      })
+      .addCase(fetchExerciseById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch the exercise by ID";
       });
   },
 });

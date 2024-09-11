@@ -27,14 +27,14 @@ import RecipeScreen from "./src/pages/ProfileSection/profile/Imc/ImcTypes/Recipe
 import StepsHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/StepsHistoryScreen";
 import BpmHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/BpmHistoryScreen";
 import KcalHistoryScreen from "./src/pages/ProfileSection/profile/storyScreen/KcalHistoryScreen";
-import InsuffisantExercice from "./src/pages/ProfileSection/profile/ExerciceApi/InsuffisantExercice";
+import InsuffisantExercice from "./src/pages/ProfileSection/profile/ExerciceApi/InsuffisantExercice/InsuffisantExercice";
 import NormalExercice from "./src/pages/ProfileSection/profile/ExerciceApi/NormalExercice";
 import SurpoidsExercice from "./src/pages/ProfileSection/profile/ExerciceApi/SurpoidsExercice";
 import ObesiteExercice from "./src/pages/ProfileSection/profile/ExerciceApi/ObesiteExercice";
 import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciseDetail";
 import FitnessExercices from './src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/FitnessExercices';
 import ExerciseListScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseListScreen";
-import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen";
+import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen/ExerciseDetailsScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import ScanCode from "./src/pages/ScanCode/ScanCode";

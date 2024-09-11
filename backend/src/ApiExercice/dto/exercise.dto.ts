@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsObject,
+} from 'class-validator';
 
 export class CreateExerciseDto {
   @IsNotEmpty()
@@ -28,4 +34,20 @@ export class CreateExerciseDto {
   @IsOptional()
   @IsNumber()
   readonly calories?: number;
+
+  @IsOptional()
+  @IsObject()
+  readonly calories_depensée?: {
+    Homme: number;
+    Femme: number;
+    Autres: number;
+  };
+
+  @IsOptional()
+  @IsObject()
+  readonly calories_depense_repetition?: {
+    Homme: number;
+    Femme: number;
+    Autres: number;
+  };
 }
