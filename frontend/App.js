@@ -35,6 +35,7 @@ import ExerciseDetail from "./src/pages/ProfileSection/profile/ExerciceApi/Exerc
 import FitnessExercices from './src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/FitnessExercices';
 import ExerciseListScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseListScreen";
 import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen/ExerciseDetailsScreen";
+import PolicyScreen from "./src/pages/ProfileSection/profile/PolicyScreen/PolicyScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import ScanCode from "./src/pages/ScanCode/ScanCode";
@@ -56,7 +57,15 @@ const ScanTabNavigator = () => {
     </Tab.Navigator>
   );
 };
-
+const MonthTabNavigator = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Mois 1" component={InsuffisantExercice} />
+      <Tab.Screen name="Mois 2" component={NormalExercice} />
+      <Tab.Screen name="Mois 3" component={SurpoidsExercice} />
+    </Tab.Navigator>
+  );
+};
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -147,6 +156,8 @@ const App = () => {
           <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
           <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{ title: 'Exercise Details' }} />
 
+          <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
+
 
           <Stack.Screen
             name="HoroscopeDetailsScreen"
@@ -157,6 +168,11 @@ const App = () => {
             name="ScanTabs" // Utiliser ScanTabs pour le top tab
             component={ScanTabNavigator}
             options={{ title: "Scanner & Historique" }}
+          />
+           <Stack.Screen
+            name="MonthTabs"  // Here, we add the MonthTabNavigator
+            component={MonthTabNavigator}
+            options={{ title: "Programme des mois" }} // Set a title for this tab screen
           />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
         </Stack.Navigator>

@@ -122,7 +122,7 @@ export const fetchExercisesByExactCalories = createAsyncThunk(
   }
 );
 
-// Fetch exercises by muscle group and title (only title and imageUrl)
+// Fetch exercises by muscle group and title (with more fields)
 export const fetchExercisesByMuscleGroupAndTitle = createAsyncThunk(
   "exerciseApi/fetchExercisesByMuscleGroupAndTitle",
   async ({ muscleGroup, title }, { rejectWithValue, getState }) => {
@@ -130,7 +130,7 @@ export const fetchExercisesByMuscleGroupAndTitle = createAsyncThunk(
       const response = await axios.get(
         `${hostname}/fitnessExercice/muscleGroup/${muscleGroup}/title/${title}`,
         {
-          params: { fields: "title,imageUrl" }, // Request only title and imageUrl
+          params: { fields: "title,imageUrl,repetitions,calories_depensée,calories_depense_repetition" }, // Add more fields here
           ...getAuthHeader(getState),
         }
       );
@@ -143,6 +143,7 @@ export const fetchExercisesByMuscleGroupAndTitle = createAsyncThunk(
     }
   }
 );
+
 
 
 // Fetch a specific exercise by ID

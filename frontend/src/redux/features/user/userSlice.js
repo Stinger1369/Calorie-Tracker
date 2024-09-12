@@ -26,6 +26,7 @@ const initialState = {
   recommendedCalories: null,
   loading: false,
   error: null,
+  isProfileIncomplete: false, // Ajout de l'état pour le profil incomplet
 };
 
 // Action pour récupérer le userId depuis AsyncStorage
@@ -112,9 +113,7 @@ export const deleteUser = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {
-    // Ajouter des reducers personnalisés si nécessaire
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Fetch User ID
@@ -134,6 +133,13 @@ const userSlice = createSlice({
         state.age = action.payload.age;
         state.bmi = action.payload.bmi;
         state.recommendedCalories = action.payload.recommendedCalories;
+
+        // Vérifier si les informations essentielles sont manquantes (taille, poids, genre, date de naissance)
+        if (!action.payload.height || !action.payload.weight || !action.payload.dateOfBirth || !action.payload.gender) {
+          state.isProfileIncomplete = true;
+        } else {
+          state.isProfileIncomplete = false;
+        }
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         console.error("Failed to fetch user info (rejected):", action.payload);
@@ -151,6 +157,13 @@ const userSlice = createSlice({
         state.age = action.payload.age;
         state.bmi = action.payload.bmi;
         state.recommendedCalories = action.payload.recommendedCalories;
+
+        // Vérifier à nouveau si les informations essentielles sont complètes après la mise à jour
+        if (!action.payload.height || !action.payload.weight || !action.payload.dateOfBirth || !action.payload.gender) {
+          state.isProfileIncomplete = true;
+        } else {
+          state.isProfileIncomplete = false;
+        }
       })
       .addCase(updateUserInfo.rejected, (state, action) => {
         state.loading = false;

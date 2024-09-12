@@ -33,7 +33,7 @@ const BasicInfoScreen = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [localImageUri, setLocalImageUri] = useState(null); // Stocker l'image sélectionnée localement
+  const [localImageUri, setLocalImageUri] = useState(null);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -70,7 +70,7 @@ const BasicInfoScreen = ({ navigation }) => {
   useEffect(() => {
     if (uploadedImageUrl) {
       setImageUrl(uploadedImageUrl);
-      setHasChanges(true); // Marquer le formulaire comme modifié
+      setHasChanges(true);
     }
   }, [uploadedImageUrl]);
 
@@ -78,7 +78,6 @@ const BasicInfoScreen = ({ navigation }) => {
     let finalImageUrl = imageUrl;
 
     if (localImageUri) {
-      // Upload de l'image sélectionnée
       await dispatch(
         uploadImage({
           userId: userInfo._id,
@@ -103,6 +102,21 @@ const BasicInfoScreen = ({ navigation }) => {
       dispatch(updateUserInfo({ userId: userInfo._id, userData: updatedData }));
       setIsSaved(true);
       setHasChanges(false);
+
+      // Si la date de naissance est complétée mais que le poids ou la taille manque
+      if (!userInfo.height || !userInfo.weight) {
+        Alert.alert(
+          "Profil incomplet",
+          "Vous devez compléter votre taille et votre poids.",
+          [
+            {
+              text: "Compléter maintenant",
+              onPress: () => navigation.navigate("HealthInfo"),
+            },
+            { text: "Ignorer", style: "cancel" },
+          ]
+        );
+      }
     }
   };
 
@@ -123,8 +137,8 @@ const BasicInfoScreen = ({ navigation }) => {
   };
 
   const handleImageSelected = (uri) => {
-    setLocalImageUri(uri); // Stocker l'URI de l'image localement pour l'utiliser lors du save
-    setHasChanges(true); // Marquer le formulaire comme modifié
+    setLocalImageUri(uri);
+    setHasChanges(true);
   };
 
   return (

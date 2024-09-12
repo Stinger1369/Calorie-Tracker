@@ -4,7 +4,8 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Permet au conteneur principal de prendre toute la hauteur disponible
+    flex: 1,
+
   },
   loadingContainer: {
     flex: 1,
@@ -79,6 +80,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#28a745",
     color: "#fff",
     borderRadius: 5,
+  },
+  categoryTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: "left",
+    paddingLeft: 10,
   },
 });
 

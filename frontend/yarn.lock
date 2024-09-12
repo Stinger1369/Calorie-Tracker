@@ -5944,6 +5944,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-checkbox@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "expo-checkbox@npm:3.0.0"
+  checksum: 10c0/15aa4a33b6d9065e4203c35a7c6918ab1314718bedcbbb2e7c2ec1429305f0b90d4382d5f3e6b108b54cbedf43c1bef6a656e1d7d5d3d3ef027cd30bd9420652
+  languageName: node
+  linkType: hard
+
 "expo-constants@npm:~16.0.0, expo-constants@npm:~16.0.2":
   version: 16.0.2
   resolution: "expo-constants@npm:16.0.2"
@@ -6509,6 +6516,7 @@ __metadata:
     expo-app-loading: "npm:^2.1.1"
     expo-barcode-scanner: "npm:^13.0.1"
     expo-camera: "npm:^15.0.15"
+    expo-checkbox: "npm:^3.0.0"
     expo-constants: "npm:~16.0.2"
     expo-font: "npm:~12.0.9"
     expo-image-manipulator: "npm:^12.0.5"

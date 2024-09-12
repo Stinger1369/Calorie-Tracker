@@ -44,7 +44,7 @@ const HealthInfoScreen = ({ navigation }) => {
             dispatch(restoreToken({ user: parsedUser, token: storedToken }));
           }
         }
-  
+
         if (userId && storedToken) {
           await dispatch(fetchUserInfo(userId));
         }
@@ -68,20 +68,31 @@ const HealthInfoScreen = ({ navigation }) => {
     }
   }, [userInfo]);
 
-  const handleSave = () => {
-    const updatedData = {
-      weight: weight !== null ? parseFloat(weight) : null,
-      height: height !== null ? parseFloat(height) : null,
-      medicalConditions,
-      bloodTestResults,
-    };
+const handleSave = () => {
+  if (weight < 2 || weight > 350) {
+    alert("Veuillez entrer un poids valide (entre 2 et 350 kg).");
+    return;
+  }
+  if (height < 50 || height > 250) {
+    alert("Veuillez entrer une taille valide (entre 50 et 250 cm).");
+    return;
+  }
 
-    if (userInfo && userInfo._id) {
-      dispatch(updateUserInfo({ userId: userInfo._id, userData: updatedData }));
-      setIsSaved(true);
-      setHasChanges(false);
-    }
+  const updatedData = {
+    weight: weight !== null ? parseFloat(weight) : null,
+    height: height !== null ? parseFloat(height) : null,
+    medicalConditions,
+    bloodTestResults,
   };
+
+  if (userInfo && userInfo._id) {
+    dispatch(updateUserInfo({ userId: userInfo._id, userData: updatedData }));
+    setIsSaved(true);
+    setHasChanges(false);
+  }
+};
+
+
 
   const handleNext = () => {
     handleSave();
