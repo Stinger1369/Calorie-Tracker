@@ -5,7 +5,7 @@ import { FitnessExerciseApiService } from './fitness-exercise-api.service';
 import {
   FitnessExercise,
   FitnessExerciseSchema,
-} from './schemas/fitness-exercise.schema';
+} from './schemas/fitness-exercise-api.schema';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import {
       {
         name: FitnessExercise.name,
         schema: FitnessExerciseSchema,
-        collection: 'fitnessExercice',
+        collection: 'fitnessexercice',
       },
     ]),
   ],

@@ -1,7 +1,17 @@
-import { Controller, Get, Param, Query, Patch, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Patch,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { FitnessExerciseApiService } from './fitness-exercise-api.service';
+import { CreateExerciseDto } from './dto/create-exercise.dto'; // Importer le DTO
+import { ToggleLikeDto } from './dto/toggle-like.dto';
 
-@Controller('fitnessExercice')
+@Controller('fitnessexercice')
 export class FitnessExerciseApiController {
   constructor(
     private readonly fitnessExerciseApiService: FitnessExerciseApiService,
@@ -11,6 +21,12 @@ export class FitnessExerciseApiController {
   @Get()
   async getAllExercises() {
     return this.fitnessExerciseApiService.getAllExercises();
+  }
+
+  // Route pour créer un nouvel exercice
+  @Post()
+  async createExercise(@Body() createExerciseDto: CreateExerciseDto) {
+    return this.fitnessExerciseApiService.createExercise(createExerciseDto);
   }
 
   // Route pour obtenir les exercices par groupe musculaire
@@ -76,22 +92,11 @@ export class FitnessExerciseApiController {
   @Patch(':id/like-unlike')
   async toggleLikeOrUnlike(
     @Param('id') exerciseId: string,
-    @Body()
-    {
-      userId,
-      actionType,
-      gender,
-    }: {
-      userId: string;
-      actionType: 'like' | 'unlike';
-      gender: 'male' | 'female' | 'other';
-    },
+    @Body() toggleLikeDto: ToggleLikeDto, // Utilisation du DTO pour valider les données
   ) {
     return this.fitnessExerciseApiService.toggleLikeOrUnlike(
       exerciseId,
-      userId,
-      actionType,
-      gender,
+      toggleLikeDto,
     );
   }
 }

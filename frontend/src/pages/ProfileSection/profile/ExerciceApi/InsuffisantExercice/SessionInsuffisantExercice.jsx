@@ -81,27 +81,41 @@ const SessionInsuffisantExercice = ({ month }) => {
     setTimeRemaining(`${duration.days()} jours ${duration.hours()}h ${duration.minutes()}m`);
   };
 
-  // Updated handleLike and handleUnlike to use userId
-  const handleLike = (exerciseId) => {
-    console.log("handleLike called for exerciseId:", exerciseId);
-    console.log("UserId:", userId, "Gender:", gender);
-    if (userId) {
-      dispatch(toggleLikeOrUnlike({ exerciseId, actionType: 'like', userId, gender }));
-    } else {
-      console.error("UserId is null. Could not send like request.");
-    }
-  };
+// Handle like action
+const handleLike = (exerciseId) => {
+  if (userId) {
+    const dataToSend = { exerciseId, actionType: 'like', userId, gender };
 
-  const handleUnlike = (exerciseId) => {
-    console.log("handleUnlike called for exerciseId:", exerciseId);
-    console.log("UserId:", userId, "Gender:", gender);
-    if (userId) {
-      dispatch(toggleLikeOrUnlike({ exerciseId, actionType: 'unlike', userId, gender }));
-    } else {
-      console.error("UserId is null. Could not send unlike request.");
-    }
-  };
+    dispatch(toggleLikeOrUnlike(dataToSend))
+      .unwrap()
+      .then((response) => {
+        console.log("Like successful:", response);
+      })
+      .catch((error) => {
+        console.error("Like failed:", error);
+      });
+  } else {
+    console.error("UserId is null. Could not send like request.");
+  }
+};
 
+// Handle unlike action
+const handleUnlike = (exerciseId) => {
+  if (userId) {
+    const dataToSend = { exerciseId, actionType: 'unlike', userId, gender };
+
+    dispatch(toggleLikeOrUnlike(dataToSend))
+      .unwrap()
+      .then((response) => {
+        console.log("Unlike successful:", response);
+      })
+      .catch((error) => {
+        console.error("Unlike failed:", error);
+      });
+  } else {
+    console.error("UserId is null. Could not send unlike request.");
+  }
+};
   const renderExerciseItem = ({ item }) => {
     const insuffisantReps = item?.Insuffisant_Reps || {};
     const repetitions = insuffisantReps.repetitions || 'N/A';

@@ -1,43 +1,31 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsObject,
-} from 'class-validator';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export class CreateExerciseDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly title: string;
+@Schema({ collection: 'fitnessexercice' })
+export class FitnessExercise extends Document {
+  @Prop({ required: true })
+  title: string;
 
-  @IsOptional()
-  @IsString()
-  readonly imageUrl?: string;
+  @Prop()
+  imageUrl?: string;
 
-  @IsOptional()
-  @IsString()
-  readonly description?: string;
+  @Prop()
+  description?: string;
 
-  @IsOptional()
-  @IsString()
-  readonly instructions?: string;
+  @Prop()
+  instructions?: string;
 
-  @IsOptional()
-  @IsString()
-  readonly trainingTips?: string;
+  @Prop()
+  trainingTips?: string;
 
-  @IsOptional()
-  @IsString()
-  readonly muscleGroup?: string;
+  @Prop()
+  muscleGroup?: string;
 
-  @IsOptional()
-  @IsNumber()
-  readonly calories?: number;
+  @Prop()
+  calories?: number;
 
-  @IsOptional()
-  @IsObject()
-  readonly Insuffisant_Reps?: {
+  @Prop({ type: Object })
+  Insuffisant_Reps?: {
     repetitions: string;
     calories_depensée: {
       male: number;
@@ -51,9 +39,8 @@ export class CreateExerciseDto {
     };
   };
 
-  @IsOptional()
-  @IsObject()
-  readonly Normal_Reps?: {
+  @Prop({ type: Object })
+  Normal_Reps?: {
     repetitions: string;
     calories_depensée: {
       male: number;
@@ -67,9 +54,8 @@ export class CreateExerciseDto {
     };
   };
 
-  @IsOptional()
-  @IsObject()
-  readonly Surpoids_Reps?: {
+  @Prop({ type: Object })
+  Surpoids_Reps?: {
     repetitions: string;
     calories_depensée: {
       male: number;
@@ -83,9 +69,8 @@ export class CreateExerciseDto {
     };
   };
 
-  @IsOptional()
-  @IsObject()
-  readonly Obese_Reps?: {
+  @Prop({ type: Object })
+  Obese_Reps?: {
     repetitions: string;
     calories_depensée: {
       male: number;
@@ -99,9 +84,15 @@ export class CreateExerciseDto {
     };
   };
 
-  @IsOptional()
-  @IsObject()
-  readonly like?: {
+  // Champs pour like et unlike
+  @Prop({
+    type: Object,
+    default: {
+      user_ids: { male: [], female: [], other: [] },
+      count: { male: 0, female: 0, other: 0 },
+    },
+  })
+  like?: {
     user_ids: {
       male: string[];
       female: string[];
@@ -114,9 +105,14 @@ export class CreateExerciseDto {
     };
   };
 
-  @IsOptional()
-  @IsObject()
-  readonly unlike?: {
+  @Prop({
+    type: Object,
+    default: {
+      user_ids: { male: [], female: [], other: [] },
+      count: { male: 0, female: 0, other: 0 },
+    },
+  })
+  unlike?: {
     user_ids: {
       male: string[];
       female: string[];
@@ -129,3 +125,6 @@ export class CreateExerciseDto {
     };
   };
 }
+
+export const FitnessExerciseSchema =
+  SchemaFactory.createForClass(FitnessExercise);

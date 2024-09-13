@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { FitnessExercise } from './schemas/fitness-exercise.schema';
+import { FitnessExercise } from './schemas/fitness-exercise-api.schema';
+import { CreateExerciseDto } from './dto/create-exercise.dto'; // Importer le DTO pour créer un exercice
+import { ToggleLikeDto } from './dto/toggle-like.dto'; // Importer le DTO pour like/unlike
 
 @Injectable()
 export class FitnessExerciseApiService {
@@ -9,6 +11,14 @@ export class FitnessExerciseApiService {
     @InjectModel(FitnessExercise.name)
     private readonly fitnessExerciseModel: Model<FitnessExercise>,
   ) {}
+
+  // Méthode pour créer un nouvel exercice
+  async createExercise(
+    createExerciseDto: CreateExerciseDto,
+  ): Promise<FitnessExercise> {
+    const newExercise = new this.fitnessExerciseModel(createExerciseDto);
+    return newExercise.save();
+  }
 
   // Méthode pour récupérer tous les exercices
   async getAllExercises(): Promise<FitnessExercise[]> {
@@ -79,64 +89,49 @@ export class FitnessExerciseApiService {
   // Méthode pour gérer le like/unlike
   async toggleLikeOrUnlike(
     exerciseId: string,
-    userId: string,
-    actionType: 'like' | 'unlike',
-    gender: 'male' | 'female' | 'other',
+    toggleLikeDto: ToggleLikeDto, // Utilisation du DTO pour valider les données
   ): Promise<FitnessExercise> {
+    const { userId, actionType, gender } = toggleLikeDto;
     const exercise = await this.fitnessExerciseModel.findById(exerciseId);
 
     if (!exercise) {
       throw new Error('Exercice non trouvé');
     }
 
-    // Initialiser les propriétés `like` et `unlike` si elles n'existent pas
-    if (!exercise.like) {
-      exercise.like = {
-        user_ids: { male: [], female: [], other: [] },
-        count: { male: 0, female: 0, other: 0 },
-      };
-    }
-
-    if (!exercise.unlike) {
-      exercise.unlike = {
-        user_ids: { male: [], female: [], other: [] },
-        count: { male: 0, female: 0, other: 0 },
-      };
-    }
-
-    if (actionType === 'like') {
-      // Supprimer l'utilisateur du tableau unlike s'il a déjà unliké
-      if (exercise.unlike.user_ids[gender].includes(userId)) {
-        exercise.unlike.user_ids[gender] = exercise.unlike.user_ids[
-          gender
-        ].filter((id) => id !== userId);
-        exercise.unlike.count[gender] = exercise.unlike.user_ids[gender].length;
-      }
-
-      // Ajouter l'utilisateur au tableau like s'il n'y est pas déjà
-      if (!exercise.like.user_ids[gender].includes(userId)) {
-        exercise.like.user_ids[gender].push(userId);
-        exercise.like.count[gender] = exercise.like.user_ids[gender].length;
-      }
-    } else if (actionType === 'unlike') {
-      // Supprimer l'utilisateur du tableau like s'il a déjà liké
-      if (exercise.like.user_ids[gender].includes(userId)) {
-        exercise.like.user_ids[gender] = exercise.like.user_ids[gender].filter(
-          (id) => id !== userId,
+    try {
+      if (actionType === 'like') {
+        await this.fitnessExerciseModel.findByIdAndUpdate(
+          exerciseId,
+          {
+            $pull: { [`unlike.user_ids.${gender}`]: userId }, // Retirer de la liste unlike
+            $push: { [`like.user_ids.${gender}`]: userId }, // Ajouter à la liste like
+            $inc: {
+              [`unlike.count.${gender}`]: -1, // Diminuer le count unlike
+              [`like.count.${gender}`]: 1, // Incrémenter le count like
+            },
+          },
+          { new: true }, // Pour retourner l'objet mis à jour
         );
-        exercise.like.count[gender] = exercise.like.user_ids[gender].length;
+      } else if (actionType === 'unlike') {
+        await this.fitnessExerciseModel.findByIdAndUpdate(
+          exerciseId,
+          {
+            $pull: { [`like.user_ids.${gender}`]: userId }, // Retirer de la liste like
+            $push: { [`unlike.user_ids.${gender}`]: userId }, // Ajouter à la liste unlike
+            $inc: {
+              [`like.count.${gender}`]: -1, // Diminuer le count like
+              [`unlike.count.${gender}`]: 1, // Incrémenter le count unlike
+            },
+          },
+          { new: true }, // Pour retourner l'objet mis à jour
+        );
       }
-
-      // Ajouter l'utilisateur au tableau unlike s'il n'y est pas déjà
-      if (!exercise.unlike.user_ids[gender].includes(userId)) {
-        exercise.unlike.user_ids[gender].push(userId);
-        exercise.unlike.count[gender] = exercise.unlike.user_ids[gender].length;
-      }
+      console.log('Exercise updated successfully');
+    } catch (error) {
+      console.error('Error updating exercise:', error);
+      throw new Error('Unable to update exercise');
     }
 
-    // Sauvegarder l'exercice mis à jour
-    await exercise.save();
-
-    return exercise;
+    return this.fitnessExerciseModel.findById(exerciseId);
   }
 }

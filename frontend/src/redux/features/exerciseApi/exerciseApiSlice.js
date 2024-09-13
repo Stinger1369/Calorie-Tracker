@@ -207,7 +207,6 @@ export const toggleLikeOrUnlike = createAsyncThunk(
   }
 );
 
-
 // État initial
 const initialState = {
   data: [], // Stocke les exercices
@@ -313,24 +312,31 @@ const exerciseApiSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch the exercise by ID";
       })
-      // Ajout du gestionnaire pour toggleLikeOrUnlike
-      .addCase(toggleLikeOrUnlike.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(toggleLikeOrUnlike.fulfilled, (state, action) => {
-        const { exerciseId, updatedExercise } = action.payload;
+     // Ajout du gestionnaire pour toggleLikeOrUnlike
+     .addCase(toggleLikeOrUnlike.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(toggleLikeOrUnlike.fulfilled, (state, action) => {
+  const { exerciseId, updatedExercise } = action.payload;
 
-        // Mettre à jour l'exercice dans le store avec les nouvelles valeurs de like/unlike
-        state.data = state.data.map((exercise) =>
-          exercise._id === exerciseId ? updatedExercise : exercise
-        );
-        state.loading = false;
-      })
-      .addCase(toggleLikeOrUnlike.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Failed to toggle like/unlike";
-      });
+  // Trouver l'exercice à mettre à jour
+  const exerciseIndex = state.data.findIndex(exercise => exercise._id === exerciseId);
+
+  if (exerciseIndex !== -1) {
+    // Mettre à jour l'exercice spécifique
+    state.data[exerciseIndex] = updatedExercise;
+  }
+
+  state.loading = false;
+})
+.addCase(toggleLikeOrUnlike.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload || "Échec du like/unlike";
+  console.error("Toggle like/unlike failed:", action.payload);
+});
+
+
   },
 });
 
