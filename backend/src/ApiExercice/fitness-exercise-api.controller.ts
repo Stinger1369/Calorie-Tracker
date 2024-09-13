@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Patch, Body } from '@nestjs/common';
 import { FitnessExerciseApiService } from './fitness-exercise-api.service';
 
 @Controller('fitnessExercice')
@@ -70,5 +70,28 @@ export class FitnessExerciseApiController {
   @Get(':id')
   async getExerciseById(@Param('id') id: string) {
     return this.fitnessExerciseApiService.getExerciseById(id);
+  }
+
+  // Nouvelle route pour gérer les likes/unlikes
+  @Patch(':id/like-unlike')
+  async toggleLikeOrUnlike(
+    @Param('id') exerciseId: string,
+    @Body()
+    {
+      userId,
+      actionType,
+      gender,
+    }: {
+      userId: string;
+      actionType: 'like' | 'unlike';
+      gender: 'male' | 'female' | 'other';
+    },
+  ) {
+    return this.fitnessExerciseApiService.toggleLikeOrUnlike(
+      exerciseId,
+      userId,
+      actionType,
+      gender,
+    );
   }
 }

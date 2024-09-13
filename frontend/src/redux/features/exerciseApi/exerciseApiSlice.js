@@ -183,6 +183,30 @@ export const fetchMuscleGroups = createAsyncThunk(
     }
   }
 );
+// Action pour "liker" ou "unliker" un exercice
+export const toggleLikeOrUnlike = createAsyncThunk(
+  "exerciseApi/toggleLikeOrUnlike",
+  async ({ exerciseId, actionType, userId, gender }, { rejectWithValue, getState }) => {
+    try {
+      const response = await axios.patch(
+        `${hostname}/fitnessExercice/${exerciseId}/like-unlike`,
+        {
+          userId,
+          actionType, // "like" ou "unlike"
+          gender,     // "male", "female", ou "other"
+        },
+        getAuthHeader(getState)
+      );
+      return { exerciseId, updatedExercise: response.data }; // Renvoie l'exercice mis à jour
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue("An error occurred while toggling like/unlike");
+    }
+  }
+);
+
 
 // État initial
 const initialState = {
@@ -288,6 +312,24 @@ const exerciseApiSlice = createSlice({
       .addCase(fetchExerciseById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch the exercise by ID";
+      })
+      // Ajout du gestionnaire pour toggleLikeOrUnlike
+      .addCase(toggleLikeOrUnlike.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleLikeOrUnlike.fulfilled, (state, action) => {
+        const { exerciseId, updatedExercise } = action.payload;
+
+        // Mettre à jour l'exercice dans le store avec les nouvelles valeurs de like/unlike
+        state.data = state.data.map((exercise) =>
+          exercise._id === exerciseId ? updatedExercise : exercise
+        );
+        state.loading = false;
+      })
+      .addCase(toggleLikeOrUnlike.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to toggle like/unlike";
       });
   },
 });

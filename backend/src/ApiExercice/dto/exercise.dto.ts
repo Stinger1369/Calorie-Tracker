@@ -1,8 +1,8 @@
 import {
   IsNotEmpty,
   IsString,
-  IsNumber,
   IsOptional,
+  IsNumber,
   IsObject,
 } from 'class-validator';
 
@@ -37,17 +37,95 @@ export class CreateExerciseDto {
 
   @IsOptional()
   @IsObject()
-  readonly calories_depensée?: {
-    Homme: number;
-    Femme: number;
-    Autres: number;
+  readonly Insuffisant_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
   };
 
   @IsOptional()
   @IsObject()
-  readonly calories_depense_repetition?: {
-    Homme: number;
-    Femme: number;
-    Autres: number;
+  readonly Normal_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @IsOptional()
+  @IsObject()
+  readonly Surpoids_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @IsOptional()
+  @IsObject()
+  readonly Obese_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @IsOptional()
+  @IsObject()
+  readonly like?: {
+    user_ids: {
+      male: string[];
+      female: string[];
+      other: string[];
+    };
+    count: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @IsOptional()
+  @IsObject()
+  readonly unlike?: {
+    user_ids: {
+      male: string[];
+      female: string[];
+      other: string[];
+    };
+    count: {
+      male: number;
+      female: number;
+      other: number;
+    };
   };
 }

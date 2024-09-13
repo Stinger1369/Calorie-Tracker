@@ -1,7 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchExercisesByMuscleGroupAndTitle } from "../../../../../redux/features/exerciseApi/exerciseApiSlice";
+import { fetchExercisesByMuscleGroupAndTitle, toggleLikeOrUnlike } from "../../../../../redux/features/exerciseApi/exerciseApiSlice";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./InsuffisantExerciceStyle";
 import { getExercisesForSession } from "./InsuffisantExerciceData";
@@ -12,43 +13,59 @@ const SessionInsuffisantExercice = ({ month }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { loading, error } = useSelector((state) => state.exerciseApi);
-  const { gender } = useSelector((state) => state.user.userInfo);
+  const { gender, _id: reduxUserId } = useSelector((state) => state.user.userInfo); // Redux contains user info
 
   const [currentSession, setCurrentSession] = useState(1);
   const [exercises, setExercises] = useState([]);
   const [startDate, setStartDate] = useState(moment());
   const [nextSessionDate, setNextSessionDate] = useState("");
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [userId, setUserId] = useState(reduxUserId || null); // Initialize with Redux userId
 
-useEffect(() => {
-  const sessionExercises = getExercisesForSession(month, currentSession);
+  // Fetch userId from AsyncStorage if it's not available in Redux
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!reduxUserId) {
+        try {
+          const storedUserId = await AsyncStorage.getItem('userId'); // Assuming 'userId' is the key
+          if (storedUserId !== null) {
+            setUserId(storedUserId); // Set the userId from AsyncStorage if it's found
+            console.log("Fetched userId from AsyncStorage:", storedUserId);
+          }
+        } catch (error) {
+          console.error("Error fetching userId from AsyncStorage:", error);
+        }
+      }
+    };
 
-  const fetchExercisePromises = sessionExercises.map((exerciseTitle) => {
-    return dispatch(fetchExercisesByMuscleGroupAndTitle(exerciseTitle))
-      .unwrap()
-      .then((response) => response[0])
-      .catch((err) => {
-        console.error(`Error fetching exercise ${exerciseTitle}:`, err);
-        return undefined; // Retourner undefined en cas d'erreur pour éviter les erreurs futures
-      });
-  });
+    fetchUserId();
+  }, [reduxUserId]); // Only run this if reduxUserId is missing
 
-  Promise.all(fetchExercisePromises)
-    .then((resolvedExercises) => {
-      // Filtrer les exercices valides (pas undefined) avant de créer la Map
-      const validExercises = resolvedExercises.filter(exercise => exercise !== undefined);
+  useEffect(() => {
+    const sessionExercises = getExercisesForSession(month, currentSession);
 
-      const uniqueExercises = Array.from(
-        new Map(validExercises.map((exercise) => [exercise._id, exercise])).values()
-      );
-
-      setExercises(uniqueExercises);
-    })
-    .catch((err) => {
-      console.error("Error fetching exercises:", err);
+    const fetchExercisePromises = sessionExercises.map((exerciseTitle) => {
+      return dispatch(fetchExercisesByMuscleGroupAndTitle(exerciseTitle))
+        .unwrap()
+        .then((response) => response[0])
+        .catch((err) => {
+          console.error(`Error fetching exercise ${exerciseTitle}:`, err);
+          return undefined;
+        });
     });
-}, [currentSession, dispatch, month]);
 
+    Promise.all(fetchExercisePromises)
+      .then((resolvedExercises) => {
+        const validExercises = resolvedExercises.filter(exercise => exercise !== undefined);
+        const uniqueExercises = Array.from(
+          new Map(validExercises.map((exercise) => [exercise._id, exercise])).values()
+        );
+        setExercises(uniqueExercises);
+      })
+      .catch((err) => {
+        console.error("Error fetching exercises:", err);
+      });
+  }, [currentSession, dispatch, month]);
 
   useEffect(() => {
     const dayOffset = (currentSession - 1) * 2;
@@ -62,6 +79,27 @@ useEffect(() => {
     const diff = moment(nextDate).diff(now);
     const duration = moment.duration(diff);
     setTimeRemaining(`${duration.days()} jours ${duration.hours()}h ${duration.minutes()}m`);
+  };
+
+  // Updated handleLike and handleUnlike to use userId
+  const handleLike = (exerciseId) => {
+    console.log("handleLike called for exerciseId:", exerciseId);
+    console.log("UserId:", userId, "Gender:", gender);
+    if (userId) {
+      dispatch(toggleLikeOrUnlike({ exerciseId, actionType: 'like', userId, gender }));
+    } else {
+      console.error("UserId is null. Could not send like request.");
+    }
+  };
+
+  const handleUnlike = (exerciseId) => {
+    console.log("handleUnlike called for exerciseId:", exerciseId);
+    console.log("UserId:", userId, "Gender:", gender);
+    if (userId) {
+      dispatch(toggleLikeOrUnlike({ exerciseId, actionType: 'unlike', userId, gender }));
+    } else {
+      console.error("UserId is null. Could not send unlike request.");
+    }
   };
 
   const renderExerciseItem = ({ item }) => {
@@ -79,6 +117,8 @@ useEffect(() => {
         caloriesPerRep={caloriesPerRep}
         onPressDetails={() => navigation.navigate('ExerciseDetails', { exercise: item })}
         onPressStart={() => navigation.navigate('StartExerciseScreen', { exercise: item })}
+        onLike={() => handleLike(item._id)}
+        onUnlike={() => handleUnlike(item._id)}
       />
     );
   };

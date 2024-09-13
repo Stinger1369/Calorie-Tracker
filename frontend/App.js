@@ -36,6 +36,7 @@ import FitnessExercices from './src/pages/ProfileSection/profile/ExerciceApi/Fit
 import ExerciseListScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseListScreen";
 import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen/ExerciseDetailsScreen";
 import PolicyScreen from "./src/pages/ProfileSection/profile/PolicyScreen/PolicyScreen";
+import StartExerciseScreen from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciceCard/StartExerciseScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import ScanCode from "./src/pages/ScanCode/ScanCode";
@@ -135,7 +136,6 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="IMCDetails" component={IMCDetails} />
-          {/* Ajout des nouveaux écrans */}
           <Stack.Screen name="Insuffisant" component={Insuffisant} />
           <Stack.Screen name="Normal" component={Normal} />
           <Stack.Screen name="Surpoids" component={Surpoids} />
@@ -155,7 +155,7 @@ const App = () => {
           <Stack.Screen name="FitnessExercices" component={FitnessExercices} />
           <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
           <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{ title: 'Exercise Details' }} />
-
+          <Stack.Screen name="StartExerciseScreen" component={StartExerciseScreen} />
           <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
 
 
@@ -165,14 +165,14 @@ const App = () => {
           />
           <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
           <Stack.Screen
-            name="ScanTabs" // Utiliser ScanTabs pour le top tab
+            name="ScanTabs"
             component={ScanTabNavigator}
             options={{ title: "Scanner & Historique" }}
           />
            <Stack.Screen
-            name="MonthTabs"  // Here, we add the MonthTabNavigator
+            name="MonthTabs"
             component={MonthTabNavigator}
-            options={{ title: "Programme des mois" }} // Set a title for this tab screen
+            options={{ title: "Programme des mois" }}
           />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
         </Stack.Navigator>

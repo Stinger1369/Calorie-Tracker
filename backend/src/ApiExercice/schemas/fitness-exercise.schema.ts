@@ -25,17 +25,103 @@ export class FitnessExercise extends Document {
   calories?: number;
 
   @Prop({ type: Object })
-  calories_depensée?: {
-    Homme: number;
-    Femme: number;
-    Autres: number;
+  Insuffisant_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
   };
 
   @Prop({ type: Object })
-  calories_depense_repetition?: {
-    Homme: number;
-    Femme: number;
-    Autres: number;
+  Normal_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @Prop({ type: Object })
+  Surpoids_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @Prop({ type: Object })
+  Obese_Reps?: {
+    repetitions: string;
+    calories_depensée: {
+      male: number;
+      female: number;
+      other: number;
+    };
+    calories_depense_repetition: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @Prop({
+    type: Object,
+    default: {
+      user_ids: { male: [], female: [], other: [] },
+      count: { male: 0, female: 0, other: 0 },
+    },
+  })
+  like?: {
+    user_ids: {
+      male: string[];
+      female: string[];
+      other: string[];
+    };
+    count: {
+      male: number;
+      female: number;
+      other: number;
+    };
+  };
+
+  @Prop({
+    type: Object,
+    default: {
+      user_ids: { male: [], female: [], other: [] },
+      count: { male: 0, female: 0, other: 0 },
+    },
+  })
+  unlike?: {
+    user_ids: {
+      male: string[];
+      female: string[];
+      other: string[];
+    };
+    count: {
+      male: number;
+      female: number;
+      other: number;
+    };
   };
 }
 

@@ -75,4 +75,68 @@ export class FitnessExerciseApiService {
   async getExerciseById(id: string): Promise<FitnessExercise> {
     return this.fitnessExerciseModel.findById(id).exec();
   }
+
+  // Méthode pour gérer le like/unlike
+  async toggleLikeOrUnlike(
+    exerciseId: string,
+    userId: string,
+    actionType: 'like' | 'unlike',
+    gender: 'male' | 'female' | 'other',
+  ): Promise<FitnessExercise> {
+    const exercise = await this.fitnessExerciseModel.findById(exerciseId);
+
+    if (!exercise) {
+      throw new Error('Exercice non trouvé');
+    }
+
+    // Initialiser les propriétés `like` et `unlike` si elles n'existent pas
+    if (!exercise.like) {
+      exercise.like = {
+        user_ids: { male: [], female: [], other: [] },
+        count: { male: 0, female: 0, other: 0 },
+      };
+    }
+
+    if (!exercise.unlike) {
+      exercise.unlike = {
+        user_ids: { male: [], female: [], other: [] },
+        count: { male: 0, female: 0, other: 0 },
+      };
+    }
+
+    if (actionType === 'like') {
+      // Supprimer l'utilisateur du tableau unlike s'il a déjà unliké
+      if (exercise.unlike.user_ids[gender].includes(userId)) {
+        exercise.unlike.user_ids[gender] = exercise.unlike.user_ids[
+          gender
+        ].filter((id) => id !== userId);
+        exercise.unlike.count[gender] = exercise.unlike.user_ids[gender].length;
+      }
+
+      // Ajouter l'utilisateur au tableau like s'il n'y est pas déjà
+      if (!exercise.like.user_ids[gender].includes(userId)) {
+        exercise.like.user_ids[gender].push(userId);
+        exercise.like.count[gender] = exercise.like.user_ids[gender].length;
+      }
+    } else if (actionType === 'unlike') {
+      // Supprimer l'utilisateur du tableau like s'il a déjà liké
+      if (exercise.like.user_ids[gender].includes(userId)) {
+        exercise.like.user_ids[gender] = exercise.like.user_ids[gender].filter(
+          (id) => id !== userId,
+        );
+        exercise.like.count[gender] = exercise.like.user_ids[gender].length;
+      }
+
+      // Ajouter l'utilisateur au tableau unlike s'il n'y est pas déjà
+      if (!exercise.unlike.user_ids[gender].includes(userId)) {
+        exercise.unlike.user_ids[gender].push(userId);
+        exercise.unlike.count[gender] = exercise.unlike.user_ids[gender].length;
+      }
+    }
+
+    // Sauvegarder l'exercice mis à jour
+    await exercise.save();
+
+    return exercise;
+  }
 }

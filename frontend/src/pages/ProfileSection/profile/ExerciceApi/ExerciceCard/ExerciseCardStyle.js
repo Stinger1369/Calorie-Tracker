@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     width: screenWidth / 3,
     height: screenWidth / 3,
    borderTopLeftRadius: 20,
-    overflow: 'hidden', // pour que l'image respecte le borderRadius
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20, // Ajoute aussi un borderRadius pour la placeholder
+    borderRadius: 20,
   },
   right: {
     flex: 1,
