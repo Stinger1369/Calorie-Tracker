@@ -42,8 +42,8 @@ export const getExercisesForSession = (month, session) => {
       { title: "Rameur", muscleGroup: "cardio" }, // Échauffement 1
       { title: "Tapis de course", muscleGroup: "cardio" }, // Échauffement 2
       { title: "Développé Arnold", muscleGroup: "épaules" }, // Exercice principal 1
-      { title: "Curl haltères concentré", muscleGroup: "biceps" }, // Exercice principal 2
-      { title: "Triceps extension à la poulie", muscleGroup: "triceps" }, // Exercice principal 3
+      { title: "Curl haltère incliné avec rotation", muscleGroup: "biceps" }, // Exercice principal 2
+      { title: "Extensions verticales d’un bras avec haltère", muscleGroup: "triceps" }, // Exercice principal 3
       { title: "Développé incliné avec haltères", muscleGroup: "pectoraux" }, // Exercice principal 4
       { title: "Vrksasana posture de l’arbre", muscleGroup: "Postures-de-yoga" },
       { title: "Natarajasana posture du danseur", muscleGroup: "Postures-de-yoga" }
@@ -52,10 +52,10 @@ export const getExercisesForSession = (month, session) => {
     return [
       { title: "Vélo spinning", muscleGroup: "cardio" }, // Échauffement 1
       { title: "Tapis de course", muscleGroup: "cardio" }, // Échauffement 2
-      { title: "Leg press", muscleGroup: "quadriceps" }, // Exercice principal 1
-      { title: "Hip thrust", muscleGroup: "fessiers" }, // Exercice principal 2
+      { title: "Leg extension", muscleGroup: "quadriceps" }, // Exercice principal 1
+      { title: "Hip thrust à la machine", muscleGroup: "fessiers" }, // Exercice principal 2
       { title: "Soulevé de terre jambes tendues", muscleGroup: "ischio-jambiers" }, // Exercice principal 3
-      { title: "Élévations mollets debout", muscleGroup: "mollets" }, // Exercice principal 4
+      { title: "Élévations des mollets au Donkey", muscleGroup: "mollets" }, // Exercice principal 4
       { title: "Supta Matsyendrasana posture de la rotation de la colonne vertébrale couchée", muscleGroup: "Postures-de-yoga" }, // Yoga 1
       { title: "Ustrasana posture du chameau", muscleGroup: "Postures-de-yoga" } // Yoga 2
     ];
@@ -79,8 +79,8 @@ if (month === 3) {
       { title: "Corde à sauter", muscleGroup: "cardio" }, // Échauffement 2
       { title: "Élévations latérales", muscleGroup: "épaules" }, // Exercice principal 1
       { title: "Curl haltère prise marteau au pupitre", muscleGroup: "biceps" }, // Exercice principal 2
-      { title: "Dips machine", muscleGroup: "triceps" }, // Exercice principal 3
-      { title: "Écarté avec haltères", muscleGroup: "pectoraux" }, // Exercice principal 4
+      { title: "Dips assis à la machine Matrix", muscleGroup: "triceps" }, // Exercice principal 3
+      { title: "Écartés décliné avec haltères", muscleGroup: "pectoraux" }, // Exercice principal 4
       { title: "Adho Mukha Svanasana posture du chien tête en bas", muscleGroup: "Postures-de-yoga" },
       { title: "Matsyasana posture du poisson", muscleGroup: "Postures-de-yoga" }
     ];

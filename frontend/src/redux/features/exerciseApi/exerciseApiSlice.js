@@ -206,6 +206,27 @@ export const toggleLikeOrUnlike = createAsyncThunk(
     }
   }
 );
+// Fetch exercises with like status for a specific user
+export const fetchExercisesWithLikeStatus = createAsyncThunk(
+  "exerciseApi/fetchExercisesWithLikeStatus",
+  async ({ userId, gender }, { rejectWithValue, getState }) => {
+    try {
+      const response = await axios.get(`${hostname}/fitnessExercice/with-like-status`, {
+        params: {
+          userId,
+          gender,
+        },
+        ...getAuthHeader(getState),
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue("An error occurred while fetching exercises with like status");
+    }
+  }
+);
 
 // État initial
 const initialState = {
@@ -262,7 +283,7 @@ const exerciseApiSlice = createSlice({
         state.error = action.payload || "Failed to fetch exercises by muscle group";
       })
 
-       .addCase(fetchExercisesByMuscleGroupAndTitle.pending, (state) => {
+      .addCase(fetchExercisesByMuscleGroupAndTitle.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -312,31 +333,43 @@ const exerciseApiSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch the exercise by ID";
       })
-     // Ajout du gestionnaire pour toggleLikeOrUnlike
-     .addCase(toggleLikeOrUnlike.pending, (state) => {
-  state.loading = true;
-  state.error = null;
-})
-.addCase(toggleLikeOrUnlike.fulfilled, (state, action) => {
+
+
+
+      .addCase(fetchExercisesWithLikeStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExercisesWithLikeStatus.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchExercisesWithLikeStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch exercises with like status";
+      })
+      // Gestion du like/unlike
+      .addCase(toggleLikeOrUnlike.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleLikeOrUnlike.fulfilled, (state, action) => {
   const { exerciseId, updatedExercise } = action.payload;
 
-  // Trouver l'exercice à mettre à jour
   const exerciseIndex = state.data.findIndex(exercise => exercise._id === exerciseId);
-
   if (exerciseIndex !== -1) {
-    // Mettre à jour l'exercice spécifique
-    state.data[exerciseIndex] = updatedExercise;
+    // Mettre à jour les likes et unlikes
+    state.data[exerciseIndex].like = updatedExercise.like;
+    state.data[exerciseIndex].unlike = updatedExercise.unlike;
+    state.data[exerciseIndex].isLiked = updatedExercise.isLiked; // Met à jour le statut isLiked
   }
-
   state.loading = false;
 })
-.addCase(toggleLikeOrUnlike.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload || "Échec du like/unlike";
-  console.error("Toggle like/unlike failed:", action.payload);
-});
-
-
+      .addCase(toggleLikeOrUnlike.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Échec du like/unlike";
+        console.error("Toggle like/unlike failed:", action.payload);
+      });
   },
 });
 

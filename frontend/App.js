@@ -36,7 +36,7 @@ import FitnessExercices from './src/pages/ProfileSection/profile/ExerciceApi/Fit
 import ExerciseListScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseListScreen";
 import ExerciseDetailsScreen from "./src/pages/ProfileSection/profile/ExerciceApi/FitnessExercice/ExerciseListScreen/ExerciseDetailsScreen/ExerciseDetailsScreen";
 import PolicyScreen from "./src/pages/ProfileSection/profile/PolicyScreen/PolicyScreen";
-import StartExerciseScreen from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciceCard/StartExerciseScreen";
+import StartExerciseScreen from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciceCard/StartExerciceSection/StartExerciseScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
 import ScanCode from "./src/pages/ScanCode/ScanCode";

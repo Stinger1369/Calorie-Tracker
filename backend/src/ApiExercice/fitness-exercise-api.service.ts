@@ -54,6 +54,29 @@ export class FitnessExerciseApiService {
       .exec();
   }
 
+  // Nouvelle méthode pour récupérer les exercices par groupe musculaire, titre et statut de like
+  // Nouvelle méthode pour récupérer les exercices par groupe musculaire, titre et statut de like
+  // Récupérer les exercices par groupe musculaire et titre avec statut de like
+  async getExercisesByMuscleGroupAndTitleWithLikeStatus(
+    muscleGroup: string,
+    title: string,
+    userId: string,
+    gender: string,
+  ): Promise<any[]> {
+    const exercises = await this.fitnessExerciseModel
+      .find({
+        muscleGroup: { $regex: muscleGroup, $options: 'i' },
+        title: { $regex: title, $options: 'i' },
+      })
+      .exec();
+
+    // Ajouter dynamiquement le statut `isLiked` pour chaque exercice
+    return exercises.map((exercise) => {
+      const isLiked = exercise.like.user_ids[gender]?.includes(userId) || false;
+      return { ...exercise.toObject(), isLiked };
+    });
+  }
+
   // Récupérer les exercices dans une plage de calories
   async getExercisesByCalories(
     minCalories: number,
@@ -133,5 +156,19 @@ export class FitnessExerciseApiService {
     }
 
     return this.fitnessExerciseModel.findById(exerciseId);
+  }
+
+  // Méthode pour récupérer les exercices avec le statut de like pour un utilisateur
+  async getExercisesWithLikeStatus(
+    userId: string,
+    gender: string,
+  ): Promise<any[]> {
+    const exercises = await this.fitnessExerciseModel.find().exec();
+
+    // Check if the user has liked each exercise based on the gender
+    return exercises.map((exercise) => {
+      const isLiked = exercise.like.user_ids[gender]?.includes(userId) || false;
+      return { ...exercise.toObject(), isLiked };
+    });
   }
 }

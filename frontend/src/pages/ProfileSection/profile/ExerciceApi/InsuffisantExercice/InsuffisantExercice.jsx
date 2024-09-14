@@ -6,7 +6,11 @@ const Tab = createMaterialTopTabNavigator();
 
 const InsuffisantExercice = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        lazy: true, // Garde l'option lazy dans screenOptions
+      }}
+    >
       <Tab.Screen name="Mois 1">
         {() => <Session month={1} />}
       </Tab.Screen>

@@ -55,6 +55,22 @@ export class FitnessExerciseApiController {
     );
   }
 
+  // Updated controller method
+  @Get('muscleGroup/:muscleGroup/title/:title/with-like-status')
+  async getExercisesByMuscleGroupAndTitleWithLikeStatus(
+    @Param('muscleGroup') muscleGroup: string,
+    @Param('title') title: string,
+    @Query('userId') userId: string, // Include userId from query
+    @Query('gender') gender: string, // Include gender from query
+  ) {
+    return this.fitnessExerciseApiService.getExercisesByMuscleGroupAndTitleWithLikeStatus(
+      muscleGroup,
+      title,
+      userId,
+      gender, // Now passing gender to the service
+    );
+  }
+
   // Route pour obtenir les exercices selon une plage de calories
   @Get('calories')
   async getExercisesByCalories(
@@ -97,6 +113,18 @@ export class FitnessExerciseApiController {
     return this.fitnessExerciseApiService.toggleLikeOrUnlike(
       exerciseId,
       toggleLikeDto,
+    );
+  }
+
+  // Nouvelle route pour récupérer les exercices avec le statut de like pour un utilisateur
+  @Get('with-like-status')
+  async getExercisesWithLikeStatus(
+    @Query('userId') userId: string,
+    @Query('gender') gender: string, // Add gender parameter here
+  ) {
+    return this.fitnessExerciseApiService.getExercisesWithLikeStatus(
+      userId,
+      gender,
     );
   }
 }

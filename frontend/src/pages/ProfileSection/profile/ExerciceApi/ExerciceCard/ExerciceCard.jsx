@@ -1,12 +1,9 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import styles from './ExerciseCardStyle';
 
 const { width: screenWidth } = Dimensions.get('window');
-const truncateTitle = (title) => {
-  return title.length > 20 ? title.substring(0, 20) + '...' : title;
-};
 
 const ExerciseCard = ({
   title,
@@ -17,9 +14,31 @@ const ExerciseCard = ({
   caloriesBurned,
   caloriesPerRep,
   onLike,
-  onUnlike
+  onUnlike,
+  liked,
+  unliked
 }) => {
-  console.log("ExerciseCard rendered for:", title);
+  console.log("ExerciseCard rendered for:", title, "Liked state:", liked, "Unliked state:", unliked);
+
+  const handlePressStart = useCallback(() => {
+    onPressStart();
+  }, [onPressStart]);
+
+  const handlePressDetails = useCallback(() => {
+    onPressDetails();
+  }, [onPressDetails]);
+
+  const handleLike = useCallback(() => {
+    if (!liked) {
+      onLike();
+    }
+  }, [onLike, liked]);
+
+  const handleUnlike = useCallback(() => {
+    if (!unliked) {
+      onUnlike();
+    }
+  }, [onUnlike, unliked]);
 
   return (
     <View style={styles.cardContainer}>
@@ -39,32 +58,37 @@ const ExerciseCard = ({
         )}
         <View style={styles.right}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>{truncateTitle(title || 'Exercice')}</Text>
+            <Text style={styles.title}>{title}</Text>
             <Text style={styles.detailsText}>Répétitions: {repetitions || 'N/A'}</Text>
             <Text style={styles.detailsText}>Calories dépensées: {caloriesBurned || 'N/A'}</Text>
             <Text style={styles.detailsText}>Calories par répétition: {caloriesPerRep || 'N/A'}</Text>
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.startButton} onPress={onPressStart}>
+            <TouchableOpacity style={styles.startButton} onPress={handlePressStart}>
               <Text style={styles.buttonText}>Start</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.detailsButton} onPress={onPressDetails}>
+            <TouchableOpacity style={styles.detailsButton} onPress={handlePressDetails}>
               <Text style={styles.buttonText}>Details</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+
+      {/* Like and Unlike buttons with default colors and interaction logic */}
       <View style={styles.likeDislikeContainer}>
-        <TouchableOpacity onPress={onLike}>
-          <FontAwesome name="thumbs-up" size={24} color="green" />
+        {/* Like button is green by default, turns gray when liked */}
+        <TouchableOpacity onPress={handleLike} disabled={liked}>
+<FontAwesome name="thumbs-up" size={24} color={liked ? "gray" : "green"} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dislikeButton} onPress={onUnlike}>
-          <FontAwesome name="thumbs-down" size={24} color="red" />
+
+        {/* Unlike button is red by default, turns gray when unliked */}
+        <TouchableOpacity onPress={handleUnlike} disabled={unliked} style={styles.dislikeButton}>
+<FontAwesome name="thumbs-down" size={24} color={unliked ? "gray" : "red"} />
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default ExerciseCard;
+export default memo(ExerciseCard);
