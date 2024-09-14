@@ -24,6 +24,7 @@ const initialState = {
   age: null,
   bmi: null,
   recommendedCalories: null,
+  members: [],  // Ajout de la liste des membres
   loading: false,
   error: null,
   isProfileIncomplete: false, // Ajout de l'état pour le profil incomplet
@@ -66,6 +67,25 @@ export const fetchUserInfo = createAsyncThunk(
       }
       console.error("Unknown error fetching user info:", error);
       return rejectWithValue("An error occurred while fetching user info");
+    }
+  }
+);
+
+// Action pour récupérer tous les utilisateurs (membres)
+export const fetchAllUsers = createAsyncThunk(
+  "user/fetchAllUsers",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const response = await axios.get(
+        `${hostname}/users`,  // Assure-toi que l'API supporte cette route
+        getAuthHeader(getState)
+      );
+      return response.data;  // La liste des utilisateurs
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue("An error occurred while fetching all users");
     }
   }
 );
@@ -134,7 +154,7 @@ const userSlice = createSlice({
         state.bmi = action.payload.bmi;
         state.recommendedCalories = action.payload.recommendedCalories;
 
-        // Vérifier si les informations essentielles sont manquantes (taille, poids, genre, date de naissance)
+        // Vérifier si les informations essentielles sont manquantes
         if (!action.payload.height || !action.payload.weight || !action.payload.dateOfBirth || !action.payload.gender) {
           state.isProfileIncomplete = true;
         } else {
@@ -145,6 +165,22 @@ const userSlice = createSlice({
         console.error("Failed to fetch user info (rejected):", action.payload);
         state.loading = false;
         state.error = action.payload || "Failed to fetch user info";
+      })
+      // Fetch All Users (nouvelle action pour récupérer tous les membres)
+      .addCase(fetchAllUsers.pending, (state) => {
+        console.log("Fetching all users... (pending)");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        console.log("All users fetched successfully (fulfilled):", action.payload);
+        state.loading = false;
+        state.members = action.payload;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        console.error("Failed to fetch all users (rejected):", action.payload);
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch all users";
       })
       // Update User Info
       .addCase(updateUserInfo.pending, (state) => {

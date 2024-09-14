@@ -191,12 +191,13 @@ const handleNutritionPress = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.section, styles.sectionMembers]}
-              onPress={() => {}}
-            >
-              <FontAwesome5 name="users" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Membres</Text>
-            </TouchableOpacity>
+  style={[styles.section, styles.sectionMembers]}
+  onPress={() => navigation.navigate("MembersScreen")} // Navigue vers l'écran des membres
+>
+  <FontAwesome5 name="users" size={40} color="#ffffff" />
+  <Text style={styles.sectionText}>Membres</Text>
+</TouchableOpacity>
+
 
             <TouchableOpacity
               style={[styles.section, styles.sectionRecipes]}

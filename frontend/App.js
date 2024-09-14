@@ -44,7 +44,8 @@ import ScanHistory from "./src/pages/ScanCode/ScanHistory";
 import ProductDetails from "./src/pages/ScanCode/ProductDetails";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
-
+import MembersScreen from "./src/pages/ProfileSection/MembersScreen/MembersScreen";
+import MemberProfileScreen from "./src/pages/ProfileSection/profile/MemberProfileScreen.jsx";
 enableScreens();
 
 const Stack = createNativeStackNavigator();
@@ -175,6 +176,14 @@ const App = () => {
             options={{ title: "Programme des mois" }}
           />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
+
+          <Stack.Screen name="MembersScreen" component={MembersScreen} options={{ title: 'Membres' }} />
+<Stack.Screen
+  name="MemberProfileScreen"
+  component={MemberProfileScreen}
+  options={{ title: "Member Profile" }}
+/>
+
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

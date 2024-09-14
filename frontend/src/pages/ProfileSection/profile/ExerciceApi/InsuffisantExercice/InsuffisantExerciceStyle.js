@@ -1,11 +1,10 @@
+import { StyleSheet, Dimensions } from "react-native";
 
-
-import { StyleSheet } from "react-native";
+const { width: screenWidth } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
   loadingContainer: {
     flex: 1,
@@ -64,22 +63,25 @@ const styles = StyleSheet.create({
   },
   sessionSwitcher: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between", // Répartit sans espace
     marginBottom: 20,
-  },
-  monthButton: {
-    marginHorizontal: 10,
-    padding: 10,
-    backgroundColor: "#007bff",
-    color: "#fff",
-    borderRadius: 5,
+    width: "100%",
   },
   sessionButton: {
-    marginHorizontal: 10,
-    padding: 10,
-    backgroundColor: "#28a745",
+    width: screenWidth / 3, // Ajusté pour occuper exactement un tiers de l'écran
+    padding: 5,
+    //borderRadius: 0, // Pas de bordures arrondies pour les bords adjacents
+    alignItems: "center",
+  },
+  activeSessionButton: {
+    backgroundColor: "#28a745", // Couleur verte pour le bouton actif
+  },
+  inactiveSessionButton: {
+    backgroundColor: "#ccc", // Couleur grise pour le bouton inactif
+  },
+  buttonText: {
     color: "#fff",
-    borderRadius: 5,
+    fontWeight: "bold",
   },
   categoryTitle: {
     fontSize: 24,
