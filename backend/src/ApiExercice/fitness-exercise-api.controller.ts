@@ -84,7 +84,7 @@ export class FitnessExerciseApiController {
   }
 
   // Nouvelle route pour obtenir les groupes musculaires uniques
-  @Get('muscle-groups')
+  @Get('unique-muscle-groups')
   async getUniqueMuscleGroups() {
     return this.fitnessExerciseApiService.getUniqueMuscleGroups();
   }

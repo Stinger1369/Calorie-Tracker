@@ -168,7 +168,7 @@ export const fetchMuscleGroups = createAsyncThunk(
   async (_, { rejectWithValue, getState }) => {
     try {
       const response = await axios.get(
-        `${hostname}/fitnessExercice/muscleGroups`,
+        `${hostname}/fitnessExercice/unique-muscle-groups`,
         getAuthHeader(getState)
       );
       return response.data;
@@ -208,14 +208,11 @@ export const fetchExercisesWithLikeStatus = createAsyncThunk(
   "exerciseApi/fetchExercisesWithLikeStatus",
   async ({ exerciseId, userId, gender }, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`${hostname}/fitnessexercice/${exerciseId}/with-like-status`, {
-        params: {
-          userId,
-          gender,
-        },
-        ...getAuthHeader(getState),
-      });
-      return response.data; // Cela ne retourne que le statut { isLiked, isUnliked }
+      const response = await axios.get(
+        `${hostname}/fitnessexercice/${exerciseId}/with-like-status?userId=${userId}&gender=${gender}`,
+        getAuthHeader(getState)
+      );
+      return { exerciseId, ...response.data };  // Retourner les résultats avec exerciseId
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
@@ -224,6 +221,7 @@ export const fetchExercisesWithLikeStatus = createAsyncThunk(
     }
   }
 );
+
 
 
 // État initial
