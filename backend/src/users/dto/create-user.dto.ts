@@ -20,15 +20,18 @@ export class CreateUserDto {
   @IsEmail()
   readonly email: string;
 
-  @IsNotEmpty()
+  @IsOptional() // Make password optional for Google login
   @MinLength(6)
-  readonly password: string;
+  readonly password?: string;
+
+  @IsOptional()
+  @IsString()
+  readonly googleId?: string; // Field for Google ID
 
   @IsOptional()
   @IsString()
   readonly verificationCode?: string;
 
-  // Ajoute ceci si nécessaire
   @IsOptional()
   @IsBoolean()
   readonly isVerified?: boolean;

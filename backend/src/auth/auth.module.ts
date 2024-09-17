@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from '../users/users.module';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth.service'; // Assurez-vous que ce chemin est correct
 import { AuthController } from './auth.controller';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import {
   BlacklistedToken,
   BlacklistedTokenSchema,
-} from './schemas/blacklisted-token.schema'; // Importez votre schéma
+} from './schemas/blacklisted-token.schema';
 import { EmailService } from '../email/email.service';
 
 @Module({
@@ -24,9 +24,9 @@ import { EmailService } from '../email/email.service';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: BlacklistedToken.name, schema: BlacklistedTokenSchema },
-    ]), // Ajoutez le modèle à Mongoose
+    ]),
   ],
-  providers: [AuthService, JwtStrategy, EmailService],
+  providers: [AuthService, JwtStrategy, EmailService], // AuthService doit être là
   controllers: [AuthController],
 })
 export class AuthModule {}

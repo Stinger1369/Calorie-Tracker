@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, SafeAreaView, StyleSheet } from "react-native";
 
 import { loadFonts } from "./src/utils/loadFonts";
 
@@ -39,45 +38,155 @@ import PolicyScreen from "./src/pages/ProfileSection/profile/PolicyScreen/Policy
 import StartExerciseScreen from "./src/pages/ProfileSection/profile/ExerciceApi/ExerciceCard/StartExerciceSection/StartExerciseScreen";
 import HoroscopeDetailsScreen from "./src/pages/Home/HoroscopeDetails/HoroscopeDetailsScreen";
 import RecetteScreen from "./src/pages/Home/RecipeScreen/RecetteScreen";
-import ScanCode from "./src/pages/ScanCode/ScanCode";
-import ScanHistory from "./src/pages/ScanCode/ScanHistory";
 import ProductDetails from "./src/pages/ScanCode/ProductDetails";
-import store from "./src/redux/store/store";
-import { enableScreens } from "react-native-screens";
 import MembersScreen from "./src/pages/ProfileSection/MembersScreen/MembersScreen";
 import MemberProfileScreen from "./src/pages/ProfileSection/profile/MemberProfileScreen.jsx";
+import CreateProgramScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/CreateProgramScreen";
+import SelectExercisesScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/SelectExercisesScreen";
+import ReviewProgramScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/ReviewProgramScreen";
+
+import ScanTabNavigator from './src/navigation/ScanTabNavigator';
+import MonthTabNavigator from './src/navigation/MonthTabNavigator';
+
+import store from "./src/redux/store/store";
+import { enableScreens } from "react-native-screens";
+
 enableScreens();
 
 const Stack = createNativeStackNavigator();
-const Tab = createMaterialTopTabNavigator();
 
-const ScanTabNavigator = () => {
+// AuthStack pour les utilisateurs non connectés
+const AuthStackScreen = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Scanner" component={ScanCode} />
-      <Tab.Screen name="Historique" component={ScanHistory} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+
+      <Stack.Screen
+        name="AuthChoice"
+        component={AuthChoice}
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={Register}
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="VerifyEmail"
+        component={VerifyEmail}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPassword}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 };
-const MonthTabNavigator = () => {
+
+const AppStackScreen = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Mois 1" component={InsuffisantExercice} />
-      <Tab.Screen name="Mois 2" component={NormalExercice} />
-      <Tab.Screen name="Mois 3" component={SurpoidsExercice} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+       <Stack.Screen
+              name="Home"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen
+              name="Welcom"
+              component={Welcom}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="IMCDetails" component={IMCDetails} />
+            <Stack.Screen name="Insuffisant" component={Insuffisant} />
+            <Stack.Screen name="Normal" component={Normal} />
+            <Stack.Screen name="Surpoids" component={Surpoids} />
+            <Stack.Screen name="Obesite" component={Obesite} />
+            <Stack.Screen name="RecipeScreen" component={RecipeScreen} />
+            <Stack.Screen name="StepsHistory" component={StepsHistoryScreen} />
+            <Stack.Screen name="KcalHistory" component={KcalHistoryScreen} />
+            <Stack.Screen name="BpmHistory" component={BpmHistoryScreen} />
+            <Stack.Screen
+              name="InsuffisantExercice"
+              component={InsuffisantExercice}
+            />
+            <Stack.Screen name="NormalExercice" component={NormalExercice} />
+            <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
+            <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
+            <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
+            <Stack.Screen name="FitnessExercices" component={FitnessExercices} />
+            <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
+            <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{ title: 'Exercise Details' }} />
+            <Stack.Screen name="StartExerciseScreen" component={StartExerciseScreen} />
+            <Stack.Screen name="CreateProgramScreen" component={CreateProgramScreen} />
+            <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
+            <Stack.Screen name="SelectExercisesScreen" component={SelectExercisesScreen} />
+             <Stack.Screen
+              name="ProfileEdit"
+              component={ProfileEditNavigator}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen name="ReviewProgramScreen" component={ReviewProgramScreen} />
+
+            <Stack.Screen
+              name="HoroscopeDetailsScreen"
+              component={HoroscopeDetailsScreen}
+            />
+            <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
+            <Stack.Screen
+              name="ScanTabs"
+              component={ScanTabNavigator}
+              options={{ title: "Scanner & Historique" }}
+            />
+            <Stack.Screen
+              name="MonthTabs"
+              component={MonthTabNavigator}
+              options={{ title: "Programme des mois" }}
+            />
+            <Stack.Screen name="ProductDetails" component={ProductDetails} />
+
+            <Stack.Screen
+              name="MembersScreen"
+              component={MembersScreen}
+              options={{ title: 'Membres' }}
+            />
+            <Stack.Screen
+              name="MemberProfileScreen"
+              component={MemberProfileScreen}
+              options={{ title: "Member Profile" }}
+            />
+    </Stack.Navigator>
   );
 };
-const App = () => {
+
+// Le composant principal vérifie si l'utilisateur est connecté et rend la bonne pile de navigation
+const MainApp = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const { token } = useSelector((state) => state.auth); // Utiliser useSelector après la configuration du Provider
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function loadAllFonts() {
       await loadFonts();
       setFontsLoaded(true);
     }
+
+    const checkAuth = () => {
+      if (token) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
     loadAllFonts();
-  }, []);
+    checkAuth();
+  }, [token]);
 
   if (!fontsLoaded) {
     return (
@@ -88,106 +197,29 @@ const App = () => {
   }
 
   return (
+    <NavigationContainer>
+      {isLoggedIn ? <AppStackScreen /> : <AuthStackScreen />}
+    </NavigationContainer>
+  );
+};
+
+// App.js avec le Provider correctement configuré
+const App = () => {
+  return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Welcom">
-          <Stack.Screen
-            name="Welcom"
-            component={Welcom}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="AuthChoice"
-            component={AuthChoice}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{ headerShown: true }}
-          />
-          <Stack.Screen
-            name="VerifyEmail"
-            component={VerifyEmail}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Home"
-            component={TabNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: true }}
-          />
-          <Stack.Screen
-            name="Logout"
-            component={Logout}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ResetPassword"
-            component={ResetPassword}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ProfileEdit"
-            component={ProfileEditNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="IMCDetails" component={IMCDetails} />
-          <Stack.Screen name="Insuffisant" component={Insuffisant} />
-          <Stack.Screen name="Normal" component={Normal} />
-          <Stack.Screen name="Surpoids" component={Surpoids} />
-          <Stack.Screen name="Obesite" component={Obesite} />
-          <Stack.Screen name="RecipeScreen" component={RecipeScreen} />
-          <Stack.Screen name="StepsHistory" component={StepsHistoryScreen} />
-          <Stack.Screen name="KcalHistory" component={KcalHistoryScreen} />
-          <Stack.Screen name="BpmHistory" component={BpmHistoryScreen} />
-          <Stack.Screen
-            name="InsuffisantExercice"
-            component={InsuffisantExercice}
-          />
-          <Stack.Screen name="NormalExercice" component={NormalExercice} />
-          <Stack.Screen name="SurpoidsExercice" component={SurpoidsExercice} />
-          <Stack.Screen name="ObesiteExercice" component={ObesiteExercice} />
-          <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
-          <Stack.Screen name="FitnessExercices" component={FitnessExercices} />
-          <Stack.Screen name="ExerciseListScreen" component={ExerciseListScreen} />
-          <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{ title: 'Exercise Details' }} />
-          <Stack.Screen name="StartExerciseScreen" component={StartExerciseScreen} />
-          <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
-
-
-          <Stack.Screen
-            name="HoroscopeDetailsScreen"
-            component={HoroscopeDetailsScreen}
-          />
-          <Stack.Screen name="RecetteScreen" component={RecetteScreen} />
-          <Stack.Screen
-            name="ScanTabs"
-            component={ScanTabNavigator}
-            options={{ title: "Scanner & Historique" }}
-          />
-           <Stack.Screen
-            name="MonthTabs"
-            component={MonthTabNavigator}
-            options={{ title: "Programme des mois" }}
-          />
-          <Stack.Screen name="ProductDetails" component={ProductDetails} />
-
-          <Stack.Screen name="MembersScreen" component={MembersScreen} options={{ title: 'Membres' }} />
-<Stack.Screen
-  name="MemberProfileScreen"
-  component={MemberProfileScreen}
-  options={{ title: "Member Profile" }}
-/>
-
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SafeAreaView style={styles.globalContainer}>
+        <MainApp />
+      </SafeAreaView>
     </Provider>
   );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  globalContainer: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "#1c1c1e", // Assure un fond constant
+  },
+});

@@ -46,7 +46,7 @@ const BasicInfoScreen = ({ navigation }) => {
       }
 
       if (userId) {
-        dispatch(fetchUserInfo(userId));
+      dispatch(fetchUserInfo({ userId, source: "BasicInfoScreen" }));
       }
     };
 

@@ -75,30 +75,31 @@ const InfoCards = ({ userInfo }) => {
             <Text style={styles.heartTitle}>Heart</Text>
             <FontAwesome5 name="heartbeat" size={18} color="#FF69B4" />
           </View>
-          {containerWidth > 0 && ( // Affiche le graphique seulement après avoir capturé la largeur
-            <LineChart
-              data={generateData()}
-              width={containerWidth + 50} // Largeur ajustée pour s'adapter au conteneur
-              height={170}
-              chartConfig={{
-                ...chartConfig,
-                color: (opacity = 1) => `rgba(255, 105, 180, ${opacity})`,
-                labelColor: () => `rgba(255, 255, 255, 0.5)`,
-                propsForDots: {
-                  r: "2",
-                  strokeWidth: "2",
-                },
-                propsForBackgroundLines: {
-                  strokeDasharray: "",
-                },
-              }}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-            />
-          )}
+         {containerWidth > 0 && (
+  <LineChart
+    data={generateData()}
+    width={containerWidth} // Ajusté pour correspondre au conteneur
+    height={170}
+    chartConfig={{
+      ...chartConfig,
+      color: (opacity = 1) => `rgba(255, 105, 180, ${opacity})`,
+      labelColor: () => `rgba(255, 255, 255, 0.5)`,
+      propsForDots: {
+        r: "2",
+        strokeWidth: "2",
+      },
+      propsForBackgroundLines: {
+        strokeDasharray: "",
+      },
+    }}
+    bezier
+    style={{
+      marginVertical: 8,
+      borderRadius: 16,
+    }}
+  />
+)}
+
           <Text style={styles.heartRateValue}>74 bpm</Text>
         </TouchableOpacity>
       </View>

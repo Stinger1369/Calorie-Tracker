@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { View, FlatList, ActivityIndicator, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllUsers } from '../../../redux/features/user/userSlice';
 import UserCard from '../../../components/UserCard/UserCard';
@@ -11,7 +11,7 @@ const MembersScreen = ({ navigation }) => {
   const { user: loggedInUser } = useSelector(state => state.auth); // Utilisateur connecté
 
   useEffect(() => {
-    dispatch(fetchAllUsers());
+    dispatch(fetchAllUsers()); // Utilise l'action fetchAllUsers
   }, [dispatch]);
 
   const handleUserPress = (memberId) => {

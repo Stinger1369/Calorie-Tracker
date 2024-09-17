@@ -77,7 +77,7 @@ const Surpoids = () => {
                 })
               }
             >
-              <Text style={styles.recipeTitle}>
+              <Text style={styles.recipeTitleSurpoids}>
                 {truncateTitle(recipe.Title)}
               </Text>
               <Image

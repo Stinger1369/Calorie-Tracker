@@ -1,15 +1,30 @@
 import React from 'react';
-import {View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {registerUser} from '../../../redux/features/auth/authSlice';
-import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../../../redux/features/auth/authSlice';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import styles from './registerStyles'; // Import external styles
+import { useIdTokenAuthRequest } from 'expo-auth-session/providers/google';
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
+  const [request, response, promptAsync] = useIdTokenAuthRequest({
+    clientId: '159735607745-262ukrqbt3iqc7p6jvlhnemh97kg1vfl.apps.googleusercontent.com', // Google Client ID
+  });
+
+React.useEffect(() => {
+  if (response?.type === 'success') {
+    const { id_token } = response.params;
+
+    // Send the ID token to the backend for authentication
+    dispatch(googleLogin({ idToken: id_token }));
+  }
+}, [response]);
+
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('Prénom requis'),
@@ -54,7 +69,7 @@ const Register = () => {
             }}
             validationSchema={validationSchema}
             onSubmit={handleRegister}>
-            {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
               <>
                 <Text style={styles.title}>Inscription</Text>
                 <TextInput
@@ -111,6 +126,14 @@ const Register = () => {
                 )}
                 <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                   <Text style={styles.buttonText}>S'inscrire</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.googleButton}
+                  onPress={() => {
+                    promptAsync();
+                  }}>
+                  <Text style={styles.buttonText}>Se connecter avec Google</Text>
                 </TouchableOpacity>
               </>
             )}

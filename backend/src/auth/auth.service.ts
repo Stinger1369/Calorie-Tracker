@@ -14,25 +14,70 @@ import { Model } from 'mongoose';
 import {
   BlacklistedToken,
   BlacklistedTokenDocument,
-} from './schemas/blacklisted-token.schema'; // Assurez-vous de créer ce schéma
+} from './schemas/blacklisted-token.schema';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+  private client: OAuth2Client;
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private emailService: EmailService,
     @InjectModel(BlacklistedToken.name)
-    private blacklistedTokenModel: Model<BlacklistedTokenDocument>, // Injectez le modèle de la liste noire
-  ) {}
+    private blacklistedTokenModel: Model<BlacklistedTokenDocument>,
+  ) {
+    this.client = new OAuth2Client(
+      '159735607745-262ukrqbt3iqc7p6jvlhnemh97kg1vfl.apps.googleusercontent.com',
+    );
+  }
+  // Authentification via Google
+  async googleLogin(idToken: string): Promise<any> {
+    try {
+      const ticket = await this.client.verifyIdToken({
+        idToken,
+        audience:
+          '159735607745-262ukrqbt3iqc7p6jvlhnemh97kg1vfl.apps.googleusercontent.com',
+      });
+      const payload = ticket.getPayload();
 
+      let user = await this.usersService.findByEmail(payload.email);
+
+      if (!user) {
+        user = await this.usersService.create({
+          email: payload.email,
+          firstName: payload.given_name,
+          lastName: payload.family_name,
+          googleId: payload.sub,
+          isVerified: true,
+        });
+      }
+
+      const access_token = this.generateAccessToken(user);
+      const refresh_token = this.generateRefreshToken(user);
+
+      return {
+        access_token,
+        refresh_token,
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        },
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+  }
+  // Enregistrement d'un nouvel utilisateur
   async register(registerDto: RegisterDto): Promise<any> {
     const hashedPassword = this.hashPassword(registerDto.password);
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000,
     ).toString();
 
-    // Créer un nouvel utilisateur avec les informations de base
     const user = await this.usersService.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
@@ -42,46 +87,69 @@ export class AuthService {
       isVerified: false,
     });
 
-    // Envoyer le code de vérification par email
     await this.emailService.sendVerificationCode(user.email, verificationCode);
-
     return { message: 'A verification code has been sent to your email.' };
   }
 
+  // Connexion de l'utilisateur
   async login(
     loginDto: LoginDto,
-  ): Promise<{ access_token: string; user: any }> {
-    console.log('Login attempt with:', loginDto);
-
+  ): Promise<{ access_token: string; refresh_token: string; user: any }> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     if (!user) {
-      console.error('Login failed: invalid credentials');
       throw new UnauthorizedException('Invalid credentials.');
     }
 
     if (!user.isVerified) {
-      console.error('Login failed: user is not verified');
       throw new UnauthorizedException('User is not verified.');
     }
 
-    const payload = { email: user.email, sub: user._id };
-    const access_token = this.jwtService.sign(payload);
-
-    console.log('Login successful, generated token:', access_token);
+    const access_token = this.generateAccessToken(user);
+    const refresh_token = this.generateRefreshToken(user);
 
     return {
       access_token,
+      refresh_token,
       user: {
-        _id: user._id, // Assurez-vous que l'ID utilisateur est inclus ici
+        _id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        // Inclure d'autres informations utilisateur si nécessaire
       },
     };
   }
 
+  // Générer un access token
+  generateAccessToken(user: any): string {
+    const payload = { email: user.email, sub: user._id };
+    return this.jwtService.sign(payload, { expiresIn: '1h' });
+  }
+
+  // Générer un refresh token
+  generateRefreshToken(user: any): string {
+    const payload = { email: user.email, sub: user._id };
+    return this.jwtService.sign(payload, { expiresIn: '7d' });
+  }
+
+  // Renouvellement de l'access token avec le refresh token
+  async refreshAccessToken(
+    refresh_token: string,
+  ): Promise<{ access_token: string }> {
+    try {
+      const payload = this.jwtService.verify(refresh_token);
+      const user = await this.usersService.findById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token.');
+      }
+      const newAccessToken = this.generateAccessToken(user);
+      return { access_token: newAccessToken };
+    } catch (error) {
+      throw new UnauthorizedException('Refresh token expired or invalid.');
+    }
+  }
+
+  // Vérification du code de validation
   async verifyCode(email: string, code: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
 
@@ -104,6 +172,7 @@ export class AuthService {
     return { message: 'User successfully verified.' };
   }
 
+  // Demander un nouveau code de vérification
   async sendNewVerificationCode(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
 
@@ -115,7 +184,7 @@ export class AuthService {
       100000 + Math.random() * 900000,
     ).toString();
 
-    const codeExpirationTime = new Date(new Date().getTime() + 15 * 60000); // Code expires in 15 minutes
+    const codeExpirationTime = new Date(new Date().getTime() + 15 * 60000);
 
     user.verificationCode = newVerificationCode;
     user.codeExpiration = codeExpirationTime;
@@ -129,6 +198,7 @@ export class AuthService {
     return { message: 'A new verification code has been sent to your email.' };
   }
 
+  // Gestion de la réinitialisation du mot de passe
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
@@ -168,7 +238,6 @@ export class AuthService {
   }
 
   async logout(token: string): Promise<void> {
-    // Ajoute le token à la liste noire
     await this.blacklistedTokenModel.create({ token });
   }
 

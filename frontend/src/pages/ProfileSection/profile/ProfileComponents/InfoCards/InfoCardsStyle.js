@@ -1,55 +1,61 @@
 import { StyleSheet } from "react-native";
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   infoCardsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    width: "100%",
+    marginBottom: hp('2%'),
   },
   leftColumn: {
     flex: 1,
     justifyContent: "space-between",
-    marginHorizontal: 10,
+    marginHorizontal: wp('2.5%'),
+    width: "100%",
   },
   rightColumn: {
-    flex: 1,
-    justifyContent: "center",
-    marginRight: 100,
-  },
-  caloriesCard: {
-    backgroundColor: "#FF6347",
-    borderRadius: 20,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-    padding: 15,
-    borderRadius: 20,
-    width: 120,
-    height: 120,
-  },
-  stepsCard: {
-    backgroundColor: "#4682B4",
-    borderRadius: 20,
-    padding: 15,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-    borderRadius: 20,
-    width: 120,
-    height: 120,
-  },
-  bpmCard: {
-    backgroundColor: "#1E2132",
-    borderRadius: 20,
-    padding: 15,
-    alignItems: "center",
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-    borderRadius: 20,
-    width: 250,
+  flex: 1,
+  justifyContent: "center",
+  marginRight: wp('10%'), // Réduire la marge pour les écrans larges
+  width: "100%",
+},
 
-  },
+caloriesCard: {
+  backgroundColor: "#FF6347",
+  borderRadius: wp('5%'),
+  alignItems: "center",
+  borderWidth: 2,
+  borderColor: "#FFFFFF",
+  padding: hp('2%'),
+  width: wp('35%'), // Augmenter la largeur
+  height: hp('18%'), // Augmenter légèrement la hauteur
+},
+stepsCard: {
+  backgroundColor: "#4682B4",
+  borderRadius: wp('5%'),
+  padding: hp('2%'),
+  alignItems: "center",
+  borderWidth: 2,
+  borderColor: "#FFFFFF",
+  width: wp('35%'), // Ajustement similaire
+  height: hp('18%'),
+},
+
+bpmCard: {
+  backgroundColor: "#1E2132",
+  borderRadius: wp('5%'),
+  padding: hp('2%'),
+  alignItems: "center",
+  marginBottom: hp('1%'),
+  borderWidth: 2,
+  borderColor: "#FFFFFF",
+  width: "120%",
+  overflow: "hidden", // Empêche les débordements
+},
+
+
   heartHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -57,26 +63,16 @@ const styles = StyleSheet.create({
    },
   heartTitle: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: wp('4%'),
     fontWeight: "bold",
   },
   heartRateValue: {
     color: "#FFFFFF",
-    fontSize: 24,
+    fontSize: wp('6%'),
     fontWeight: "bold",
-    marginTop: 10,
-  },
-  infoCardTitle: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    marginTop: 5,
-  },
-  infoCardValue: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 5,
+    marginTop: hp('1%'),
   },
 });
 
 export default styles;
+

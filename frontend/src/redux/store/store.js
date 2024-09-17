@@ -7,7 +7,7 @@ import stepReducer from "../features/step/stepSlice";
 import exerciseApiReducer from "../features/exerciseApi/exerciseApiSlice";
 import horiscopeSlice from "../features/horiscopeSlice/horiscopeSlice";
 import imageReducer from "../features/imageSlice/imageSlice";
-
+import customProgramReducer from "../features/customProgramExerciceSlice/customProgramExerciceSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -18,6 +18,7 @@ const store = configureStore({
     exerciseApi: exerciseApiReducer,
     horiscope: horiscopeSlice,
     image: imageReducer,
+    customProgram: customProgramReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

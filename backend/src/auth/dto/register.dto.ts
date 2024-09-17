@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, MinLength, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -25,4 +31,7 @@ export class RegisterDto {
       'Confirmation password is too short. It must be at least 6 characters.',
   })
   readonly confirmPassword: string;
+
+  @IsOptional() // Optional field for Google users
+  readonly googleId?: string;
 }

@@ -83,6 +83,12 @@ export class FitnessExerciseApiController {
     );
   }
 
+  // Nouvelle route pour obtenir les groupes musculaires uniques
+  @Get('muscle-groups')
+  async getUniqueMuscleGroups() {
+    return this.fitnessExerciseApiService.getUniqueMuscleGroups();
+  }
+
   // Route pour obtenir un exercice par son type (e.g., Musculation, Cardio)
   @Get('type/:type')
   async getExercisesByType(@Param('type') type: string) {
@@ -117,12 +123,14 @@ export class FitnessExerciseApiController {
   }
 
   // Nouvelle route pour récupérer les exercices avec le statut de like pour un utilisateur
-  @Get('with-like-status')
-  async getExercisesWithLikeStatus(
+  @Get(':id/with-like-status')
+  async getExerciseWithLikeStatus(
+    @Param('id') exerciseId: string,
     @Query('userId') userId: string,
-    @Query('gender') gender: string, // Add gender parameter here
+    @Query('gender') gender: string,
   ) {
-    return this.fitnessExerciseApiService.getExercisesWithLikeStatus(
+    return this.fitnessExerciseApiService.getExerciseWithLikeStatus(
+      exerciseId,
       userId,
       gender,
     );

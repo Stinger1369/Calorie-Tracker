@@ -26,33 +26,33 @@ const HealthInfoScreen = ({ navigation }) => {
       try {
         let userId = user?._id;
         let storedToken = token;
-  
+
         console.log("User ID:", userId);
         console.log("Stored Token:", storedToken);
-  
+
         if (!userId || !storedToken) {
           const storedUser = await AsyncStorage.getItem("user");
           storedToken = await AsyncStorage.getItem("token");
-  
+
           console.log("Stored User:", storedUser);
           console.log("Stored Token:", storedToken);
-  
+
           if (storedUser && storedToken) {
             const parsedUser = JSON.parse(storedUser);
             userId = parsedUser?._id;
-  
+
             dispatch(restoreToken({ user: parsedUser, token: storedToken }));
           }
         }
 
         if (userId && storedToken) {
-          await dispatch(fetchUserInfo(userId));
+        await dispatch(fetchUserInfo({ userId, source: "HealthInfoScreen" }));
         }
       } catch (error) {
         console.error("Failed to load user data:", error);
       }
     };
-  
+
     loadUserData();
   }, [dispatch, user, token]);
   

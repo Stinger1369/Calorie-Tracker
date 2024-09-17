@@ -54,4 +54,14 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Avenir-Medium',
   },
+  googleButton: {
+  backgroundColor: '#4285F4', // Couleur de fond de Google
+  paddingVertical: 15,
+  paddingHorizontal: 40,
+  borderRadius: 30,
+  width: '100%',
+  alignItems: 'center',
+  marginVertical: 10,
+},
+
 });

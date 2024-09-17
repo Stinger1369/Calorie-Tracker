@@ -8,10 +8,12 @@ import { FitnessGoalModule } from './fitness-goals/fitness-goal.module';
 import { RecommendationFoodModule } from './recommendation-food/recommendation-food.module';
 import { StepCountModule } from './step-count/step-count.module';
 import { FitnessExerciseModule } from './ApiExercice/api-exercice-api.module';
+import { CustomProgramsExerciceModule } from './custom-programs-exercice/custom-programs-exercice.module'; // Ajout de l'import pour CustomProgramsExercice
+
 import { ImageModule } from './image/image.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerMiddleware } from './middleware/LoggerMiddleware'; // Assurez-vous que le chemin est correct
+import { LoggerMiddleware } from './middleware/LoggerMiddleware';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { LoggerMiddleware } from './middleware/LoggerMiddleware'; // Assurez-vou
     RecommendationFoodModule,
     StepCountModule,
     FitnessExerciseModule,
+    CustomProgramsExerciceModule,
     ImageModule,
   ],
   controllers: [AppController],

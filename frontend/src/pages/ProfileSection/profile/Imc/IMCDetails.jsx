@@ -24,17 +24,18 @@ const IMCDetails = () => {
     }
   };
 
-  const getAdviceImage = () => {
-    if (imc < 18.5) {
-      return require("./images/underweight.png");
-    } else if (imc >= 18.5 && imc < 24.9) {
-      return require("./images/normal.png");
-    } else if (imc >= 25 && imc < 29.9) {
-      return require("./images/overweight.png");
-    } else {
-      return require("./images/obesity.png");
-    }
-  };
+ const getAdviceImage = () => {
+  if (imc < 18.5) {
+    return { uri: "http://82.66.65.151:7000/images/front/underweight.png" };
+  } else if (imc >= 18.5 && imc < 24.9) {
+    return { uri: "http://82.66.65.151:7000/images/front/normal.png" };
+  } else if (imc >= 25 && imc < 29.9) {
+    return { uri: "http://82.66.65.151:7000/images/front/overweight.png" };
+  } else {
+    return { uri: "http://82.66.65.151:7000/images/front/obesity.png" };
+  }
+};
+
 
   const getIMCIndex = () => {
     if (imc < 18.5) {

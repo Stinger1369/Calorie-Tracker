@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
   },
-  recipeTitle: {
+  recipeTitleObeisite: {
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 5,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 5,
   },
-  recipeTitle: {
+  recipeTitleObeisite: {
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 5,

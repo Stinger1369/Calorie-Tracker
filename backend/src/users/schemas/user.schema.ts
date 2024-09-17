@@ -79,6 +79,9 @@ export class User extends Document {
   @Prop({ default: false })
   isVerified: boolean;
 
+  @Prop({ default: false })
+  hasAcceptedPolicy: boolean;
+
   @Prop({ required: false, enum: ['male', 'female', 'other'] })
   gender: string;
 
@@ -208,6 +211,9 @@ export class User extends Document {
 
   @Prop()
   imageUrl: string;
+
+  @Prop()
+  googleId?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

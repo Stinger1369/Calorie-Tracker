@@ -34,12 +34,16 @@ const ScanCode = () => {
         };
 
         ws.current.onerror = (error) => {
-          setTimeout(connectWebSocket, 5000);
+          // Utilisation de useEffect pour gérer le setTimeout
+          const timeout = setTimeout(connectWebSocket, 5000);
+          return () => clearTimeout(timeout);
         };
 
         ws.current.onclose = (event) => {
           setIsWsConnected(false);
-          setTimeout(connectWebSocket, 5000);
+          // Utilisation de useEffect pour gérer le setTimeout
+          const timeout = setTimeout(connectWebSocket, 5000);
+          return () => clearTimeout(timeout);
         };
       }
     };
@@ -147,12 +151,10 @@ const ScanCode = () => {
               <Text style={styles.productDetail}>Nutriscore: {response.nutriscore || "N/A"}</Text>
               <Text style={styles.productDetail}>Quantity: {response.quantity || "N/A"}</Text>
 
-              {/* Affichage de l'indicateur de santé */}
               <Text style={[styles.productDetail, { color: response.is_healthy ? 'green' : 'red' }]}>
                 Health Status: {response.is_healthy ? 'Healthy' : 'Unhealthy'}
               </Text>
 
-              {/* Afficher seulement les nutriments qui ne sont pas nuls */}
               {response.nutriments && Object.keys(response.nutriments).map((key) => {
                 const value = response.nutriments[key];
                 if (value !== null) {

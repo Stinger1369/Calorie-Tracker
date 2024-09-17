@@ -77,7 +77,7 @@ const Normal = () => {
                 })
               }
             >
-              <Text style={styles.recipeTitle}>
+              <Text style={styles.recipeTitleNormal}>
                 {truncateTitle(recipe.Title)}
               </Text>
               <Image

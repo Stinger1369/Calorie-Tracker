@@ -11,7 +11,7 @@ export default StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: "cover",
-    //marginBottom: getResponsiveSize(5, "height"),
+    // marginBottom: getResponsiveSize(5, "height"),
   },
   container: {
     flex: 1,
@@ -20,7 +20,7 @@ export default StyleSheet.create({
     paddingTop: getResponsiveSize(10, "height"),
   },
   menuContainer: {
-    //position: "absolute",
+    // position: "absolute",
     bottom: 0,
     width: "100%",
     backgroundColor: "#0E1331",
@@ -179,5 +179,18 @@ export default StyleSheet.create({
     color: "#fff",
     fontSize: getResponsiveSize(4),
     fontWeight: "bold",
+  },
+  // Ajout des styles pour les icônes
+  icon: {
+    fontSize: getResponsiveSize(10), // équivalent à size={40}
+    color: "#ffffff",
+  },
+  iconLogout: {
+    fontSize: getResponsiveSize(7.5), // équivalent à size={30}
+    color: "#ffffff",
+  },
+  iconClose: {
+    fontSize: getResponsiveSize(7.5), // équivalent à size={30}
+    color: "#e74c3c",
   },
 });

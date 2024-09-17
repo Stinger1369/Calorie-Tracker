@@ -77,7 +77,7 @@ const Insuffisant = () => {
                 })
               }
             >
-              <Text style={styles.recipeTitle}>
+              <Text style={styles.recipeTitleInsuffisant}>
                 {truncateTitle(recipe.Title)}
               </Text>
               <Image

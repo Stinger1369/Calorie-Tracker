@@ -35,23 +35,25 @@ const AdditionalInfoScreen = ({ navigation }) => {
   const [initialValues, setInitialValues] = useState({});
   const [isSaved, setIsSaved] = useState(false);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      let userId = user?._id;
+useEffect(() => {
+  const loadUserData = async () => {
+    let userId = user?._id;
 
-      if (!userId) {
-        const storedUser = await AsyncStorage.getItem("user");
-        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-        userId = parsedUser?._id;
-      }
+    if (!userId) {
+      const storedUser = await AsyncStorage.getItem("user");
+      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      userId = parsedUser?._id;
+    }
 
-      if (userId) {
-        dispatch(fetchUserInfo(userId));
-      }
-    };
+    if (userId) {
+      // Add source tracking for AdditionalInfoScreen
+      dispatch(fetchUserInfo({ userId, source: "AdditionalInfoScreen" }));
+    }
+  };
 
-    loadUserData();
-  }, [dispatch, user]);
+  loadUserData();
+}, [dispatch, user]);
+
 
   useEffect(() => {
     if (userInfo) {

@@ -77,7 +77,7 @@ const Obeisite = () => {
                 })
               }
             >
-              <Text style={styles.recipeTitle}>
+              <Text style={styles.recipeTitleObeisite}>
                 {truncateTitle(recipe.Title)}
               </Text>
               <Image

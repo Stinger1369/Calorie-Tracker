@@ -15,6 +15,11 @@ import { Request, Response } from 'express';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post('google')
+  async googleLogin(@Body('idToken') idToken: string) {
+    return this.authService.googleLogin(idToken);
+  }
+
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
@@ -70,5 +75,10 @@ export class AuthController {
       await this.authService.logout(token); // Invalide le token
     }
     res.status(200).send({ message: 'Logged out successfully' });
+  }
+
+  @Post('refresh-token')
+  async refreshToken(@Body('refresh_token') refresh_token: string) {
+    return this.authService.refreshAccessToken(refresh_token);
   }
 }

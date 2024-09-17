@@ -1,0 +1,34 @@
+# Ignorer les dossiers spécifiques à l'IDE/éditeur
+.vscode/
+.idea/
+*.swp
+
+# Ignorer les fichiers et dossiers de build
+node_modules/
+build/
+dist/
+android/build/
+ios/build/
+web-build/
+
+# Ignorer les fichiers log et de configuration spécifiques
+*.log
+*.lock
+*.cache
+
+# Ignorer les fichiers générés par Expo ou Yarn
+.expo/
+.expo-shared/
+yarn-error.log
+.yarn/
+.pnp.*
+.yarnrc.yml
+
+# Ignorer les fichiers d'images ou autres ressources non nécessaires au build
+assets/images/backup/
+frontend/src/assets/Images/
+
+# Ignorer les fichiers spécifiques à Git ou aux environnements locaux
+.git/
+.env
+.DS_Store

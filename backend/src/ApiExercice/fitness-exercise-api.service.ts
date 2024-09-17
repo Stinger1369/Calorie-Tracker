@@ -54,8 +54,6 @@ export class FitnessExerciseApiService {
       .exec();
   }
 
-  // Nouvelle méthode pour récupérer les exercices par groupe musculaire, titre et statut de like
-  // Nouvelle méthode pour récupérer les exercices par groupe musculaire, titre et statut de like
   // Récupérer les exercices par groupe musculaire et titre avec statut de like
   async getExercisesByMuscleGroupAndTitleWithLikeStatus(
     muscleGroup: string,
@@ -112,8 +110,8 @@ export class FitnessExerciseApiService {
   // Méthode pour gérer le like/unlike
   async toggleLikeOrUnlike(
     exerciseId: string,
-    toggleLikeDto: ToggleLikeDto, // Utilisation du DTO pour valider les données
-  ): Promise<FitnessExercise> {
+    toggleLikeDto: ToggleLikeDto,
+  ): Promise<any> {
     const { userId, actionType, gender } = toggleLikeDto;
     const exercise = await this.fitnessExerciseModel.findById(exerciseId);
 
@@ -123,31 +121,52 @@ export class FitnessExerciseApiService {
 
     try {
       if (actionType === 'like') {
-        await this.fitnessExerciseModel.findByIdAndUpdate(
-          exerciseId,
-          {
-            $pull: { [`unlike.user_ids.${gender}`]: userId }, // Retirer de la liste unlike
-            $push: { [`like.user_ids.${gender}`]: userId }, // Ajouter à la liste like
-            $inc: {
-              [`unlike.count.${gender}`]: -1, // Diminuer le count unlike
-              [`like.count.${gender}`]: 1, // Incrémenter le count like
+        const isAlreadyLiked = exercise.like.user_ids[gender]?.includes(userId);
+
+        if (!isAlreadyLiked) {
+          const isAlreadyUnliked =
+            exercise.unlike.user_ids[gender]?.includes(userId);
+
+          if (isAlreadyUnliked) {
+            await this.fitnessExerciseModel.findByIdAndUpdate(exerciseId, {
+              $pull: { [`unlike.user_ids.${gender}`]: userId },
+              $inc: { [`unlike.count.${gender}`]: -1 },
+            });
+          }
+
+          await this.fitnessExerciseModel.findByIdAndUpdate(
+            exerciseId,
+            {
+              $push: { [`like.user_ids.${gender}`]: userId },
+              $inc: { [`like.count.${gender}`]: 1 },
             },
-          },
-          { new: true }, // Pour retourner l'objet mis à jour
-        );
+            { new: true },
+          );
+        }
       } else if (actionType === 'unlike') {
-        await this.fitnessExerciseModel.findByIdAndUpdate(
-          exerciseId,
-          {
-            $pull: { [`like.user_ids.${gender}`]: userId }, // Retirer de la liste like
-            $push: { [`unlike.user_ids.${gender}`]: userId }, // Ajouter à la liste unlike
-            $inc: {
-              [`like.count.${gender}`]: -1, // Diminuer le count like
-              [`unlike.count.${gender}`]: 1, // Incrémenter le count unlike
+        const isAlreadyUnliked =
+          exercise.unlike.user_ids[gender]?.includes(userId);
+
+        if (!isAlreadyUnliked) {
+          const isAlreadyLiked =
+            exercise.like.user_ids[gender]?.includes(userId);
+
+          if (isAlreadyLiked) {
+            await this.fitnessExerciseModel.findByIdAndUpdate(exerciseId, {
+              $pull: { [`like.user_ids.${gender}`]: userId },
+              $inc: { [`like.count.${gender}`]: -1 },
+            });
+          }
+
+          await this.fitnessExerciseModel.findByIdAndUpdate(
+            exerciseId,
+            {
+              $push: { [`unlike.user_ids.${gender}`]: userId },
+              $inc: { [`unlike.count.${gender}`]: 1 },
             },
-          },
-          { new: true }, // Pour retourner l'objet mis à jour
-        );
+            { new: true },
+          );
+        }
       }
       console.log('Exercise updated successfully');
     } catch (error) {
@@ -155,20 +174,48 @@ export class FitnessExerciseApiService {
       throw new Error('Unable to update exercise');
     }
 
-    return this.fitnessExerciseModel.findById(exerciseId);
+    const updatedExercise =
+      await this.fitnessExerciseModel.findById(exerciseId);
+    const isLiked =
+      updatedExercise.like.user_ids[gender]?.includes(userId) || false;
+    const isUnliked =
+      updatedExercise.unlike.user_ids[gender]?.includes(userId) || false;
+
+    return {
+      ...updatedExercise.toObject(),
+      isLiked,
+      isUnliked,
+    };
+  }
+
+  async getUniqueMuscleGroups(): Promise<string[]> {
+    const exercises = await this.fitnessExerciseModel
+      .find()
+      .select('muscleGroup')
+      .exec();
+    const muscleGroups = exercises.map((exercise) => exercise.muscleGroup);
+    // Filtre les doublons
+    return [...new Set(muscleGroups)];
   }
 
   // Méthode pour récupérer les exercices avec le statut de like pour un utilisateur
-  async getExercisesWithLikeStatus(
+  async getExerciseWithLikeStatus(
+    exerciseId: string,
     userId: string,
     gender: string,
-  ): Promise<any[]> {
-    const exercises = await this.fitnessExerciseModel.find().exec();
+  ): Promise<{ isLiked: boolean; isUnliked: boolean }> {
+    const exercise = await this.fitnessExerciseModel
+      .findById(exerciseId)
+      .exec();
 
-    // Check if the user has liked each exercise based on the gender
-    return exercises.map((exercise) => {
-      const isLiked = exercise.like.user_ids[gender]?.includes(userId) || false;
-      return { ...exercise.toObject(), isLiked };
-    });
+    if (!exercise) {
+      throw new Error('Exercice non trouvé');
+    }
+
+    const isLiked = exercise.like.user_ids[gender]?.includes(userId) || false;
+    const isUnliked =
+      exercise.unlike.user_ids[gender]?.includes(userId) || false;
+
+    return { isLiked, isUnliked }; // Renvoie à la fois le statut de "like" et "unlike"
   }
 }

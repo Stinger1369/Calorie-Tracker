@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -34,8 +35,12 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+    @Query('fields') fields?: string, // Ajout de 'fields' en tant que paramètre de requête
+  ): Promise<Partial<User>> {
+    // Si des champs spécifiques sont demandés, les transmettre au service
+    return this.usersService.findOne(id, fields ? fields.split(',') : null);
   }
 
   @Put(':id/bmi')
@@ -69,10 +74,28 @@ export class UsersController {
     console.log('--- Fin de la mise à jour via le Controller ---');
     return updatedUser;
   }
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':id/accept-policy')
+  async acceptPolicy(
+    @Param('id') id: string,
+    @Body('hasAcceptedPolicy') hasAcceptedPolicy: boolean,
+  ): Promise<User> {
+    return this.usersService.updatePolicyAcceptance(id, hasAcceptedPolicy);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     await this.usersService.delete(id);
+  }
+  @Post('google')
+  async googleLogin(@Body('idToken') idToken: string) {
+    try {
+      const user =
+        await this.usersService.findOrCreateUserByGoogleToken(idToken);
+      return { user };
+    } catch (error) {
+      return { message: 'Erreur lors de la connexion avec Google', error };
+    }
   }
 }

@@ -16,15 +16,21 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { getHoroscope } from '../utils/zodiac-signs.util';
 import { ImageService } from '../image/image.service';
-
+import { OAuth2Client } from 'google-auth-library';
 @Injectable()
 export class UsersService {
+  private client: OAuth2Client; // Ajout de la déclaration de la propriété client
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private readonly imageService: ImageService, // Injection du service Image
+    private readonly imageService: ImageService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    this.client = new OAuth2Client(
+      '159735607745-262ukrqbt3iqc7p6jvlhnemh97kg1vfl.apps.googleusercontent.com',
+    );
+  }
 
   private calculateAge(dateOfBirth: Date): number {
     const today = new Date();
@@ -252,18 +258,45 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findOne(id: string): Promise<User> {
-    console.log('ID reçu dans findOne:', id); // Ajoutez cette ligne pour vérifier l'ID
+  async findOne(id: string, fields?: string[]): Promise<Partial<User>> {
+    console.log('ID reçu dans findOne:', id); // Log pour vérifier l'ID
 
+    // Recherche l'utilisateur par son ID
     const user = await this.userModel.findById(id).exec();
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    if (fields && fields.length > 0) {
+      // Crée un objet avec uniquement les champs demandés
+      const filteredUser = {};
+      fields.forEach((field) => {
+        if (user[field] !== undefined) {
+          filteredUser[field] = user[field];
+        }
+      });
+      return filteredUser as Partial<User>;
+    }
+
     return user;
   }
+  async updatePolicyAcceptance(
+    userId: string,
+    hasAcceptedPolicy: boolean,
+  ): Promise<User> {
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { hasAcceptedPolicy },
+      { new: true },
+    );
 
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return user;
+  }
   async delete(id: string): Promise<void> {
     await this.userModel.findByIdAndDelete(id).exec();
   }
@@ -274,5 +307,32 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     return this.userModel.findById(id).exec();
+  }
+  async verifyGoogleToken(idToken: string): Promise<any> {
+    const ticket = await this.client.verifyIdToken({
+      idToken,
+      audience:
+        '159735607745-262ukrqbt3iqc7p6jvlhnemh97kg1vfl.apps.googleusercontent.com', // Le même que celui utilisé dans le frontend
+    });
+    const payload = ticket.getPayload();
+    return payload;
+  }
+
+  async findOrCreateUserByGoogleToken(idToken: string) {
+    const payload = await this.verifyGoogleToken(idToken);
+
+    // Vérifie si l'utilisateur existe déjà
+    let user = await this.userModel.findOne({ email: payload.email });
+    if (!user) {
+      // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
+      user = new this.userModel({
+        email: payload.email,
+        firstName: payload.given_name,
+        lastName: payload.family_name,
+        googleId: payload.sub,
+      });
+      await user.save();
+    }
+    return user;
   }
 }

@@ -1,39 +1,61 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  ImageBackground,
-  Image,
-  ScrollView,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Modal, Text, TouchableOpacity } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/features/auth/authSlice";
-import { fetchUserInfo } from "../../redux/features/user/userSlice";
+import { fetchUserInfo, fetchUserId } from "../../redux/features/user/userSlice"; // Fetch user info from Redux
+import { restoreToken,logout,  } from "../../redux/features/auth/authSlice"; // Restore token from AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./homeStyles";
 import moment from "moment";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
+import Header from "./HomeSection/Header";
+import Section from "./HomeSection/Section";
+import LogoutModal from "../../components/Logout/LogoutModal";
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [incompleteProfileSection, setIncompleteProfileSection] = useState("");
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { userInfo, loading, error } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.auth);
 
-  const { userInfo } = useSelector((state) => state.user);
-
+  // Récupérer l'ID utilisateur depuis AsyncStorage et restaurer le token s'il n'est pas présent
   useEffect(() => {
-    const userId = userInfo?._id;
-    if (userId) {
-      dispatch(fetchUserInfo(userId));
-    }
+    const restoreUserData = async () => {
+      const storedToken = await AsyncStorage.getItem("token");
+      const storedUser = await AsyncStorage.getItem("user");
+
+      if (storedToken && storedUser) {
+        dispatch(restoreToken({ token: storedToken, user: JSON.parse(storedUser) }));
+      } else {
+        console.error("Token or user not found in AsyncStorage");
+      }
+    };
+
+    restoreUserData();
   }, [dispatch]);
+
+  // Récupérer les informations de l'utilisateur lorsque l'écran est focus
+useFocusEffect(
+  useCallback(() => {
+    const fetchUserData = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      if (userId && token) {
+        console.log("Fetching user info with userId:", userId);
+        await dispatch(fetchUserInfo({ userId, source: "home" }));
+      } else {
+        console.error("User ID or token not found");
+      }
+    };
+
+    // Assurez-vous que le token est bien initialisé avant de faire l'appel API
+    if (token && !userInfo) {
+      fetchUserData();
+    }
+  }, [dispatch, token, userInfo])
+);
+
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
@@ -44,41 +66,30 @@ const Home = () => {
     navigation.reset({ index: 0, routes: [{ name: "Welcom" }] });
   };
 
+  const handleProfileModal = (section) => {
+    setIncompleteProfileSection(section);
+    setProfileModalVisible(true);
+  };
+
+  const closeProfileModal = () => setProfileModalVisible(false);
+
+  const navigateToProfileEdit = () => {
+    closeProfileModal();
+    navigation.navigate("ProfileEdit");
+  };
+
+  const isProfileComplete = () => {
+    return userInfo?.dateOfBirth && userInfo?.height && userInfo?.weight && userInfo?.bmi;
+  };
+
   const handleHoroscopePress = () => {
-    if (userInfo?.dateOfBirth && userInfo?.zodiacSign) {
+    if (isProfileComplete()) {
       navigation.navigate("HoroscopeDetailsScreen", {
         zodiacSign: userInfo.zodiacSign,
         dateOfBirth: userInfo.dateOfBirth,
       });
     } else {
-      console.warn("Horoscope not available for this user.");
-    }
-  };
-  
-
-  const handleRecipesPress = () => navigation.navigate("RecetteScreen");
-const handleNutritionPress = () => {
-  navigation.navigate("ScanTabs"); // Navigate to the ScanCode screen
-};
-  const renderProfileIcon = () => {
-    if (userInfo?.imageUrl) {
-      return (
-        <Image
-          source={{ uri: userInfo.imageUrl }}
-          style={styles.profileImage}
-        />
-      );
-    } else {
-      switch (userInfo?.gender) {
-        case "male":
-          return <FontAwesome name="male" size={50} color="#888" />;
-        case "female":
-          return <FontAwesome name="female" size={50} color="#888" />;
-        case "other":
-          return <FontAwesome name="genderless" size={50} color="#888" />;
-        default:
-          return <FontAwesome name="user-circle" size={50} color="#888" />;
-      }
+      handleProfileModal("Horoscope");
     }
   };
 
@@ -96,162 +107,136 @@ const handleNutritionPress = () => {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          {/* Header Section */}
-          <View style={styles.header}>
-            <View style={styles.profileInfoContainer}>
-              {renderProfileIcon()}
-              <View style={styles.greetingContainer}>
-                <Text style={styles.welcomeText}>
-                  Hello {userInfo?.firstName}!
-                </Text>
-                <Text style={styles.dateText}>{currentDate}</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.iconContainer} onPress={openModal}>
-              <MaterialCommunityIcons name="logout" size={30} color="#ffffff" />
-            </TouchableOpacity>
-          </View>
+          <Header userInfo={userInfo} currentDate={currentDate} openModal={openModal} />
 
-          {/* Main Sections */}
           <View style={styles.sectionsContainer}>
-            <TouchableOpacity
-              style={[styles.section, styles.sectionChat]}
-              onPress={() => {}}
-            >
-              <MaterialCommunityIcons name="chat" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Chat</Text>
-            </TouchableOpacity>
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="chat"
+              label="Chat"
+              onPress={() => {
+                if (isProfileComplete()) {
+                  console.log("Navigating to Chat");
+                } else {
+                  handleProfileModal("Chat");
+                }
+              }}
+              style={styles.sectionChat}
+            />
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionDating]}
-              onPress={() => {}}
-            >
-              <FontAwesome name="heart" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Rencontres</Text>
-            </TouchableOpacity>
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="heart"
+              label="Rencontres"
+              onPress={() => {
+                if (isProfileComplete()) {
+                  console.log("Navigating to Rencontres");
+                } else {
+                  handleProfileModal("Rencontres");
+                }
+              }}
+              style={styles.sectionDating}
+            />
 
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="food"
+              label="Nutrition"
+              onPress={() => navigation.navigate("ScanTabs")}
+              style={styles.sectionNutrition}
+            />
 
-              <TouchableOpacity
-                style={[styles.section, styles.sectionNutrition]}
-                onPress={handleNutritionPress} // Call the function here
-              >
-                <MaterialCommunityIcons name="food" size={40} color="#ffffff" />
-                <Text style={styles.sectionText}>Nutrition</Text>
-              </TouchableOpacity>
-              {/* Other sections */}
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="dumbbell"
+              label="Exercice"
+              onPress={() => navigation.navigate("FitnessExercices")}
+              style={styles.sectionExercise}
+            />
 
-
-          <TouchableOpacity
-  style={[styles.section, styles.sectionExercise]}
-  onPress={() => navigation.navigate("FitnessExercices")}
->
-  <FontAwesome5 name="dumbbell" size={40} color="#ffffff" />
-  <Text style={styles.sectionText}>Exercice</Text>
-</TouchableOpacity>
-
-
-            <TouchableOpacity
-              style={[styles.section, styles.sectionHoroscope]}
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="star"
+              label="Horoscope"
               onPress={handleHoroscopePress}
-            >
-              <FontAwesome5 name="star" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Horoscope</Text>
-            </TouchableOpacity>
+              style={styles.sectionHoroscope}
+            />
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionGroupActivities]}
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="account-group"
+              label="Activités de groupe"
               onPress={() => {}}
-            >
-              <MaterialCommunityIcons
-                name="account-group"
-                size={40}
-                color="#ffffff"
-              />
-              <Text style={styles.sectionText}>Activités de groupe</Text>
-            </TouchableOpacity>
+              style={styles.sectionGroupActivities}
+            />
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionCaloriesNeeded]}
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="fire"
+              label="Calories Needed"
+              onPress={() => {
+                if (isProfileComplete()) {
+                  console.log("Navigating to Calories Needed");
+                } else {
+                  handleProfileModal("Calories Needed");
+                }
+              }}
+              style={styles.sectionCaloriesNeeded}
+            />
+
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="calculator"
+              label="Calculateur de Calories"
               onPress={() => {}}
-            >
-              <FontAwesome5 name="burn" size={40} color="#ffffff" />
-              <Text style={styles.sectionText}>Calories Needed</Text>
-            </TouchableOpacity>
+              style={styles.sectionCalorieCalculator}
+            />
 
-            <TouchableOpacity
-              style={[styles.section, styles.sectionCalorieCalculator]}
-              onPress={() => {}}
-            >
-              <MaterialCommunityIcons
-                name="calculator"
-                size={40}
-                color="#ffffff"
-              />
-              <Text style={styles.sectionText}>Calculateur de Calories</Text>
-            </TouchableOpacity>
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="account-multiple"
+              label="Membres"
+              onPress={() => {
+                if (isProfileComplete()) {
+                  console.log("Navigating to Membres");
+                } else {
+                  handleProfileModal("Membres");
+                }
+              }}
+              style={styles.sectionMembers}
+            />
 
-            <TouchableOpacity
-  style={[styles.section, styles.sectionMembers]}
-  onPress={() => navigation.navigate("MembersScreen")} // Navigue vers l'écran des membres
->
-  <FontAwesome5 name="users" size={40} color="#ffffff" />
-  <Text style={styles.sectionText}>Membres</Text>
-</TouchableOpacity>
-
-
-            <TouchableOpacity
-              style={[styles.section, styles.sectionRecipes]}
-              onPress={handleRecipesPress}
-            >
-              <MaterialCommunityIcons
-                name="food-apple"
-                size={40}
-                color="#ffffff"
-              />
-              <Text style={styles.sectionText}>Recettes</Text>
-            </TouchableOpacity>
+            <Section
+              iconType="MaterialCommunityIcons"
+              iconName="food-apple"
+              label="Recettes"
+              onPress={() => navigation.navigate("RecetteScreen")}
+              style={styles.sectionRecipes}
+            />
           </View>
 
-          {/* Logout Modal */}
+          <LogoutModal
+  modalVisible={modalVisible}
+  closeModal={closeModal}
+  handleLogout={handleLogout}
+/>
           <Modal
-            animationType="fade"
+            animationType="slide"
             transparent={true}
-            visible={modalVisible}
-            onRequestClose={closeModal}
+            visible={profileModalVisible}
+            onRequestClose={closeProfileModal}
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                {/* Bouton de fermeture en haut à droite */}
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={closeModal}
-                >
-                  <MaterialCommunityIcons
-                    name="close"
-                    size={30}
-                    color="#e74c3c"
-                  />
-                </TouchableOpacity>
-
                 <Text style={styles.modalText}>
-                  Souhaitez-vous sauvegarder vos données pour une connexion
-                  rapide la prochaine fois?
+                  Vous devez compléter votre profil pour accéder à la section {incompleteProfileSection}.
                 </Text>
-
-                <View style={styles.buttonRow}>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => handleLogout(true)}
-                  >
-                    <Text style={styles.modalButtonText}>Oui</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => handleLogout(false)}
-                  >
-                    <Text style={styles.modalButtonText}>Non</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.modalButton} onPress={navigateToProfileEdit}>
+                  <Text style={styles.modalButtonText}>Compléter le profil</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={closeProfileModal}>
+                  <Text style={styles.modalButtonText}>Annuler</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </Modal>

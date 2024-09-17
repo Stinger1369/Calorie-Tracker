@@ -1,27 +1,30 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0E1331", // Couleur de fond sombre
-    paddingHorizontal: 20,
-    paddingTop: "20%",
+    backgroundColor: "#0E1331",
+    paddingHorizontal: width * 0.05, // 5% de la largeur de l'écran
+    paddingTop: height * 0.05, // 5% de la hauteur de l'écran
   },
   errorText: {
     color: "red",
-    fontSize: 16,
+    fontSize: width * 0.04, // 4% de la largeur de l'écran
     textAlign: "center",
   },
   button: {
     backgroundColor: "#1E90FF",
-    padding: 15,
-    borderRadius: 10,
+    paddingVertical: height * 0.02, // 2% de la hauteur de l'écran
+    paddingHorizontal: width * 0.04, // 4% de la largeur de l'écran
+    borderRadius: 8, // Utilisation de valeurs fixes pour conserver un design cohérent
     alignItems: "center",
-    marginTop: 20,
+    marginTop: height * 0.03, // 3% de la hauteur de l'écran
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: width * 0.04, // 4% de la largeur de l'écran
     fontWeight: "bold",
   },
   modalContainer: {
@@ -32,33 +35,33 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
+    padding: width * 0.05, // 5% de la largeur de l'écran
+    borderRadius: width * 0.03, // 3% de la largeur de l'écran
+    width: "80%", // 80% de la largeur de l'écran
     alignItems: "center",
   },
   modalText: {
-    fontSize: 18,
+    fontSize: width * 0.045, // 4.5% de la largeur de l'écran
     color: "#333",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: height * 0.02, // 2% de la hauteur de l'écran
   },
   modalButton: {
     backgroundColor: "#1E90FF",
-    padding: 10,
-    borderRadius: 10,
+    paddingVertical: height * 0.015, // 1.5% de la hauteur de l'écran
+    borderRadius: width * 0.03, // 3% de la largeur de l'écran
     alignItems: "center",
-    width: "100%",
+    width: "100%", // 100% de la largeur du modal
   },
   modalButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: width * 0.045, // 4.5% de la largeur de l'écran
     fontWeight: "bold",
   },
   closeIcon: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: height * 0.015, // 1.5% de la hauteur de l'écran
+    right: width * 0.05, // 5% de la largeur de l'écran
   },
 });
 

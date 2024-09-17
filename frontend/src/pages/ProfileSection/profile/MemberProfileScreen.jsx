@@ -11,11 +11,15 @@ const MemberProfileScreen = ({ route }) => {
 
   const { userInfo, loading, error } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    if (memberId) {
-      dispatch(fetchUserInfo(memberId)); // Fetch the selected member's info
-    }
-  }, [dispatch, memberId]);
+ useEffect(() => {
+  if (memberId && token) {
+    console.log("Fetching info for member with ID:", memberId);
+    dispatch(fetchUserInfo({ userId: memberId, source: "SelectedMemberInfo" }));
+  } else {
+    console.error("Member ID or token is missing.");
+  }
+}, [dispatch, memberId, token]);
+
 
   if (loading) {
     return (

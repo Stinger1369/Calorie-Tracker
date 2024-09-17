@@ -16,6 +16,10 @@ import { FoodAnalysisDto } from './food-analysis.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
+  @IsBoolean()
+  readonly hasAcceptedPolicy?: boolean;
+
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
   readonly dateOfBirth?: Date;

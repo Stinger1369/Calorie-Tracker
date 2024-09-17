@@ -62,6 +62,73 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+// Add googleLogin to the authSlice
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ idToken }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${hostname}/auth/google`, { idToken });
+
+      const user = response.data.user;
+      const token = response.data.token;
+
+      // Save user and token in AsyncStorage
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem('token', token);
+
+      return { user, token };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue('An error occurred during Google login');
+    }
+  }
+);
+
+// Action pour rafraîchir le token d'accès
+export const refreshAccessToken = createAsyncThunk(
+  "auth/refreshAccessToken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const refreshToken = await AsyncStorage.getItem("refresh_token");
+      if (refreshToken) {
+        const response = await axios.post(`${hostname}/auth/refresh-token`, {
+          refresh_token: refreshToken,
+        });
+        if (response.data.access_token) {
+          await AsyncStorage.setItem("token", response.data.access_token);
+          return response.data.access_token;
+        } else {
+          throw new Error("Failed to refresh access token");
+        }
+      } else {
+        return rejectWithValue("No refresh token found");
+      }
+    } catch (error) {
+      return rejectWithValue("Error refreshing token");
+    }
+  }
+);
+
+// Action pour restaurer le token
+export const restoreToken = createAsyncThunk(
+  "auth/restoreToken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const user = await AsyncStorage.getItem("user");
+      if (token && user) {
+        const parsedUser = JSON.parse(user);
+        return { token, user: parsedUser };
+      }
+      return rejectWithValue("No token found");
+    } catch (error) {
+      console.error("Error restoring token:", error);
+      return rejectWithValue("Error restoring token");
+    }
+  }
+);
 
 // Action pour vérifier le code de vérification
 export const verifyCode = createAsyncThunk(
@@ -124,14 +191,22 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state, action) => {
-      state.user = null;
-      if (!action.payload.saveData) {
-        state.token = null;
-        AsyncStorage.removeItem("user");
-        AsyncStorage.removeItem("token");
-      }
-    },
-    restoreToken: (state, action) => {
+  console.log("Déconnexion en cours, suppression des données...");
+
+  state.user = null;
+  state.token = null;
+
+  // Si `saveData` n'est pas vrai, on supprime les données d'AsyncStorage
+  if (!action.payload?.saveData) {
+    console.log("Suppression des informations dans AsyncStorage...");
+    AsyncStorage.removeItem("user");
+    AsyncStorage.removeItem("token");
+    console.log("Données AsyncStorage supprimées.");
+  }
+},
+
+
+    restoreTokenState: (state, action) => {
       state.token = action.payload.token;
       state.user = action.payload.user;
     },
@@ -194,10 +269,47 @@ const authSlice = createSlice({
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to reset password";
-      });
+      })
+      .addCase(refreshAccessToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(refreshAccessToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload;
+      })
+      .addCase(refreshAccessToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to refresh token";
+      })
+      .addCase(restoreToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+      })
+      .addCase(restoreToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to restore token";
+      })
+      .addCase(googleLogin.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(googleLogin.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+    })
+    .addCase(googleLogin.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to log in with Google';
+    });
   },
 });
 
-export const { logout, restoreToken } = authSlice.actions;
+export const { logout, restoreTokenState } = authSlice.actions;
+console.log('Actions disponibles:', authSlice.actions);
 
 export default authSlice.reducer;

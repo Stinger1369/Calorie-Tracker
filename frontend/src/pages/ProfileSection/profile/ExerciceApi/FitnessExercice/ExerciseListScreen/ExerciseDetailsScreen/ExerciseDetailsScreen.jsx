@@ -32,7 +32,8 @@ const ExerciseDetailsScreen = ({ route }) => {
           userId = storedUser ? JSON.parse(storedUser).id : null;
         }
         if (userId) {
-          dispatch(fetchUserInfo(userId));
+         dispatch(fetchUserInfo({ userId, source: "ExerciseDetailsScreen" })); // Replace "ComponentName" with the actual name of the component
+
         }
       } catch (error) {
         console.error("Error fetching user data:", error);

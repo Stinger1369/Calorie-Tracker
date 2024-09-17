@@ -75,16 +75,16 @@ const ExerciseCard = ({
         </View>
       </View>
 
-      {/* Like and Unlike buttons with default colors and interaction logic */}
+      {/* Like and Unlike buttons with dynamic colors based on state */}
       <View style={styles.likeDislikeContainer}>
         {/* Like button is green by default, turns gray when liked */}
         <TouchableOpacity onPress={handleLike} disabled={liked}>
-<FontAwesome name="thumbs-up" size={24} color={liked ? "gray" : "green"} />
+          <FontAwesome name="thumbs-up" size={24} color={liked ? "gray" : "green"} />
         </TouchableOpacity>
 
         {/* Unlike button is red by default, turns gray when unliked */}
         <TouchableOpacity onPress={handleUnlike} disabled={unliked} style={styles.dislikeButton}>
-<FontAwesome name="thumbs-down" size={24} color={unliked ? "gray" : "red"} />
+          <FontAwesome name="thumbs-down" size={24} color={unliked ? "gray" : "red"} />
         </TouchableOpacity>
       </View>
     </View>
@@ -92,3 +92,4 @@ const ExerciseCard = ({
 };
 
 export default memo(ExerciseCard);
+

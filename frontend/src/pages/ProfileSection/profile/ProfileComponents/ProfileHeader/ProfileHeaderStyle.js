@@ -1,42 +1,45 @@
 import { StyleSheet } from "react-native";
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   profileHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: hp('2%'),
   },
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: hp('2%'),
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
+    width: wp('12%'),
+    height: wp('12%'),
+    borderRadius: wp('6%'),
+    marginRight: wp('3%'),
   },
   greetingContainer: {
     flexDirection: "column",
   },
   welcomeText: {
     color: "#FFFFFF",
-    fontSize: 20, // Adjusted size
+    fontSize: wp('5%'),
     fontWeight: "bold",
-    marginLeft: 20,
+    marginLeft: wp('5%'),
   },
   dateText: {
     color: "#AAAAAA",
-    fontSize: 14,
-    marginLeft: 20,
+    fontSize: wp('3.5%'),
+    marginLeft: wp('5%'),
   },
   editIconContainer: {
-    padding: 5,
+    padding: wp('1%'),
     backgroundColor: "#292929",
-    borderRadius: 10,
+    borderRadius: wp('3%'),
   },
 });
 
 export default styles;
+

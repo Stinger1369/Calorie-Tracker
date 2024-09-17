@@ -15,7 +15,20 @@ const StartExerciseScreen = ({ route }) => {
   const [countdown, setCountdown] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [isFinished, setIsFinished] = useState(false); // Pour vérifier si l'exercice est terminé
+  const [isFinished, setIsFinished] = useState(false);
+
+  // Utilisation de useEffect pour gérer setTimeout proprement
+  useEffect(() => {
+    let timeout;
+    if (isFinished) {
+      timeout = setTimeout(() => {
+        setIsFinished(true);
+      }, 3000);
+    }
+
+    // Nettoyage du timeout si le composant est démonté ou que l'exercice change
+    return () => clearTimeout(timeout);
+  }, [isFinished]);
 
   const startCountdown = () => {
     setCountdown(3);
@@ -36,10 +49,8 @@ const StartExerciseScreen = ({ route }) => {
             setTimeLeft(selectedMinutes * 60);
           }
 
-          // Faire apparaître le bouton "Valider" après 3 secondes
-          setTimeout(() => {
-            setIsFinished(true);
-          }, 3000);
+          // Mise à jour de l'état pour démarrer le timer avec le nouveau timeout géré par useEffect
+          setIsFinished(true);
         }
         return prev - 1;
       });
@@ -96,7 +107,6 @@ const StartExerciseScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Repetition Mode */}
       {mode === 'repetition' && (
         <RepetitionPicker
           repetitionCount={repetitionCount}
@@ -106,7 +116,6 @@ const StartExerciseScreen = ({ route }) => {
         />
       )}
 
-      {/* Minute Mode */}
       {mode === 'minute' && (
         <MinutePicker
           selectedMinutes={selectedMinutes}
@@ -114,7 +123,6 @@ const StartExerciseScreen = ({ route }) => {
         />
       )}
 
-      {/* Countdown and Start Button */}
       {countdown && <Text style={styles.countdown}>{countdown}</Text>}
 
       {!hasStarted && mode && (
@@ -123,7 +131,6 @@ const StartExerciseScreen = ({ route }) => {
         </TouchableOpacity>
       )}
 
-      {/* Timer Display */}
       {mode === 'repetition' && hasStarted && (
         <Text style={styles.timer}>
           Répétitions restantes : {Math.ceil(timeLeft / 0.7)} {/* Convertir en répétitions restantes */}
@@ -134,7 +141,6 @@ const StartExerciseScreen = ({ route }) => {
         <Text style={styles.timer}>Temps restant : {timeLeft} secondes</Text>
       )}
 
-      {/* Pause/Resume, Reset, and Validate Buttons */}
       {hasStarted && (
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.pauseButton} onPress={togglePause}>
