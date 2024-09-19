@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchExercisesByMuscleGroup,
   fetchMuscleGroups,
-  toggleLikeOrUnlike,
   fetchExercisesWithLikeStatus,
 } from "../../../../../redux/features/exerciseApi/exerciseApiSlice";
 import { fetchUserInfoWithFields } from "../../../../../redux/features/user/userSlice"; // Import the action for fetching user info
 
 import ExerciceCustomCard from "./ExerciceCustomCard/ExerciceCustomCard";
+import { handleLikeExercise, handleUnlikeExercise } from "../../../../../utils/likeUtil";
 import styles from "./SelectExercisesScreenStyle";
 
 const SelectExercisesScreen = ({ navigation, route }) => {
-  const { programName, durationMonths, sessionsPerWeek } = route.params;
+  const { programName, durationMonths, sessionsPerWeek, currentSession, totalSessions, sessions } = route.params;
   const dispatch = useDispatch();
 
   // Fetch data from the Redux store
@@ -28,12 +28,12 @@ const SelectExercisesScreen = ({ navigation, route }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   const [userId, setUserId] = useState(user?._id || null);
-    const [gender, setGender] = useState(null);  // State to store user gender
-
+  const [gender, setGender] = useState(null);  // State to store user gender
   const [exercises, setExercises] = useState([]);
+  const [cachedExercises, setCachedExercises] = useState({});  // To cache exercises per muscle group
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("Musculation");
-
+  const [loadingExercises, setLoadingExercises] = useState(false);
   const musculationMuscleGroups = [
     "épaules", "biceps", "triceps", "pectoraux", "dos", "abdominaux",
     "fessiers", "quadriceps", "ischio-jambiers", "mollets",
@@ -41,6 +41,7 @@ const SelectExercisesScreen = ({ navigation, route }) => {
     "polyarticulaires", "monoarticulaires",
   ];
 
+  // Fetch user ID from storage
   useEffect(() => {
     const fetchUserIdFromStorage = async () => {
       if (!userId) {
@@ -59,11 +60,15 @@ const SelectExercisesScreen = ({ navigation, route }) => {
     fetchUserIdFromStorage();
   }, [userId]);
 
+  // Fetch muscle groups and initial exercises for "Musculation"
   useEffect(() => {
     dispatch(fetchMuscleGroups());
-    dispatch(fetchExercisesByMuscleGroup("Musculation"));
+    if (!cachedExercises["Musculation"]) {
+      dispatch(fetchExercisesByMuscleGroup("Musculation"));
+    }
   }, [dispatch]);
-// Fetch user info (specifically gender) on component mount
+
+  // Fetch user info (specifically gender)
   useEffect(() => {
     if (userId && !gender) {
       dispatch(
@@ -78,40 +83,52 @@ const SelectExercisesScreen = ({ navigation, route }) => {
       });
     }
   }, [userId, gender, dispatch]);
-useEffect(() => {
-    if (exercisesData && userId && gender) {
-      setExercises(exercisesData);
-      exercisesData.forEach((exercise) => {
-        dispatch(
-          fetchExercisesWithLikeStatus({
-            exerciseId: exercise._id,
-            userId,
-            gender,
-          })
-        ).then((res) => {
-          const { isLiked, isUnliked } = res.payload;
-        console.log(`Result for exercise ${exercise.title} (ID: ${exercise._id}): Liked = ${isLiked}, Unliked = ${isUnliked}`);
 
-        setExercises((prevExercises) =>
-            prevExercises.map((ex) =>
-              ex._id === exercise._id ? { ...ex, isLiked, isUnliked } : ex
-            )
-          );
+  // Update exercises when data from redux store changes
+  useEffect(() => {
+    if (exercisesData && userId && gender) {
+      const fetchStatuses = exercisesData.map((exercise) => {
+        return dispatch(fetchExercisesWithLikeStatus({
+          exerciseId: exercise._id,
+          userId,
+          gender,
+        })).then((res) => {
+          const { isLiked, isUnliked } = res.payload;
+          return {
+            ...exercise,
+            isLiked,
+            isUnliked,
+          };
         });
+      });
+
+      Promise.all(fetchStatuses).then((updatedExercises) => {
+        setExercises(updatedExercises);
+        setCachedExercises(prevCache => ({
+          ...prevCache,
+          [selectedMuscleGroup]: updatedExercises,  // Cache exercises per muscle group
+        }));
+      }).catch((error) => {
+        console.error("Error fetching like/unlike statuses:", error);
       });
     }
   }, [exercisesData, userId, gender, dispatch]);
 
+  // Handle muscle group change, fetch from cache if exists
 
+const handleMuscleGroupChange = (group) => {
+  setSelectedMuscleGroup(group);
+  setLoadingExercises(true); // Active le chargement
+  if (cachedExercises[group]) {
+    setExercises(cachedExercises[group]);
+    setLoadingExercises(false); // Désactive le chargement si en cache
+  } else {
+    dispatch(fetchExercisesByMuscleGroup(group)).then(() => {
+      setLoadingExercises(false); // Désactive le chargement une fois les exercices récupérés
+    });
+  }
+};
 
-
-
-
-
-  const handleMuscleGroupChange = (group) => {
-    setSelectedMuscleGroup(group);
-    dispatch(fetchExercisesByMuscleGroup(group));
-  };
 
   const handleSelectExercise = (exercise) => {
     setSelectedExercises((prev) =>
@@ -121,84 +138,42 @@ useEffect(() => {
     );
   };
 
-  const handleSubmit = () => {
-    if (selectedExercises.length === 0) {
-      Alert.alert("Erreur", "Veuillez sélectionner au moins un exercice.");
-      return;
-    }
+ const handleNextSession = () => {
+  if (selectedExercises.length === 0) {
+    Alert.alert("Erreur", "Veuillez sélectionner au moins un exercice.");
+    return;
+  }
+
+  const updatedSessions = [...sessions, { sessionNumber: currentSession, exercises: selectedExercises }];
+
+  if (currentSession === totalSessions) {
+    // Toutes les séances sont configurées, passer à l'écran de révision
     navigation.navigate("ReviewProgramScreen", {
       programName,
       durationMonths,
       sessionsPerWeek,
-      exercises: selectedExercises,
+      sessions: updatedSessions, // Passer toutes les séances créées
     });
-  };
+  } else {
+    // Réinitialiser les exercices sélectionnés avant de passer à la séance suivante
+    setSelectedExercises([]);  // Efface la sélection des exercices
 
-// Handle liking an exercise
-  const handleLike = (exerciseId) => {
-    if (!userId || !gender) {
-      console.error("Cannot like exercise without userId or gender");
-      return;
-    }
-
-    const dataToSend = {
-      exerciseId,
-      actionType: "like",
-      userId,
-      gender,
-    };
-
-    dispatch(toggleLikeOrUnlike(dataToSend))
-      .unwrap()
-      .then((response) => {
-        setExercises((prevExercises) =>
-          prevExercises.map((exercise) =>
-            exercise._id === exerciseId
-              ? { ...exercise, isLiked: true, isUnliked: false }  // Update like/unlike status
-              : exercise
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Like failed:", error);
-      });
-  };
-
-  // Handle unliking an exercise
-  const handleUnlike = (exerciseId) => {
-    if (!userId || !gender) {
-      console.error("Cannot unlike exercise without userId or gender");
-      return;
-    }
-
-    const dataToSend = {
-      exerciseId,
-      actionType: "unlike",
-      userId,
-      gender,
-    };
-
-    dispatch(toggleLikeOrUnlike(dataToSend))
-      .unwrap()
-      .then((response) => {
-        setExercises((prevExercises) =>
-          prevExercises.map((exercise) =>
-            exercise._id === exerciseId
-              ? { ...exercise, isLiked: false, isUnliked: true }  // Update like/unlike status
-              : exercise
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Unlike failed:", error);
-      });
-  };
-
+    // Passer à la séance suivante
+    navigation.navigate("SelectExercisesScreen", {
+      programName,
+      durationMonths,
+      sessionsPerWeek,
+      currentSession: currentSession + 1,
+      totalSessions,
+      sessions: updatedSessions,  // Conserver les séances déjà créées
+    });
+  }
+};
 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sélectionnez vos exercices</Text>
+      <Text style={styles.title}>Sélectionnez vos exercices pour la séance {currentSession}</Text>
 
       <View style={styles.typeButtonsContainer}>
         <TouchableOpacity
@@ -246,27 +221,30 @@ useEffect(() => {
       {exercisesLoading ? (
         <Text>Chargement des exercices...</Text>
       ) : (
-        <FlatList
-          data={exercises}
-          renderItem={({ item }) => (
-           <ExerciceCustomCard
-  exercise={item}
-  onSelectExercise={() => handleSelectExercise(item)}
-  isSelected={selectedExercises.includes(item)}
-  onLike={() => handleLike(item._id)}
-  onUnlike={() => handleUnlike(item._id)}
-  liked={item.isLiked === true}
-  unliked={item.isUnliked === true}
+       <FlatList
+  data={exercises}
+  renderItem={({ item }) => (
+    <ExerciceCustomCard
+      exercise={item}
+      onSelectExercise={() => handleSelectExercise(item)}
+      isSelected={selectedExercises.includes(item)}
+       onPressDetails={() => navigation.navigate('ExerciseDetailsScreenFull', { exercise: item })}
+      onLike={() => handleLikeExercise(item._id, userId, gender, dispatch, setExercises)}
+      onUnlike={() => handleUnlikeExercise(item._id, userId, gender, dispatch, setExercises)}
+      liked={item.isLiked === true}
+      unliked={item.isUnliked === true}
+    />
+  )}
+  keyExtractor={(item) => item._id}  // Utilisation d'une clé unique
+  extraData={selectedExercises}
 />
 
-          )}
-          keyExtractor={(item) => item._id}
-          extraData={exercises}
-        />
       )}
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Valider le programme</Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleNextSession}>
+        <Text style={styles.submitButtonText}>
+          {currentSession === totalSessions ? "Terminer" : "Séance suivante"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

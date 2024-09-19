@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Modal, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserInfoWithFields } from "../../../redux/features/user/userSlice";
-import { restoreToken } from "../../../redux/features/auth/authSlice";
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from "./ProfileStyles";
 import moment from "moment";
@@ -14,36 +12,22 @@ import ActionCard from "./ProfileComponents/ActionCard/ActionCard";
 const ProfileTab = ({ navigation }) => {
   const dispatch = useDispatch();
   const { userInfo, loading, error } = useSelector((state) => state.user);
-  const { user, token } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [showModal, setShowModal] = useState(false);
   const [localUserId, setLocalUserId] = useState(null);
   const [isTokenRestored, setIsTokenRestored] = useState(false);  // Suivre la restauration du token
 
-  // Premier useEffect: Restauration des données utilisateur et token
+  // Premier useEffect: Restauration des données utilisateur
   useEffect(() => {
-    const loadUserData = async () => {
+    const loadUserData = () => {
       try {
-        let userId = user?._id;
-        let storedToken = token;
+        const userId = user?._id;
 
-        if (!userId || !storedToken) {
-          const storedUser = await AsyncStorage.getItem("user");
-          storedToken = await AsyncStorage.getItem("token");
-
-          if (storedUser && storedToken) {
-            const parsedUser = JSON.parse(storedUser);
-            userId = parsedUser?._id;
-            dispatch(restoreToken({ user: parsedUser, token: storedToken, source: "AdditionalInfoScreen" }));
-            console.log("Token et user restaurés depuis AsyncStorage");
-          }
-        }
-
-        if (userId && storedToken) {
-          console.log("User ID et Token trouvés:", userId, storedToken);
+        if (userId) {
           setLocalUserId(userId);
-          setIsTokenRestored(true);  // Restauration du token terminée
+          setIsTokenRestored(true);  // Restauration terminée
         } else {
-          console.error("User ID ou token manquant. Redirection vers la page de connexion...");
+          console.error("User ID manquant. Redirection vers la page de connexion...");
           navigation.navigate("Login");
         }
       } catch (error) {
@@ -52,11 +36,11 @@ const ProfileTab = ({ navigation }) => {
     };
 
     loadUserData();
-  }, [dispatch, user, token, navigation]);
+  }, [user, navigation]);
 
-  // Deuxième useEffect: Récupérer les informations utilisateur après restauration du token
+  // Deuxième useEffect: Récupérer les informations utilisateur après restauration
   useEffect(() => {
-    if (localUserId && token) {
+    if (localUserId) {
       console.log("Fetching user info for userId:", localUserId);
       dispatch(fetchUserInfoWithFields({ userId: localUserId, fields: ["firstName", "lastName", "bmi", "imageUrl", "weight", "height"], source: "ProfileTab" }))
         .unwrap()
@@ -70,9 +54,9 @@ const ProfileTab = ({ navigation }) => {
           }
         });
     } else {
-      console.log("User ID ou token manquant après restauration. Impossible de récupérer les informations utilisateur.");
+      console.log("User ID manquant. Impossible de récupérer les informations utilisateur.");
     }
-  }, [localUserId, token, dispatch, navigation]);
+  }, [localUserId, dispatch, navigation]);
 
   const handleUpdateUser = () => {
     navigation.navigate("ProfileEdit");

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   imageContainer: {
-    width: screenWidth / 3, // Image takes up 1/3 of the card's width
+    width: screenWidth / 3,
     height: screenWidth / 3,
     borderTopLeftRadius: 20,
     overflow: 'hidden',
@@ -58,6 +58,21 @@ const styles = StyleSheet.create({
     borderColor: '#00ACC1',
     borderWidth: 2,
   },
+  detailsButtonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+  marginTop: 10,
+},
+detailsButton: {
+  backgroundColor: '#4CAF50',
+  padding: 8,
+  borderRadius: 5,
+},
+detailsButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
+
 });
 
 export default styles;

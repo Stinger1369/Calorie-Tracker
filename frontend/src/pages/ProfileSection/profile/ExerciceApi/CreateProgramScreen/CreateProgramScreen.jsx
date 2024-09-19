@@ -7,18 +7,24 @@ const CreateProgramScreen = ({ navigation }) => {
   const [durationMonths, setDurationMonths] = useState("");
   const [sessionsPerWeek, setSessionsPerWeek] = useState("");
 
-  const handleNextStep = () => {
-    if (programName && durationMonths && sessionsPerWeek) {
-      // Passer les données du programme à l'écran suivant pour choisir les exercices
-      navigation.navigate("SelectExercisesScreen", {
-        programName,
-        durationMonths,
-        sessionsPerWeek,
-      });
-    } else {
-      Alert.alert("Erreur", "Veuillez remplir tous les champs.");
-    }
-  };
+ const handleNextStep = () => {
+  if (programName && durationMonths && sessionsPerWeek) {
+    const totalSessions = durationMonths * sessionsPerWeek;
+
+    // Commencer la configuration de la première séance
+    navigation.navigate("SelectExercisesScreen", {
+      programName,
+      durationMonths,
+      sessionsPerWeek,
+      currentSession: 1,
+      totalSessions, // Calculer le nombre total de séances
+      sessions: [],  // Stocker les séances à créer
+    });
+  } else {
+    Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+  }
+};
+
 
   return (
     <View style={styles.container}>

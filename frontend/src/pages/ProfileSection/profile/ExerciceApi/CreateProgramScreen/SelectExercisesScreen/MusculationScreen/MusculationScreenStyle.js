@@ -3,8 +3,9 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f5', // Background color updated for a cleaner look
-    padding: 20,
+    backgroundColor: '#f0f0f5',
+    paddingHorizontal: 20,
+    paddingTop: 60,
   },
   title: {
     fontSize: 26,
@@ -13,31 +14,6 @@ export default StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  typeButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#1abc9c',
-    padding: 12,
-    borderRadius: 10,
-    width: '30%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-//229010203
-//200 847
   muscleGroupsContainer: {
     marginVertical: 15,
     paddingVertical: 10,
@@ -51,15 +27,20 @@ export default StyleSheet.create({
   },
   muscleGroupButton: {
     backgroundColor: '#2980b9',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 10,  // Garder le padding vertical raisonnable
+    paddingHorizontal: 20,  // Assurer que le texte a suffisamment d'espace horizontal
     borderRadius: 20,
-    marginHorizontal: 10,
+    marginHorizontal: 5,  // Ajuster la marge pour un bon espacement entre les boutons
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 100,  // Largeur minimale pour éviter que le texte soit coupé
+    maxWidth: 150,  // Largeur maximale pour les groupes musculaires avec des noms plus longs
   },
   muscleGroupButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,  // Taille de police légèrement réduite pour s'adapter à des boutons plus petits
     fontWeight: '500',
+    textAlign: 'center',
   },
   exerciseCard: {
     backgroundColor: '#fff',
@@ -71,16 +52,6 @@ export default StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 4,
-  },
-  exerciseCardSelected: {
-    backgroundColor: '#e0f7fa',
-    borderColor: '#00ACC1',
-    borderWidth: 2,
-  },
-  exerciseCardText: {
-    fontSize: 18,
-    color: '#34495e',
-    fontWeight: '500',
   },
   submitButton: {
     backgroundColor: '#e74c3c',

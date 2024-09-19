@@ -1,4 +1,3 @@
-// components/LogoutModal.jsx
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,14 +18,14 @@ const LogoutModal = ({ modalVisible, closeModal, handleLogout }) => {
           </TouchableOpacity>
 
           <Text style={styles.modalText}>
-            Souhaitez-vous sauvegarder vos données pour une connexion rapide la prochaine fois?
+            Voulez-vous vraiment vous déconnecter ? Toutes vos données locales seront supprimées.
           </Text>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.modalButton} onPress={() => handleLogout(true)}>
+            <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
               <Text style={styles.modalButtonText}>Oui</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => handleLogout(false)}>
+            <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
               <Text style={styles.modalButtonText}>Non</Text>
             </TouchableOpacity>
           </View>

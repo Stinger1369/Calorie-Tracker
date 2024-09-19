@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import styles from './ExerciceCustomCardStyle';
 
-const ExerciceCustomCard = ({ exercise, onSelectExercise, isSelected, onLike, onUnlike, liked, unliked }) => {
+const ExerciceCustomCard = ({ exercise, onSelectExercise, isSelected, onLike, onUnlike, liked, unliked, onPressDetails }) => {
   const {
     title,
     imageUrl,
@@ -26,6 +26,10 @@ const ExerciceCustomCard = ({ exercise, onSelectExercise, isSelected, onLike, on
       onUnlike();
     }
   }, [onUnlike, unliked]);
+
+  const handlePressDetails = useCallback(() => {
+    onPressDetails(exercise);
+  }, [onPressDetails, exercise]);
 
   return (
     <TouchableOpacity
@@ -53,8 +57,8 @@ const ExerciceCustomCard = ({ exercise, onSelectExercise, isSelected, onLike, on
           <View style={styles.textContainer}>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.detailsText}>Répétitions: {repsInfo.repetitions || 'N/A'}</Text>
-            <Text style={styles.detailsText}>Calories dépensées: {repsInfo.calories_depensée.male || 'N/A'} kcal</Text>
-            <Text style={styles.detailsText}>Calories par répétition: {repsInfo.calories_depense_repetition.male || 'N/A'} kcal</Text>
+            <Text style={styles.detailsText}>Calories dépensées: {repsInfo.calories_depensée?.male || 'N/A'} kcal</Text>
+            <Text style={styles.detailsText}>Calories par répétition: {repsInfo.calories_depense_repetition?.male || 'N/A'} kcal</Text>
           </View>
 
           {/* Likes and Unlikes Section */}
@@ -71,8 +75,15 @@ const ExerciceCustomCard = ({ exercise, onSelectExercise, isSelected, onLike, on
           </View>
         </View>
       </View>
+
+      {/* Button to navigate to exercise details */}
+      <View style={styles.detailsButtonContainer}>
+        <TouchableOpacity style={styles.detailsButton} onPress={handlePressDetails}>
+          <Text style={styles.detailsButtonText}>Détails</Text>
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 };
 
-export default ExerciceCustomCard;
+export default memo(ExerciceCustomCard);

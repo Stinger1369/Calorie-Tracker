@@ -26,30 +26,22 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+// Action pour la connexion
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${hostname}/auth/login`, userData);
       const user = response.data.user;
-      const token = response.data.access_token; // Récupération du token
+      const token = response.data.access_token;
 
-      // Assurez-vous que l'ID utilisateur et le token sont présents
+      // Sauvegarder l'utilisateur et le token dans AsyncStorage
       if (user && user._id && token) {
-        // Sauvegarder l'utilisateur et le token dans AsyncStorage
-        await AsyncStorage.setItem(
-          "user",
-          JSON.stringify({ ...user, id: user._id })
-        );
+        await AsyncStorage.setItem("user", JSON.stringify({ ...user, id: user._id }));
         await AsyncStorage.setItem("token", token);
 
-        console.log(
-          "User data and token saved in AsyncStorage:",
-          JSON.stringify({ ...user, id: user._id }),
-          token
-        );
+        console.log("User data and token saved in AsyncStorage:", JSON.stringify({ ...user, id: user._id }), token);
       } else {
-        console.error("User ID or token not found in response");
         return rejectWithValue("User ID or token not found");
       }
 
@@ -62,7 +54,8 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
-// Add googleLogin to the authSlice
+
+// Action pour la connexion Google
 export const googleLogin = createAsyncThunk(
   'auth/googleLogin',
   async ({ idToken }, { rejectWithValue }) => {
@@ -72,7 +65,7 @@ export const googleLogin = createAsyncThunk(
       const user = response.data.user;
       const token = response.data.token;
 
-      // Save user and token in AsyncStorage
+      // Sauvegarder l'utilisateur et le token dans AsyncStorage
       await AsyncStorage.setItem('user', JSON.stringify(user));
       await AsyncStorage.setItem('token', token);
 
@@ -190,21 +183,17 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state, action) => {
-  console.log("Déconnexion en cours, suppression des données...");
+    logout: (state) => {
+      console.log("Déconnexion en cours, suppression des données...");
 
-  state.user = null;
-  state.token = null;
+      state.user = null;
+      state.token = null;
 
-  // Si `saveData` n'est pas vrai, on supprime les données d'AsyncStorage
-  if (!action.payload?.saveData) {
-    console.log("Suppression des informations dans AsyncStorage...");
-    AsyncStorage.removeItem("user");
-    AsyncStorage.removeItem("token");
-    console.log("Données AsyncStorage supprimées.");
-  }
-},
-
+      // Supprimer toutes les données de AsyncStorage à la déconnexion
+      AsyncStorage.removeItem("user");
+      AsyncStorage.removeItem("token");
+      console.log("Données AsyncStorage supprimées.");
+    },
 
     restoreTokenState: (state, action) => {
       state.token = action.payload.token;
@@ -294,22 +283,20 @@ const authSlice = createSlice({
         state.error = action.payload || "Failed to restore token";
       })
       .addCase(googleLogin.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(googleLogin.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-    })
-    .addCase(googleLogin.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload || 'Failed to log in with Google';
-    });
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to log in with Google";
+      });
   },
 });
 
 export const { logout, restoreTokenState } = authSlice.actions;
-console.log('Actions disponibles:', authSlice.actions);
-
 export default authSlice.reducer;

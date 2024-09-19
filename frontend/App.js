@@ -44,10 +44,10 @@ import MemberProfileScreen from "./src/pages/ProfileSection/profile/MemberProfil
 import CreateProgramScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/CreateProgramScreen";
 import SelectExercisesScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/SelectExercisesScreen";
 import ReviewProgramScreen from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/ReviewProgramScreen";
-
 import ScanTabNavigator from './src/navigation/ScanTabNavigator';
 import MonthTabNavigator from './src/navigation/MonthTabNavigator';
-
+import SelectExercisesTabNavigation from './src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/SelectExercisesTabNavigation.jsx';
+import ExerciseDetailsScreenFull from "./src/pages/ProfileSection/profile/ExerciceApi/CreateProgramScreen/ExerciseDetailsScreenFull/ExerciseDetailsScreenFull.jsx";
 import store from "./src/redux/store/store";
 import { enableScreens } from "react-native-screens";
 
@@ -59,15 +59,19 @@ const Stack = createNativeStackNavigator();
 const AuthStackScreen = () => {
   return (
     <Stack.Navigator>
-
-      <Stack.Screen
-        name="AuthChoice"
-        component={AuthChoice}
+        <Stack.Screen
+              name="Welcom"
+              component={Welcom}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen
+        name="Login"
+        component={Login}
         options={{ headerShown: true }}
       />
       <Stack.Screen
-        name="Login"
-        component={Login}
+        name="AuthChoice"
+        component={AuthChoice}
         options={{ headerShown: true }}
       />
       <Stack.Screen
@@ -97,11 +101,7 @@ const AppStackScreen = () => {
               component={TabNavigator}
               options={{ headerShown: false }}
             />
-             <Stack.Screen
-              name="Welcom"
-              component={Welcom}
-              options={{ headerShown: false }}
-            />
+
             <Stack.Screen name="IMCDetails" component={IMCDetails} />
             <Stack.Screen name="Insuffisant" component={Insuffisant} />
             <Stack.Screen name="Normal" component={Normal} />
@@ -126,6 +126,12 @@ const AppStackScreen = () => {
             <Stack.Screen name="CreateProgramScreen" component={CreateProgramScreen} />
             <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
             <Stack.Screen name="SelectExercisesScreen" component={SelectExercisesScreen} />
+            <Stack.Screen name="ExerciseDetailsScreenFull" component={ExerciseDetailsScreenFull} />
+            {/* <Stack.Screen
+              name="SelectExercisesTabNavigation"
+              component={SelectExercisesTabNavigation}
+              options={{ headerShown: true }}
+            /> */}
              <Stack.Screen
               name="ProfileEdit"
               component={ProfileEditNavigator}

@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../redux/features/auth/authSlice';
-console.log("Action logout importée:", logout);
 
 const Logout = () => {
   const navigation = useNavigation();
@@ -12,65 +11,48 @@ const Logout = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Fonction pour gérer la déconnexion
-const handleLogout = async () => {
-  console.log("Déconnexion en cours, suppression des données...");
+  const handleLogout = async () => {
+    console.log("Déconnexion en cours, suppression des données...");
 
-  try {
-    // Supprimez les données du `token` après toutes les autres actions
-    await AsyncStorage.removeItem('token');
-    await AsyncStorage.removeItem('user');
+    try {
+      // Supprimer toutes les données de AsyncStorage
+      await AsyncStorage.clear();
 
-    // Mettez à jour le state Redux après la suppression du token
-    dispatch(logout());
+      // Mettre à jour le state Redux après la suppression des données
+      dispatch(logout());
 
-    // Rediriger l'utilisateur
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Welcome' }],
-    });
-  } catch (error) {
-    console.error("Erreur lors de la déconnexion:", error);
-  }
-};
-
-
-useEffect(() => {
-  console.log("État actuel de Redux après déconnexion:", { userInfo: userInfo, token: token });
-}, [userInfo, token]);
-
-
+      // Rediriger l'utilisateur vers l'écran de bienvenue
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Welcome' }],
+      });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+    }
+  };
 
   // Fonction pour confirmer la déconnexion
   const confirmLogout = () => {
-    console.log("Affichage de la confirmation de déconnexion...");
     Alert.alert(
-      'Sauvegarder les données?',
-      'Souhaitez-vous sauvegarder vos données pour une connexion rapide la prochaine fois?',
+      'Déconnexion',
+      'Voulez-vous vraiment vous déconnecter ? Toutes les données seront supprimées.',
       [
         {
-          text: 'Non',
-          onPress: () => {
-            console.log("Choix: Ne pas sauvegarder");
-            handleLogout(false);
-          }, // Ne pas sauvegarder
+          text: 'Annuler',
           style: 'cancel',
         },
         {
           text: 'Oui',
-          onPress: () => {
-            console.log("Choix: Sauvegarder");
-            handleLogout(true);
-          }, // Sauvegarder
+          onPress: handleLogout, // Déconnexion et suppression des données
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
   // Utiliser useEffect pour afficher la confirmation de déconnexion seulement une fois
   useEffect(() => {
     if (!isLoggingOut) {
-      console.log("Initialisation de la déconnexion...");
       confirmLogout();
       setIsLoggingOut(true);
     }
